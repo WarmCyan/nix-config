@@ -11,6 +11,9 @@
 # see also: https://nix-community.github.io/home-manager/index.html#sec-flakes-standalone
 #
 # it is necessary with kitty to export TERMINFO_DIRS=/usr/share/terminfo
+# 
+# TODO: see if there's a way to make a default package that's able to create a
+# runnable to do the bootstrapping portion.
 
 
 {
@@ -25,6 +28,89 @@
 	};
 
 	outputs = {self, nixpkgs, home-manager}: {
+
+
+
+		
+		defaultPackage.x86_64-linux = 
+			with import nixpkgs { system = "x86_64-linux"; }; 
+			stdenv.mkDerivation rec {
+				name = "hm-bootstrap";
+
+				boostrapScript = ''
+					#!${runtimeShell}
+				'';
+				#passAsFile = [ "bootstrapScript" ];
+				installPhase = ''
+					mkdir -p $out/bin
+					echo "#!${runtimeShell}" >> $out/bin/bootstrap
+					#echo "export TERMINFO_DIRS=/usr/share/terminfo" # TODO: unsure what exactly is needed for this
+					echo "nix build --no-write-lock-file home-manager" >> $out/bin/bootstrap
+			 		echo "./result/bin/home-manager --flake \".#\$1\" switch" >> $out/bin/bootstrap
+					chmod +x $out/bin/bootstrap
+				'';
+				shellHook = ''
+					echo "hello";
+				'';
+			
+				dontUnpack = true;
+			};
+
+
+		homeConfigurations.default = home-manager.lib.homeManagerConfiguration {
+			configuration = {pkgs, ...}: {
+				targets.genericLinux.enable = true;
+				programs.home-manager.enable = true;
+			};
+			system = "x86_64-linux";
+			homeDirectory = "/home/dwl";
+			username = "dwl";
+			stateVersion = "22.05";
+		};
+
+
+
+		
+			# with import nixpkgs { system = "x86_64-linux"; }; 
+			# # let 
+			# # 	bootstrapScript = nixpkgs.legacyPackages.x86_64-linux.writeShellScriptBin "bootstrap" ''
+			# # 		nix build --no-write-lock-file home-manager
+			# # 		./result/bin/home-manager --flake ".#$1" switch
+			# # 	'';
+			# # in
+			# stdenv.mkDerivation rec {
+			# 	name = "hm-bootstrap";
+			# 	dontUnpack = true;
+			# 	#dontInstall = true;
+			# 	#buildInputs = [ bootstrapScript ];
+			# 	installPhase = nixpkgs.legacyPackages.x86_64-linux.writeShellScriptBin "bootstrap" ''
+			# 		nix build --no-write-lock-file home-manager
+			# 		./result/bin/home-manager --flake ".#$1" switch
+			# 	'';
+
+			# 	shellHook = ''
+			# 		echo "Hello there!"
+			# 	'';
+			# };
+		
+		#self.packages.x86_64-linux.bootstrap-script;
+			# with pkgs = import nixpkgs { system = "x86_64-linux"; };
+			# let bootstrapScript = pkgs.writeShellScriptBin "bootstrap" ''
+			# 	nix build --no-write-lock-file home-manager
+			# 	./result/bin/home-manager --flake ".#$1" switch
+			# '';
+			# in
+			# stdenv.mkDerivation rec {
+			# 	name = "bootstrap-phase";
+			# 	buildInputs = [ bootstrapScript ];
+			# };
+
+		#packages.x86_64-linux.bootstrap-script = 
+	
+
+		homeConfigurations.dwl-standard = home-manager.lib.homeManagerConfiguration {
+		};
+	
 
 		homeConfigurations.arcane = home-manager.lib.homeManagerConfiguration {
 			configuration = {pkgs, ...}: {
@@ -194,6 +280,9 @@
 			username = "81n";
 			stateVersion = "22.05";
 		};
+		
+		
+		#homeConfigurations.quark = homeConfigurations.dwl-standard;
 	};
 
 }
