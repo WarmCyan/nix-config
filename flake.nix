@@ -28,33 +28,26 @@
 	};
 
 	outputs = {self, nixpkgs, home-manager}: {
-
-
-
-		
+	
+		# the default is a script ot bootstrap the installation of home manager. 
+		# you can run this by running `nix shell .` and then `bootstrap PROFILENAME`
 		defaultPackage.x86_64-linux = 
 			with import nixpkgs { system = "x86_64-linux"; }; 
 			stdenv.mkDerivation rec {
 				name = "hm-bootstrap";
 
-				boostrapScript = ''
-					#!${runtimeShell}
-				'';
-				#passAsFile = [ "bootstrapScript" ];
 				installPhase = ''
 					mkdir -p $out/bin
 					echo "#!${runtimeShell}" >> $out/bin/bootstrap
-					#echo "export TERMINFO_DIRS=/usr/share/terminfo" # TODO: unsure what exactly is needed for this
+					echo "export TERMINFO_DIRS=/usr/share/terminfo" >> $out/bin/bootstrap
 					echo "nix build --no-write-lock-file home-manager" >> $out/bin/bootstrap
 			 		echo "./result/bin/home-manager --flake \".#\$1\" switch" >> $out/bin/bootstrap
 					chmod +x $out/bin/bootstrap
 				'';
-				shellHook = ''
-					echo "hello";
-				'';
 			
 				dontUnpack = true;
 			};
+
 
 
 		homeConfigurations.default = home-manager.lib.homeManagerConfiguration {
@@ -68,47 +61,25 @@
 			stateVersion = "22.05";
 		};
 
-
-
-		
-			# with import nixpkgs { system = "x86_64-linux"; }; 
-			# # let 
-			# # 	bootstrapScript = nixpkgs.legacyPackages.x86_64-linux.writeShellScriptBin "bootstrap" ''
-			# # 		nix build --no-write-lock-file home-manager
-			# # 		./result/bin/home-manager --flake ".#$1" switch
-			# # 	'';
-			# # in
-			# stdenv.mkDerivation rec {
-			# 	name = "hm-bootstrap";
-			# 	dontUnpack = true;
-			# 	#dontInstall = true;
-			# 	#buildInputs = [ bootstrapScript ];
-			# 	installPhase = nixpkgs.legacyPackages.x86_64-linux.writeShellScriptBin "bootstrap" ''
-			# 		nix build --no-write-lock-file home-manager
-			# 		./result/bin/home-manager --flake ".#$1" switch
-			# 	'';
-
-			# 	shellHook = ''
-			# 		echo "Hello there!"
-			# 	'';
-			# };
-		
-		#self.packages.x86_64-linux.bootstrap-script;
-			# with pkgs = import nixpkgs { system = "x86_64-linux"; };
-			# let bootstrapScript = pkgs.writeShellScriptBin "bootstrap" ''
-			# 	nix build --no-write-lock-file home-manager
-			# 	./result/bin/home-manager --flake ".#$1" switch
-			# '';
-			# in
-			# stdenv.mkDerivation rec {
-			# 	name = "bootstrap-phase";
-			# 	buildInputs = [ bootstrapScript ];
-			# };
-
-		#packages.x86_64-linux.bootstrap-script = 
-	
-
 		homeConfigurations.dwl-standard = home-manager.lib.homeManagerConfiguration {
+			configuration = {pkgs, ...}: {
+				targets.genericLinux.enable = true;
+				programs.home-manager.enable = true;
+
+				programs.zsh = {
+					enable = true;
+					#let aliasesFile = import ./shell-aliases.nix {}; in
+					#aliasesFile = import ./shell-aliases.nix;
+					#shellAliases = ./shell-aliases.nix;
+					shellAliases = ./shell-aliases.nix;
+				};
+
+				
+			};
+			system = "x86_64-linux";
+			homeDirectory = "/home/dwl";
+			username = "dwl";
+			stateVersion = "22.05";
 		};
 	
 
@@ -128,52 +99,11 @@
 				programs.home-manager.enable = true;
 				programs.zsh = {
 					enable = true;
-					shellAliases = {
 
-						# quick dir changes
-						".." = "cd ..";
-						"..." = "cd ...";
-						"...." = "cd ....";
-
-						# coloration
-						ls = "ls --color=auto";
-						grep = "grep --color=auto";
-						ll = "ls -lAh --color=auto";
-
-						# verbosity and human readable
-						df = "df -h";
-						du = "du -ch";
-						cp = "cp -v";
-						mv = "mv -v";
-
-						# don't destroy my computer
-						rm = "rm -Iv --preserve-root";
-						chown = "chown --preserve-root";
-						chmod = "chmod --preserve-root";
-						chgrp = "chgrp --preserve-root";
-
-						v = "nvim";
-						c = "clear";
-						q = "exit";
-						mx = "chmod +x";
-						lab = "cd ~/lab";
-
-						# tmux
-						tn = "tmux new-session -s";
-						ta = "tmux attach -t";
-						tl = "tmux ls";
-						tk = "tmux kill-session -t";
-						tc = "tmux new-session -t";
-
-						# git
-						g = "git status";
-						ga = "git add -A";
-						gc = "git commit -a";
-						gu = "git push";
-						gd = "git pull";
-						gl = "git log --oneline -n 10";
-
-					};
+					#let aliasesFile = import ./shell-aliases.nix; in
+					#aliasesFile = import ./shell-aliases.nix;
+					#shellAliases = aliasesFile.shellAliases;
+					shellAliases = import ./shell-aliases.nix;
 				};
 				programs.git = {
 					enable = true;
