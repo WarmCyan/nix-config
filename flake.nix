@@ -11,10 +11,14 @@
 # see also: https://nix-community.github.io/home-manager/index.html#sec-flakes-standalone
 #
 # it is necessary with kitty to export TERMINFO_DIRS=/usr/share/terminfo
+#
+# TODO: create an install script that can be curl'd
+#
+# TODO: create homemanager script that can list diffs between generations/show what's installed
+#
+# NOTE: to search vimplugins do:
+# nix-env -f '<nixpkgs>' -qaP -A vimPlugins | grep "pluginname"
 # 
-# TODO: see if there's a way to make a default package that's able to create a
-# runnable to do the bootstrapping portion.
-
 
 {
 	description = "HM Configs";
@@ -29,13 +33,14 @@
 
 	outputs = {self, nixpkgs, home-manager}: {
 	
-		# the default is a script ot bootstrap the installation of home manager. 
+		# the default is a script to bootstrap the installation of home manager. 
 		# you can run this by running `nix shell .` and then `bootstrap PROFILENAME`
 		defaultPackage.x86_64-linux = 
 			with import nixpkgs { system = "x86_64-linux"; }; 
 			stdenv.mkDerivation rec {
 				name = "hm-bootstrap";
 
+                # TODO: output a help script as well
 				installPhase = ''
 					mkdir -p $out/bin
 					echo "#!${runtimeShell}" >> $out/bin/bootstrap
@@ -88,21 +93,16 @@
 
 				home.packages = [
 					pkgs.cowsay
-					#pkgs.neovim
-					#pkgs.tmux
-					#pkgs.git
 				];
 				
 				targets.genericLinux.enable = true;
-
-
 				programs.home-manager.enable = true;
+                programs.bash = {
+					enable = true;
+					shellAliases = import ./shell-aliases.nix;
+                };
 				programs.zsh = {
 					enable = true;
-
-					#let aliasesFile = import ./shell-aliases.nix; in
-					#aliasesFile = import ./shell-aliases.nix;
-					#shellAliases = aliasesFile.shellAliases;
 					shellAliases = import ./shell-aliases.nix;
 				};
 				programs.git = {
@@ -119,90 +119,27 @@
 				programs.neovim = {
 					enable = true;
 
-					extraConfig = ''
-
-						if has('mouse')
-							set mouse=a
-							set mousehide " hide mouse when typing text
-						endif
-
-						" misc???
-						syntax on
-						filetype plugin indent on
-
-                        colorscheme monokai
-
-						" ==============================================================================
-						" SETTINGS
-						" ==============================================================================
-
-						" look
-						set number " line numbers!
-						set scrolloff=4 " keep 4 visible lines around cursorline when near top or bottom
-						set cursorline " bghighlight of current line
-						set title " window title
-						set titlestring=%t%(\ %M%)%(\ (%{expand(\"%:p:h\")})%)%(\ %a%)\ -\ %{v:servername}
-						set laststatus=2 " always show status line
-						set statusline=%t\ %m%*\ %y%h%r%w\ %<%F\ %*\ %=\ Lines:\ %L\ \ \ Col:\ %c\ \ \ [%n]
-						set noshowmode " mode unnecessary since shown in lightline
-
-						" search
-						set hlsearch " highlight search matches
-						set incsearch " move highlight as you add charachters to search string
-						set ignorecase " ignore case in search
-						set smartcase " ...unless being smart about it!
-
-						" tabs
-						set tabstop=4 " number of columns used for a tab
-						set shiftwidth=4 " how columns indent operations (<<, >>) use
-						set softtabstop=4 " how many spaces used when hit tab in insert mode
-						set expandtab " I've given up the fight on spaces v tabs... :/
-
-
-						" ==============================================================================
-						" KEY BINDINGS
-						" ==============================================================================
-
-						" ESC to leave insert mode is terrible! 'jk' is much nicer
-						inoremap jk <SPACE><BS><ESC>
-						inoremap JK <SPACE><BS><ESC>
-						inoremap Jk <SPACE><BS><ESC>
-
-						" make ',' find next character, like ';' normally does
-						nnoremap , ;
-
-						" press ';' in normal mode instead of ':', it's too common to use shift all the time!
-						nnoremap ; :
-						vnoremap ; :
-
-						" better window navigation
-						noremap <C-h> <C-w>h
-						noremap <C-j> <C-w>j
-						noremap <C-k> <C-w>k
-						noremap <C-l> <C-w>l
-					'';
+					extraConfig = builtins.readFile ./vimconf.vim;
 					
 					plugins = with pkgs.vimPlugins; [
 						vim-nix
                         vim-monokai
+                        nvim-lspconfig
+                        (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
                         { 
                             plugin = lightline-vim;
-                            config = ''let g:lightline = { 
-                                \ 'colorscheme': 'powerline', 
-                                \ 'active': {
-                                    \ 'left': [ [ 'mode', 'paste' ],
-                                              \ [ 'readonly', 'filename', 'modified'] ],
-                                    \ 'right': [ [ 'lineinfo' ],
-                                               \ [ 'percent', 'linecount' ],
-                                               \ [ 'fileformat', 'fileencoding', 'filetype' ] ]'
-                                \ },
-                                \ 'component': {
-                                    \ 'linecount': '%L'
-                                \ },
-                            \ }
-                            '';
+                            config = builtins.readFile ./vimlightline.vim;
                         }
 					];
+
+                    extraPython3Packages = (ps: with ps; [
+                      jedi
+                      pynvim
+                      pkgs.python37Packages.python-language-server
+                      pkgs.python37Packages.pyls-mypy
+                      pkgs.python37Packages.pyls-isort
+                      pkgs.python37Packages.pyls-black
+                    ]);
 				};
 			};
 			system = "x86_64-linux";
@@ -214,5 +151,4 @@
 		
 		#homeConfigurations.quark = homeConfigurations.dwl-standard;
 	};
-
 }

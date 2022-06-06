@@ -1,3 +1,4 @@
+#{}:
 {
 	# quick dir changes
 	".." = "cd ..";
@@ -42,7 +43,4 @@
 	gu = "git push";
 	gd = "git pull";
 	gl = "git log --oneline -n 10";
-
-	#testing
-	what = "echo 'what???";
 }
