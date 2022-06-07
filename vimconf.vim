@@ -59,5 +59,11 @@ noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
+
+
+
 lua <<EOF
+lspconfig = require 'lspconfig'
+
+lspconfig.pylsp.setup{}
 EOF
