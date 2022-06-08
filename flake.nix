@@ -113,16 +113,43 @@
 			configuration = {pkgs, ...}: {
 				targets.genericLinux.enable = true;
 				programs.home-manager.enable = true;
-
-				programs.zsh = {
-					enable = true;
-					#let aliasesFile = import ./shell-aliases.nix {}; in
-					#aliasesFile = import ./shell-aliases.nix;
-					#shellAliases = ./shell-aliases.nix;
-					shellAliases = ./shell-aliases.nix;
-				};
-
 				
+				home.packages = [
+                    pkgs.python39Packages.python-lsp-server
+                    pkgs.python39Packages.pylsp-mypy 
+                    pkgs.python39Packages.pyls-isort
+                    pkgs.python39Packages.python-lsp-black
+                    pkgs.python39Packages.flake8
+
+                    # NOTE: python-language-server and company are kind of broken
+                    # https://github.com/NixOS/nixpkgs/issues/151659
+				];
+				
+                programs.bash = {
+					enable = true;
+					shellAliases = import ./shell-aliases.nix;
+                };
+				programs.neovim = {
+					enable = true;
+
+                    extraConfig = builtins.readFile ./vimconf.vim;
+					
+					plugins = with pkgs.vimPlugins; [
+						vim-nix
+                        vim-monokai
+                        nvim-lspconfig
+                        (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
+                        { 
+                            plugin = lightline-vim;
+                            config = builtins.readFile ./vimlightline.vim;
+                        }
+					];
+
+                    extraPython3Packages = (ps: with ps; [
+                      jedi
+                      pynvim
+                    ]);
+				};
 			};
 			system = "x86_64-linux";
 			homeDirectory = "/home/dwl";
@@ -197,6 +224,7 @@
                             plugin = lightline-vim;
                             config = builtins.readFile ./vimlightline.vim;
                         }
+						nvim-lightline-lsp
 					];
 
                     extraPython3Packages = (ps: with ps; [

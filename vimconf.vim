@@ -66,4 +66,5 @@ lua <<EOF
 lspconfig = require 'lspconfig'
 
 lspconfig.pylsp.setup{}
+lspconfig.bashls.setup{}
 EOF
