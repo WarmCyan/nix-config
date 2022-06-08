@@ -24,6 +24,7 @@
 #
 # https://www.reddit.com/r/NixOS/comments/v2xpjm/big_list_of_flakes_tutorials/
 #
+# https://dev.to/vonheikemen/neovim-lsp-setup-nvim-lspconfig-nvim-cmp-4k8e
 
 
 # CONFIG COLLECTION 
@@ -51,6 +52,26 @@
     let
         pkgs = import nixpkgs {
             config.allowUnfree = true; # https://github.com/nix-community/home-manager/issues/2954
+
+            overlays = [
+                (self: super: {
+                    vimPlugins = super.vimPlugins // {
+                        cmp-nvim-lsp-signature-help = super.vimUtils.buildVimPluginFrom2Nix {
+                            pname = "cmp-nvim-lsp-signature-help";
+                            version = "2022-06-08";
+                            src = super.fetchFromGitHub {
+                                owner = "hrsh7th";
+                                repo = "cmp-nvim-lsp-signature-help";
+                                rev = "8014f6d120f72fe0a135025c4d41e3fe41fd411b";
+                                # to find sha256, goto github, and grab the URL for code -> download ZIP
+                                # then enter it into 
+                                # nix-prefetch-url --unpack [URL]
+                                sha256 = "1k61aw9mp012h625jqrf311vnsm2rg27k08lxa4nv8kp6nk7il29";
+                            };
+                        };
+                    };
+                })
+            ];
             
             # https://nixos.wiki/wiki/Overlays
             # this almost worked except that pip dependencies obviously didn't
@@ -138,7 +159,7 @@
 						vim-nix
                         vim-monokai
                         nvim-lspconfig
-                        (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
+                        (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars)) # unclear how to tell if this is working
                         { 
                             plugin = lightline-vim;
                             config = builtins.readFile ./vimlightline.vim;
@@ -167,15 +188,24 @@
                 #let
                 #    pkgs.python39Packages.python-language-server = pkgs.python39.python-lsp-server;
                 #in # gah why does this not work
+                # TODO: how can I modularize the tsserver stuff if I don't want in all configs?
+                # basically how can I import a string from file and parameterize it?
 				home.packages = [
 					pkgs.cowsay
                     pkgs.ripgrep
+                    pkgs.bat
                     
                     pkgs.python39Packages.python-lsp-server
                     pkgs.python39Packages.pylsp-mypy 
                     pkgs.python39Packages.pyls-isort
                     pkgs.python39Packages.python-lsp-black
                     pkgs.python39Packages.flake8
+
+                    pkgs.nodePackages.vue-language-server
+                    pkgs.nodePackages.bash-language-server
+                    pkgs.nodePackages.typescript
+                    pkgs.nodePackages.typescript-language-server
+                    # pkgs.nodePackages.javascript-typescript-langserver # no longer maintained
 
                     # NOTE: python-language-server and company are kind of broken
                     # https://github.com/NixOS/nixpkgs/issues/151659
@@ -215,16 +245,37 @@
                     #    "EOF"
                     #];
 					
+                    # to search:
+                    # nix-env -f '<nixpkgs>' -qaP -A vimPlugins | grep "pluginname"
 					plugins = with pkgs.vimPlugins; [
-						vim-nix
                         vim-monokai
+                        
+						vim-nix
+                        vim-vue
+                        
                         nvim-lspconfig
                         (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
-                        { 
-                            plugin = lightline-vim;
-                            config = builtins.readFile ./vimlightline.vim;
-                        }
-						nvim-lightline-lsp
+                        
+                        nvim-cmp
+                        cmp-buffer
+                        cmp-spell
+                        cmp-treesitter
+                        cmp-nvim-lsp
+                        cmp-path
+                        luasnip
+                        cmp_luasnip
+                        cmp-nvim-lsp-signature-help
+                        # TODO: there's also a fuzzy-buffer and fuzzy-path that I don't see in nixpkgs, see
+                        # https://github.com/hrsh7th/nvim-cmp/wiki/List-of-sources
+
+                        lualine-nvim
+                        #lualine-lsp-progress
+                        
+                        #nvim-lightline-lsp
+                        #{ 
+                        #    plugin = lightline-vim;
+                        #    config = builtins.readFile ./vimlightline.vim;
+                        #}
 					];
 
                     extraPython3Packages = (ps: with ps; [

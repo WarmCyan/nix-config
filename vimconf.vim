@@ -61,10 +61,127 @@ noremap <C-l> <C-w>l
 
 
 
+set completeopt=menu,menuone,noselect
 
 lua <<EOF
+local cmp = require 'cmp'
+local luasnip = require 'luasnip'
+
+cmp.setup({
+    snippet = {
+        expand = function(args)
+            luasnip.lsp_expand(args.body)
+        end,
+    },
+    window = {
+    },
+    mapping = cmp.mapping.preset.insert({
+        ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<CR>'] = cmp.mapping.confirm {
+            behavior = cmp.ConfirmBehavior.Replace,
+            select = true,
+        },
+        ['<Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+                luasnip.expand_or_jump()
+            else
+                fallback()
+            end
+        end, { 'i', 's' }),
+        ['<S-Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+                luasnip.jump(-1)
+            else
+                fallback()
+            end
+        end, { 'i', 's' }),
+    }),
+    sources = cmp.config.sources({
+        { name = 'nvim_lsp' },
+        { name = 'buffer' },
+        { name = 'treesitter' },
+        { name = 'path' },
+        { name = 'luasnip' },
+        { name = 'nvim_lsp_signature_help' },
+    })
+})
+
+cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+        { name = 'path' }
+    })
+})
+
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+
+
 lspconfig = require 'lspconfig'
 
-lspconfig.pylsp.setup{}
-lspconfig.bashls.setup{}
+
+-- https://github.com/neovim/nvim-lspconfig
+local on_attach = function(client, bufnr)
+    local bufopts = { noremap=true, silent=true, buffer=bufnr }
+    vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts) -- run autoformat
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts) -- open up a window with info about symbol under cursor
+    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+    vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+end
+
+
+local servers = { 'pylsp', 'bashls', 'vuels', 'tsserver' }
+for _, lsp in pairs(servers) do
+    lspconfig[lsp].setup {
+        on_attach = on_attach,
+        capabilities = capabilities
+    }
+end
+
+local util = require 'lspconfig/util'
+lspconfig.tsserver.setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+    ---- https://github.com/neovim/nvim-lspconfig/issues/260
+    -- root_dir = util.root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git") or vim.loop.cwd();
+    -- cmd = { "typescript-language-server --stdio --tsserver-path ~/.nix-profile/bin/tsserver" } # can't find it...
+})
+
+-- https://github.com/nvim-lualine/lualine.nvim/
+-- this has to be at the bottom rather than setting it in the plugin config in nix, otherwise it doesn't auto-start.
+-- https://github.com/nvim-lualine/lualine.nvim/issues/697
+require('lualine').setup {
+    options = {
+        theme = 'everforest'
+    },
+    sections = {
+        lualine_a = {'mode'},
+        lualine_b = {'branch', 'diff', 'diagnostics'},
+        lualine_c = {'filename'},
+        lualine_x = {'encoding', 'fileformat', 'filetype'},
+        lualine_y = {'progress'},
+        lualine_z = {'location'}
+        },
+    inactive_sections = {
+        lualine_a = {},
+        lualine_b = {},
+        lualine_c = {'filename'},
+        lualine_x = {'location'},
+        lualine_y = {},
+        lualine_z = {}
+        },
+    tabline = {},
+    extensions = {}
+}
+
 EOF
