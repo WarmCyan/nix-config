@@ -8,7 +8,14 @@ endif
 syntax on
 filetype plugin indent on
 
-colorscheme monokai
+" colorscheme monokai " too much purple, hard to read
+if has('termguicolors')
+    set termguicolors
+endif
+"set t_Co=256
+set background=dark
+let g:everforest_background='hard'
+colorscheme everforest
 
 " ==============================================================================
 " SETTINGS
@@ -36,6 +43,70 @@ set shiftwidth=4 " how columns indent operations (<<, >>) use
 set softtabstop=4 " how many spaces used when hit tab in insert mode
 set expandtab " I've given up the fight on spaces v tabs... :/
 
+autocmd FileType ruby setlocal tabstop=2 
+autocmd FileType ruby setlocal shiftwidth=2 
+autocmd FileType ruby setlocal softtabstop=2 
+
+autocmd FileType yaml setlocal tabstop=2 
+autocmd FileType yaml setlocal shiftwidth=2 
+autocmd FileType yaml setlocal softtabstop=2 
+
+autocmd FileType javascript setlocal foldmethod=indent
+autocmd FileType javascript setlocal tabstop=2 
+autocmd FileType javascript setlocal shiftwidth=2 
+autocmd FileType javascript setlocal softtabstop=2 
+
+autocmd FileType vue setlocal foldmethod=indent
+autocmd FileType vue setlocal tabstop=2 
+autocmd FileType vue setlocal shiftwidth=2 
+autocmd FileType vue setlocal softtabstop=2
+
+
+" folding
+set foldenable
+set foldmethod=syntax
+set foldopen=block,hor,insert,jump,mark,percent,quickfix,search,tag,undo " commands that unfold a section
+set foldcolumn=1
+
+" text editing behavior
+set encoding=utf-8
+set autoindent " smart indenting based on filetype
+set textwidth=80 " cols before auto wrap text
+" see :h fo-table
+"set formatoptions=l " long lines won't be broken up if entering insert mode and already past textwidth
+set formatoptions=t " auto-wrap lines based on textwidth
+set formatoptions+=c " auto-wrap comments using text width and auto insert comment leader
+set formatoptions+=j " be all smart and when joing a comment line, take out the extra comment leader
+set formatoptions+=q " allow formatting of comments with 'gq'
+set formatoptions+=r " automatically insert comment  leader after hitting enter in insert mode
+set backspace=indent,eol,start whichwrap+=<,>,[,] " backspace and cursor keys wrap to previous/next line
+
+" modeline is the set of vim settings that can be included in the first few or
+" last few lines of a file
+set modeline
+set modelines=5
+
+
+" directories/file handling
+set autoread
+set backup
+set undofile
+set swapfile
+set backupdir=~/tmp/bak
+set undodir=~/tmp/undo
+set directory=~/tmp/swap
+
+" if directories don't already exist, make them
+if !isdirectory(expand(&undodir))
+    call mkdir(expand(&undodir), "p")
+endif
+if !isdirectory(expand(&backupdir))
+    call mkdir(expand(&backupdir), "p")
+endif
+if !isdirectory(expand(&directory))
+    call mkdir(expand(&directory), "p")
+endif
+
 
 " ==============================================================================
 " KEY BINDINGS
@@ -58,6 +129,104 @@ noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
+
+" CTRL-C for copy
+vnoremap <C-C> "+y
+
+" CTRL-V for paste
+nnoremap <C-V> "+gP
+cnoremap <C-V> <C-R>+
+
+" normally CTRL-V is the column select, but change it to ctrl-b
+nnoremap <c-b> <c-v>
+
+" shortcuts to move back and forth in buffers
+nnoremap <F2> :bprevious<CR>
+nnoremap <F3> :bnext<CR>
+
+" fix broken CTRL-A increment number shortcut to CTRL-I
+nnoremap <C-I> <C-A>
+
+" tab control
+nnoremap <tab>h :tabprev<cr>
+nnoremap <tab>l :tabnext<cr>
+nnoremap <tab><enter> :tabnew<cr>
+nnoremap <tab>x :tabclose<cr>
+
+" make yank work the same as the other keys
+nnoremap Y y$
+
+" more sane usages of H and L
+nnoremap H ^
+nnoremap L $
+
+" convert word before cursor (or on cursor) to upper case (uses z mark)
+inoremap <C-u> <esc>mzgUiw`za
+nnoremap <C-u> mzgUiw`z
+
+" Split line (on next space)
+nnoremap S f<space>s<cr><esc>==
+
+" leader shortcuts!
+nnoremap <LEADER><SPACE> :nohlsearch<CR>
+
+" ==============================================================================
+" ABBREVIATIONS
+" ==============================================================================
+
+abbreviate note NOTE:
+abbreviate todo TODO:
+abbreviate bug BUG:
+abbreviate idea IDEA:
+
+
+" ==============================================================================
+" SPECIAL SYNTAX HIGHLIGHTING
+" ==============================================================================
+
+" highlight todo.txt syntax
+autocmd BufRead,BufNewFile * syntax match TODO_todo "\vTODO\:" containedin=ALL
+autocmd BufRead,BufNewFile * syntax match TODO_strt "\vSTRT\:" containedin=ALL
+autocmd BufRead,BufNewFile * syntax match TODO_wait "\vWAIT\:" containedin=ALL
+autocmd BufRead,BufNewFile * syntax match TODO_done "\vDONE\:" containedin=ALL
+autocmd BufRead,BufNewFile * syntax match TODO_canc "\vCANC\:" containedin=ALL
+
+" TODO: add noncterm colors too
+autocmd BufRead,BufNewFile * highlight TODO_todo ctermfg=magenta cterm=bold
+autocmd BufRead,BufNewFile * highlight TODO_strt ctermfg=cyan cterm=bold
+autocmd BufRead,BufNewFile * highlight TODO_wait ctermfg=yellow cterm=bold
+autocmd BufRead,BufNewFile * highlight TODO_done ctermfg=green cterm=bold
+autocmd BufRead,BufNewFile * highlight TODO_canc ctermfg=red cterm=bold
+
+highlight link Todo TODO_todo 
+highlight link pythonTodo TODO_todo 
+highlight link javaScriptCommentTodo TODO_todo
+
+" highlight bug/fixes/ideas
+autocmd BufRead,BufNewFile * syntax match NOTES_bug "\vBUG\:" containedin=ALL
+autocmd BufRead,BufNewFile * syntax match NOTES_fixd "\vFIXD\:" containedin=ALL
+autocmd BufRead,BufNewFile * syntax match NOTES_idea "\vIDEA\:" containedin=ALL
+autocmd BufRead,BufNewFile * syntax keyword NOTES_note NOTE containedin=ALL
+
+autocmd BufRead,BufNewFile * highlight NOTES_bug ctermfg=red cterm=bold
+autocmd BufRead,BufNewFile * highlight NOTES_fixd ctermfg=green cterm=bold
+autocmd BufRead,BufNewFile * highlight NOTES_idea ctermfg=blue cterm=bold
+autocmd BufRead,BufNewFile * highlight NOTES_note ctermfg=DarkCyan cterm=underline
+
+" highlight URLs
+autocmd BufRead,BufNewFile * syntax match URL "\vhttps?\:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)" containedin=ALL
+autocmd BufRead,BufNewFile * highlight URL ctermfg=magenta cterm=underline
+
+
+
+
+
+" ==============================================================================
+" LUA PLUGIN SETUP
+" ==============================================================================
+
+
+
 
 
 
@@ -123,24 +292,31 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protoco
 
 
 
-lspconfig = require 'lspconfig'
+local lspconfig = require 'lspconfig'
 
+local opts = { noremap=true, silent=true }
+vim.keymap.set('n', '<LEADER>h', vim.diagnostic.setloclist, opts)
+
+vim.o.updatetime = 250
+vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
 -- https://github.com/neovim/nvim-lspconfig
 local on_attach = function(client, bufnr)
     local bufopts = { noremap=true, silent=true, buffer=bufnr }
     vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts) -- run autoformat
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts) -- open up a window with info about symbol under cursor
-    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-    vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+    vim.keymap.set('n', '<C-p>', vim.lsp.buf.signature_help, bufopts)
+    vim.keymap.set('i', '<C-p>', vim.lsp.buf.signature_help, bufopts)
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
     vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+    vim.keymap.set('n', '<LEADER>r', vim.lsp.buf.rename, bufopts)
 end
 
+vim.lsp.set_log_level("debug")
 
-local servers = { 'pylsp', 'bashls', 'vuels', 'tsserver' }
+local servers = { 'pylsp', 'bashls', 'vuels', 'vimls' }
 for _, lsp in pairs(servers) do
     lspconfig[lsp].setup {
         on_attach = on_attach,
@@ -148,14 +324,37 @@ for _, lsp in pairs(servers) do
     }
 end
 
+local null_ls = require('null-ls')
+
 local util = require 'lspconfig/util'
-lspconfig.tsserver.setup({
+null_ls.setup({
+    sources = {
+        null_ls.builtins.code_actions.eslint.with({
+            only_local = "node_modules/.bin"
+        }),
+        null_ls.builtins.diagnostics.eslint.with({
+            only_local = "node_modules/.bin"
+        }),
+        null_ls.builtins.formatting.eslint.with({
+            only_local = "node_modules/.bin"
+        }),
+
+        -- null_ls.builtins.diagnostics.vint
+    },
     on_attach = on_attach,
-    capabilities = capabilities,
-    ---- https://github.com/neovim/nvim-lspconfig/issues/260
-    -- root_dir = util.root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git") or vim.loop.cwd();
-    -- cmd = { "typescript-language-server --stdio --tsserver-path ~/.nix-profile/bin/tsserver" } # can't find it...
+    capabilities = capabilities
 })
+
+
+--lspconfig.tsserver.setup({
+    --on_attach = on_attach,
+    --capabilities = capabilities,
+    ------ https://github.com/neovim/nvim-lspconfig/issues/260
+    ---- root_dir = util.root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git") or vim.loop.cwd();
+    --cmd =  { 'typescript-language-server --stdio --log-level 4' }
+    --cmd =  { 'typescript-language-server --stdio --tsserver-path /nix/store/06xqyh1191qp1brxm1clhj8nmna2jnak-typescript-4.6.4/bin/tsserver --log-level 4' }
+--})
+
 
 -- https://github.com/nvim-lualine/lualine.nvim/
 -- this has to be at the bottom rather than setting it in the plugin config in nix, otherwise it doesn't auto-start.
@@ -184,4 +383,23 @@ require('lualine').setup {
     extensions = {}
 }
 
+vim.opt.list = true
+require("indent_blankline").setup {
+    show_current_context = true,
+    show_current_context_start = true,
+    -- use_treesitter = true,
+    -- https://github.com/lukas-reineke/indent-blankline.nvim/issues/271
+    --context_patterns = {
+        --"class", "function", "method", "block", "list_literal", "selector",
+        --"^if", "^table", "if_statement", "while", "for",
+    --},
+}
+
+require('nvim_comment').setup()
+
+--require('nvim-web-devicons').setup({
+    --default = true
+--})
+
 EOF
+

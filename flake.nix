@@ -31,6 +31,7 @@
 # ----------------------------
 # https://github.com/Gerschtli/nix-config
 # https://github.com/Misterio77/nix-config
+# https://github.com/malob/nixpkgs
 # ----------------------------
 
 
@@ -184,27 +185,29 @@
 
                 #nixpkgs.config.allowUnfree = true; # why doesn't this work?
                 # https://github.com/NixOS/nixpkgs/issues/171810
+
+                home.file.".mambarc".text = ''
+channels:
+    - conda-forge
+                '';
                 
                 #let
                 #    pkgs.python39Packages.python-language-server = pkgs.python39.python-lsp-server;
                 #in # gah why does this not work
                 # TODO: how can I modularize the tsserver stuff if I don't want in all configs?
+                # I think instead of putting extras in extraPython3Packages, just put them in extraPackages.
                 # basically how can I import a string from file and parameterize it?
 				home.packages = [
 					pkgs.cowsay
                     pkgs.ripgrep
                     pkgs.bat
+                    pkgs.pre-commit
+                    pkgs.micromamba
                     
-                    pkgs.python39Packages.python-lsp-server
-                    pkgs.python39Packages.pylsp-mypy 
-                    pkgs.python39Packages.pyls-isort
-                    pkgs.python39Packages.python-lsp-black
-                    pkgs.python39Packages.flake8
-
-                    pkgs.nodePackages.vue-language-server
-                    pkgs.nodePackages.bash-language-server
-                    pkgs.nodePackages.typescript
-                    pkgs.nodePackages.typescript-language-server
+                    #pkgs.nodePackages.vue-language-server
+                    #pkgs.nodePackages.bash-language-server
+                    #pkgs.nodePackages.typescript
+                    #pkgs.nodePackages.typescript-language-server
                     # pkgs.nodePackages.javascript-typescript-langserver # no longer maintained
 
                     # NOTE: python-language-server and company are kind of broken
@@ -216,10 +219,57 @@
                 programs.bash = {
 					enable = true;
 					shellAliases = import ./shell-aliases.nix;
+                    
+                    bashrcExtra = ''
+                        # >>> mamba initialize >>>
+                        export MAMBA_EXE='${pkgs.micromamba}/bin/micromamba';
+                        export MAMBA_ROOT_PREFIX='/home/81n/micromamba';
+                        __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell bash --prefix '/home/81n/micromamba' 2> /dev/null)"
+                        if [ $? -eq 0 ]; then 
+                            eval "$__mamba_setup"
+                        else
+                            if [ -f "/home/81n/micromamba/etc/profile.d/micromamba.sh" ]; then
+                                . "/home/81n/micromamba/etc/profile.d/micromamba.sh"
+                            else
+                                export  PATH="/home/81n/micromamba/bin:$PATH"
+                            fi
+                        fi
+                        unset __mamba_setup
+                        # <<< mamba initialize <<<
+                        '';
                 };
 				programs.zsh = {
 					enable = true;
 					shellAliases = import ./shell-aliases.nix;
+                    enableAutosuggestions = true;
+                    oh-my-zsh = {
+                        enable = true;
+                        theme = "agnoster";
+                        plugins = [
+                            "git"
+                            "pip"
+                        ];
+                    };
+                    initExtra = builtins.concatStringsSep "\n" [
+                      ''
+                        # >>> mamba initialize >>>
+                        export MAMBA_EXE='${pkgs.micromamba}/bin/micromamba';
+                        export MAMBA_ROOT_PREFIX='/home/81n/micromamba';
+                        __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell zsh --prefix '/home/81n/micromamba' 2> /dev/null)"
+                        if [ $? -eq 0 ]; then 
+                            eval "$__mamba_setup"
+                        else
+                            if [ -f "/home/81n/micromamba/etc/profile.d/micromamba.sh" ]; then
+                                . "/home/81n/micromamba/etc/profile.d/micromamba.sh"
+                            else
+                                export  PATH="/home/81n/micromamba/bin:$PATH"
+                            fi
+                        fi
+                        unset __mamba_setup
+                        # <<< mamba initialize <<<
+                      ''
+                      (builtins.readFile  ./additionalzshconfig.sh)
+                    ];
 				};
 				programs.git = {
 					enable = true;
@@ -231,9 +281,45 @@
 					shell = "${pkgs.zsh}/bin/zsh";
 					aggressiveResize = true;
 					shortcut = "a";
+                    terminal = "xterm-256color";
+                    keyMode = "vi";
+                    sensibleOnTop = false;
+                    # didn't seem to work
+                    # plugins = with pkgs; [
+                    #   tmuxPlugins.vim-tmux-navigator
+                    # ];
+                    extraConfig = ''
+
+                      # Smart pane switching with awareness of Vim splits.
+# See: https://github.com/christoomey/vim-tmux-navigator
+is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
+    | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$'"
+bind-key -n 'C-h' if-shell "$is_vim" 'send-keys C-h'  'select-pane -L'
+bind-key -n 'C-j' if-shell "$is_vim" 'send-keys C-j'  'select-pane -D'
+bind-key -n 'C-k' if-shell "$is_vim" 'send-keys C-k'  'select-pane -U'
+bind-key -n 'C-l' if-shell "$is_vim" 'send-keys C-l'  'select-pane -R'
+tmux_version='$(tmux -V | sed -En "s/^tmux ([0-9]+(.[0-9]+)?).*/\1/p")'
+if-shell -b '[ "$(echo "$tmux_version < 3.0" | bc)" = 1 ]' \
+    "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\'  'select-pane -l'"
+if-shell -b '[ "$(echo "$tmux_version >= 3.0" | bc)" = 1 ]' \
+    "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\\\'  'select-pane -l'"
+
+# these don't seem to work, 
+# bind-key -T copy-mode-vi 'C-h' select-pane -L
+# bind-key -T copy-mode-vi 'C-j' select-pane -D
+# bind-key -T copy-mode-vi 'C-k' select-pane -U
+# bind-key -T copy-mode-vi 'C-l' select-pane -R
+# bind-key -T copy-mode-vi 'C-\' select-pane -l
+
+                      
+                      set -as terminal-features ",xterm-256:RGB"
+                    ''; # doesn't handle (truecolor? 256 color?) vim themes without this
+                    
 				};
 				programs.neovim = {
 					enable = true;
+                    viAlias = true;
+                    vimAlias = true;
 
                     extraConfig = builtins.readFile ./vimconf.vim;
 
@@ -248,13 +334,21 @@
                     # to search:
                     # nix-env -f '<nixpkgs>' -qaP -A vimPlugins | grep "pluginname"
 					plugins = with pkgs.vimPlugins; [
-                        vim-monokai
+                        #vim-monokai
+                        everforest
                         
 						vim-nix
                         vim-vue
+
+                        indent-blankline-nvim
+                        nvim-comment
+                        vim-tmux-navigator
+                        lualine-nvim
+                        nvim-web-devicons
                         
                         nvim-lspconfig
                         (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
+                        null-ls-nvim
                         
                         nvim-cmp
                         cmp-buffer
@@ -268,7 +362,6 @@
                         # TODO: there's also a fuzzy-buffer and fuzzy-path that I don't see in nixpkgs, see
                         # https://github.com/hrsh7th/nvim-cmp/wiki/List-of-sources
 
-                        lualine-nvim
                         #lualine-lsp-progress
                         
                         #nvim-lightline-lsp
@@ -277,6 +370,25 @@
                         #    config = builtins.readFile ./vimlightline.vim;
                         #}
 					];
+
+                    extraPackages = with pkgs; [
+                        pkgs.nodePackages.vue-language-server
+                        pkgs.nodePackages.bash-language-server
+                        pkgs.nodePackages.vim-language-server
+                        
+                        pkgs.python39Packages.python-lsp-server
+                        pkgs.python39Packages.pylsp-mypy 
+                        pkgs.python39Packages.pyls-isort
+                        pkgs.python39Packages.python-lsp-black
+                        pkgs.python39Packages.flake8
+
+                        #pkgs.vim-vint # (can be used with null_ls.builtins.diagnostics.vint)
+                        #pkgs.nodePackages.eslint
+                        # I was never able to get this to work, infuriating. I just installed npm 
+                        # and the requisite packages through OS pkg manager.
+                        #pkgs.nodePackages.typescript
+                        #pkgs.nodePackages.typescript-language-server
+                    ];
 
                     extraPython3Packages = (ps: with ps; [
                       jedi
