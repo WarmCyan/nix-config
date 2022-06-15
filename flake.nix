@@ -203,6 +203,7 @@ channels:
                     pkgs.bat
                     pkgs.pre-commit
                     pkgs.micromamba
+                    pkgs.zotero
                     
                     #pkgs.nodePackages.vue-language-server
                     #pkgs.nodePackages.bash-language-server
@@ -289,6 +290,25 @@ channels:
                     #   tmuxPlugins.vim-tmux-navigator
                     # ];
                     extraConfig = ''
+
+                        # more sane split keys
+                        unbind '"'
+                        unbind %
+                        bind | split-window -h
+                        bind - split-window -v
+
+                        bind C new-window -c '#{pane_current_path}'
+
+                        # resize panes like vim
+                        bind < resize-pane -L 3
+                        bind > resize-pane -R 3
+                        bind + resize-pane -U 3
+
+                        # accept mouse input from term emulator
+                        set -g mouse on
+
+                        set -g history-limit 10000
+                        
 
                       # Smart pane switching with awareness of Vim splits.
 # See: https://github.com/christoomey/vim-tmux-navigator

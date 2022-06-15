@@ -12,6 +12,10 @@ zle -N update_rprompt_with_date
 bindkey '^J' update_rprompt_with_date
 bindkey '^M' update_rprompt_with_date
 
+function cd {
+    builtin cd "$@" && ls -F
+}
+
 
 # https://stackoverflow.com/questions/13125825/zsh-update-prompt-with-current-time-when-a-command-is-started
 # strlen () {
