@@ -323,7 +323,7 @@ end
 
 vim.lsp.set_log_level("debug")
 
-local servers = { 'pylsp', 'bashls', 'vuels', 'vimls' }
+local servers = { 'pylsp', 'bashls', 'vuels', 'vimls', 'svelte', 'tsserver' }
 for _, lsp in pairs(servers) do
     lspconfig[lsp].setup {
         on_attach = on_attach,

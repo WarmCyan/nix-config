@@ -360,6 +360,7 @@ if-shell -b '[ "$(echo "$tmux_version >= 3.0" | bc)" = 1 ]' \
                         
 						vim-nix
                         vim-vue
+                        vim-svelte
 
                         indent-blankline-nvim
                         nvim-comment
@@ -396,6 +397,8 @@ if-shell -b '[ "$(echo "$tmux_version >= 3.0" | bc)" = 1 ]' \
                         pkgs.nodePackages.vue-language-server
                         pkgs.nodePackages.bash-language-server
                         pkgs.nodePackages.vim-language-server
+                        pkgs.nodePackages.svelte-language-server
+                        pkgs.nodePackages.typescript-language-server
                         
                         pkgs.python39Packages.python-lsp-server
                         pkgs.python39Packages.pylsp-mypy 
@@ -408,7 +411,6 @@ if-shell -b '[ "$(echo "$tmux_version >= 3.0" | bc)" = 1 ]' \
                         # I was never able to get this to work, infuriating. I just installed npm 
                         # and the requisite packages through OS pkg manager.
                         #pkgs.nodePackages.typescript
-                        #pkgs.nodePackages.typescript-language-server
                     ];
 
                     extraPython3Packages = (ps: with ps; [
