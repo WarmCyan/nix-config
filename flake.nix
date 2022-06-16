@@ -276,6 +276,7 @@ channels:
 					enable = true;
 					userName = "Martindale, Nathan";
 					userEmail = "martindalena@ornl.gov";
+                    extraConfig = { core = { pager = "cat"; }; };
 				};
 				programs.tmux = {
 					enable = true;

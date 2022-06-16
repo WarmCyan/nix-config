@@ -11,6 +11,13 @@ filetype plugin indent on
 " colorscheme monokai " too much purple, hard to read
 if has('termguicolors')
     set termguicolors
+
+    " https://vi.stackexchange.com/questions/13458/make-vim-show-all-the-colors
+    " correct RGB escape codes for vim inside tmux
+    if !has('nvim') && $TERM ==# 'screen-256color'
+      let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+      let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    endif
 endif
 "set t_Co=256
 set background=dark
@@ -192,11 +199,11 @@ autocmd BufRead,BufNewFile * syntax match TODO_done "\vDONE\:" containedin=ALL
 autocmd BufRead,BufNewFile * syntax match TODO_canc "\vCANC\:" containedin=ALL
 
 " TODO: add noncterm colors too
-autocmd BufRead,BufNewFile * highlight TODO_todo ctermfg=magenta cterm=bold
-autocmd BufRead,BufNewFile * highlight TODO_strt ctermfg=cyan cterm=bold
-autocmd BufRead,BufNewFile * highlight TODO_wait ctermfg=yellow cterm=bold
-autocmd BufRead,BufNewFile * highlight TODO_done ctermfg=green cterm=bold
-autocmd BufRead,BufNewFile * highlight TODO_canc ctermfg=red cterm=bold
+autocmd BufRead,BufNewFile * highlight TODO_todo ctermfg=magenta cterm=bold guifg=#af87ff gui=bold
+autocmd BufRead,BufNewFile * highlight TODO_strt ctermfg=cyan cterm=bold guifg=#51ceff gui=bold
+autocmd BufRead,BufNewFile * highlight TODO_wait ctermfg=yellow cterm=bold guifg=#fff26d gui=bold
+autocmd BufRead,BufNewFile * highlight TODO_done ctermfg=green cterm=bold guifg=#b1e05f gui=bold
+autocmd BufRead,BufNewFile * highlight TODO_canc ctermfg=red cterm=bold guifg=#f6669d gui=bold
 
 highlight link Todo TODO_todo 
 highlight link pythonTodo TODO_todo 
@@ -208,14 +215,14 @@ autocmd BufRead,BufNewFile * syntax match NOTES_fixd "\vFIXD\:" containedin=ALL
 autocmd BufRead,BufNewFile * syntax match NOTES_idea "\vIDEA\:" containedin=ALL
 autocmd BufRead,BufNewFile * syntax keyword NOTES_note NOTE containedin=ALL
 
-autocmd BufRead,BufNewFile * highlight NOTES_bug ctermfg=red cterm=bold
-autocmd BufRead,BufNewFile * highlight NOTES_fixd ctermfg=green cterm=bold
-autocmd BufRead,BufNewFile * highlight NOTES_idea ctermfg=blue cterm=bold
-autocmd BufRead,BufNewFile * highlight NOTES_note ctermfg=DarkCyan cterm=underline
+autocmd BufRead,BufNewFile * highlight NOTES_bug ctermfg=red cterm=bold guifg=#f6669d gui=bold
+autocmd BufRead,BufNewFile * highlight NOTES_fixd ctermfg=green cterm=bold guifg=#b1e05f gui=bold
+autocmd BufRead,BufNewFile * highlight NOTES_idea ctermfg=blue cterm=bold guifg=#00afff gui=bold
+autocmd BufRead,BufNewFile * highlight NOTES_note ctermfg=DarkCyan cterm=underline guifg=#43a8d0 gui=underline
 
 " highlight URLs
 autocmd BufRead,BufNewFile * syntax match URL "\vhttps?\:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)" containedin=ALL
-autocmd BufRead,BufNewFile * highlight URL ctermfg=magenta cterm=underline
+autocmd BufRead,BufNewFile * highlight URL ctermfg=magenta cterm=underline guifg=#af87ff gui=bold
 
 
 
