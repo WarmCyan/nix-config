@@ -25,6 +25,19 @@
 # https://www.reddit.com/r/NixOS/comments/v2xpjm/big_list_of_flakes_tutorials/
 #
 # https://dev.to/vonheikemen/neovim-lsp-setup-nvim-lspconfig-nvim-cmp-4k8e
+#
+# NOTE: if get a conflict in zsh priority, run 
+# nix-env --set-flag priority 4 nix
+# and try again
+#
+#
+# TODO: need to make a function that combines builtins.readFile and builtins.replaceStrings to modify variables in a thing
+#
+# NOTE: lualine is much better than lightline
+#
+# NOTE: I wonder if for places where I can't run nix, I can still probably get
+# all of my configuration files (maybe even bin stuff?) by building it on a
+# system I do have sudo on, and then scping all the stuff over.
 
 
 # CONFIG COLLECTION 
@@ -51,6 +64,7 @@
 
     outputs = {self, nixpkgs, home-manager}@inputs: 
     let
+        mylib = import ./lib.nix;
         pkgs = import nixpkgs {
             config.allowUnfree = true; # https://github.com/nix-community/home-manager/issues/2954
 
@@ -111,7 +125,7 @@
 					echo "#!${runtimeShell}" >> $out/bin/bootstrap
 					echo "export TERMINFO_DIRS=/usr/share/terminfo" >> $out/bin/bootstrap
 					echo "nix build --no-write-lock-file home-manager" >> $out/bin/bootstrap
-			 		echo "./result/bin/home-manager --flake \".#\$1\" switch" >> $out/bin/bootstrap
+                    echo "./result/bin/home-manager --flake \".#\$1\" switch --impure" >> $out/bin/bootstrap
 					chmod +x $out/bin/bootstrap
 				'';
 			
@@ -130,6 +144,129 @@
 			username = "dwl";
 			stateVersion = "22.05";
 		};
+		
+
+		homeConfigurations.phantom = home-manager.lib.homeManagerConfiguration {
+			inherit pkgs;
+			configuration = {pkgs, ...}: {
+				home.sessionVariables = { 
+					# https://github.com/nix-community/home-manager/pull/797
+					# #LOCALE_ARCHIVE_2_11 = "/usr/bin/locale";
+					# LOCALE_ARCHIVE = "/usr/bin/locale/locale-archive";
+					TERMINFO_DIRS = "/usr/share/terminfo"; 
+					LOCALE_ARCHIVE_2_11 = "/usr/bin/locale/locale-archive";
+					LOCALE_ARCHIVE_2_27 = "${pkgs.glibcLocales}/lib/locale/locale-archive";
+					LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
+				};
+				home.packages = [
+					pkgs.cowsay
+					pkgs.shellcheck
+                    pkgs.shfmt
+				];
+				targets.genericLinux.enable = true;
+				
+				programs.home-manager.enable = true;
+				
+                programs.bash = {
+					enable = true;
+					shellAliases = import ./shell-aliases.nix;
+                    profileExtra = ''
+if [ -z "$DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ] && [ -z "$TMUX" ]; then
+	startx
+    ~/.screenlayout/normal.sh
+fi
+'';
+                    initExtra = mylib.combine [
+                        (builtins.readFile ./shell-common.sh)
+                        "zsh; exit"
+                    ];
+				};
+				programs.zsh = {
+					enable = true;
+					shellAliases = import ./shell-aliases.nix;
+					enableAutosuggestions = true;
+					oh-my-zsh = {
+						enable = true;
+						theme = "agnoster";
+						plugins = [ "git" "pip" ];
+					};
+                    initExtra = mylib.combine [
+                        (mylib.combineFiles [ ./zsh-conf.sh ./shell-common.sh ])
+                        "export LANG=en_US.UTF-8"
+                        "export LC_ALL=en_US.UTF-8"
+                    ];
+				};
+				programs.git = {
+					enable = true;
+					userName = "Martindale, Nathan";
+					userEmail = "nathanamartindale@gmail.com";
+                    extraConfig = { core = { pager = "cat"; }; };
+				};
+				programs.tmux = {
+					enable = true;
+					shell = "${pkgs.zsh}/bin/zsh";
+					aggressiveResize = true;
+					shortcut = "a";
+                    terminal = "xterm-256color";
+                    keyMode = "vi";
+                    sensibleOnTop = false;
+                    extraConfig = builtins.readFile ./tmux.conf;
+				};
+				programs.neovim = {
+					enable = true;
+                    viAlias = true;
+                    vimAlias = true;
+
+                    extraConfig = builtins.readFile ./vim-conf.vim;
+					plugins = with pkgs.vimPlugins; [
+                        everforest
+                        
+						vim-nix
+
+                        indent-blankline-nvim
+                        nvim-comment
+                        vim-tmux-navigator
+                        lualine-nvim
+                        nvim-web-devicons
+                        
+                        nvim-lspconfig
+                        (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
+                        null-ls-nvim
+                        
+                        nvim-cmp
+                        cmp-buffer
+                        cmp-spell
+                        cmp-treesitter
+                        cmp-nvim-lsp
+                        cmp-path
+                        luasnip
+                        cmp_luasnip
+                        cmp-nvim-lsp-signature-help
+					];
+
+                    extraPackages = with pkgs; [
+                        pkgs.nodePackages.bash-language-server  # should also have shellcheck installed
+                        pkgs.nodePackages.vim-language-server
+                        
+                        pkgs.python39Packages.python-lsp-server
+                        pkgs.python39Packages.pylsp-mypy 
+                        pkgs.python39Packages.pyls-isort
+                        pkgs.python39Packages.python-lsp-black
+                        pkgs.python39Packages.flake8
+                    ];
+
+                    extraPython3Packages = (ps: with ps; [
+                      jedi
+                      pynvim
+                    ]);
+				};
+			};
+			system = "x86_64-linux";
+			homeDirectory = "/home/dwl";
+			username = "dwl";
+			stateVersion = "22.05";
+		};
+
 
 		homeConfigurations.dwl-standard = home-manager.lib.homeManagerConfiguration {
 			configuration = {pkgs, ...}: {
@@ -154,17 +291,13 @@
 				programs.neovim = {
 					enable = true;
 
-                    extraConfig = builtins.readFile ./vimconf.vim;
+                    extraConfig = builtins.readFile ./vim-conf.vim;
 					
 					plugins = with pkgs.vimPlugins; [
 						vim-nix
                         vim-monokai
                         nvim-lspconfig
                         (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars)) # unclear how to tell if this is working
-                        { 
-                            plugin = lightline-vim;
-                            config = builtins.readFile ./vimlightline.vim;
-                        }
 					];
 
                     extraPython3Packages = (ps: with ps; [
@@ -251,7 +384,7 @@ channels:
                             "pip"
                         ];
                     };
-                    initExtra = builtins.concatStringsSep "\n" [
+                    initExtra = mylib.combine [
                       ''
                         # >>> mamba initialize >>>
                         export MAMBA_EXE='${pkgs.micromamba}/bin/micromamba';
@@ -269,7 +402,7 @@ channels:
                         unset __mamba_setup
                         # <<< mamba initialize <<<
                       ''
-                      (builtins.readFile  ./additionalzshconfig.sh)
+                      (mylib.combineFiles [ ./zsh-conf.sh ./shell-common.sh ])
                     ];
 				};
 				programs.git = {
@@ -286,67 +419,18 @@ channels:
                     terminal = "xterm-256color";
                     keyMode = "vi";
                     sensibleOnTop = false;
-                    # didn't seem to work
-                    # plugins = with pkgs; [
-                    #   tmuxPlugins.vim-tmux-navigator
-                    # ];
-                    extraConfig = ''
-
-                        # more sane split keys
-                        unbind '"'
-                        unbind %
-                        bind | split-window -h
-                        bind - split-window -v
-
-                        bind C new-window -c '#{pane_current_path}'
-
-                        # resize panes like vim
-                        bind < resize-pane -L 3
-                        bind > resize-pane -R 3
-                        bind + resize-pane -U 3
-
-                        # accept mouse input from term emulator
-                        set -g mouse on
-
-                        set -g history-limit 10000
-                        
-
-                      # Smart pane switching with awareness of Vim splits.
-# See: https://github.com/christoomey/vim-tmux-navigator
-is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
-    | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$'"
-bind-key -n 'C-h' if-shell "$is_vim" 'send-keys C-h'  'select-pane -L'
-bind-key -n 'C-j' if-shell "$is_vim" 'send-keys C-j'  'select-pane -D'
-bind-key -n 'C-k' if-shell "$is_vim" 'send-keys C-k'  'select-pane -U'
-bind-key -n 'C-l' if-shell "$is_vim" 'send-keys C-l'  'select-pane -R'
-tmux_version='$(tmux -V | sed -En "s/^tmux ([0-9]+(.[0-9]+)?).*/\1/p")'
-if-shell -b '[ "$(echo "$tmux_version < 3.0" | bc)" = 1 ]' \
-    "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\'  'select-pane -l'"
-if-shell -b '[ "$(echo "$tmux_version >= 3.0" | bc)" = 1 ]' \
-    "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\\\'  'select-pane -l'"
-
-# these don't seem to work, 
-# bind-key -T copy-mode-vi 'C-h' select-pane -L
-# bind-key -T copy-mode-vi 'C-j' select-pane -D
-# bind-key -T copy-mode-vi 'C-k' select-pane -U
-# bind-key -T copy-mode-vi 'C-l' select-pane -R
-# bind-key -T copy-mode-vi 'C-\' select-pane -l
-
-                      
-                      set -as terminal-features ",xterm-256:RGB"
-                    ''; # doesn't handle (truecolor? 256 color?) vim themes without this
-                    
+                    extraConfig = builtins.readFile ./tmux.conf;
 				};
 				programs.neovim = {
 					enable = true;
                     viAlias = true;
                     vimAlias = true;
 
-                    extraConfig = builtins.readFile ./vimconf.vim;
+                    extraConfig = builtins.readFile ./vim-conf.vim;
 
                     # this is a working method for combining multiple files
                     #extraConfig = builtins.concatStringsSep "\n" [
-                    #    (builtins.readFile ./vimconf.vim)
+                    #    (builtins.readFile ./vim-conf.vim)
                     #    "lua <<EOF"
                     #    (builtins.readFile ./vimlua.lua)
                     #    "EOF"
@@ -385,12 +469,6 @@ if-shell -b '[ "$(echo "$tmux_version >= 3.0" | bc)" = 1 ]' \
                         # https://github.com/hrsh7th/nvim-cmp/wiki/List-of-sources
 
                         #lualine-lsp-progress
-                        
-                        #nvim-lightline-lsp
-                        #{ 
-                        #    plugin = lightline-vim;
-                        #    config = builtins.readFile ./vimlightline.vim;
-                        #}
 					];
 
                     extraPackages = with pkgs; [

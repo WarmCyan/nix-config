@@ -2,8 +2,9 @@
 {
 	# quick dir changes
 	".." = "cd ..";
-	"..." = "cd ...";
-	"...." = "cd ....";
+	"..." = "cd ../..";
+	"...." = "cd ../../..";
+	"....." = "cd ../../../..";
 	
 	# coloration
 	ls = "ls --color=auto";
@@ -27,7 +28,10 @@
 	c = "clear";
 	q = "exit";
 	mx = "chmod +x";
+
+    # places
 	lab = "cd ~/lab";
+    scratch = "cd ~/lab/_env/scratchpad";
 	
 	# tmux
 	tn = "tmux new-session -s";

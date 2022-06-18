@@ -34,8 +34,8 @@ set scrolloff=4 " keep 4 visible lines around cursorline when near top or bottom
 set cursorline " bghighlight of current line
 set title " window title
 set titlestring=%t%(\ %M%)%(\ (%{expand(\"%:p:h\")})%)%(\ %a%)\ -\ %{v:servername}
-set laststatus=2 " always show status line
-set statusline=%t\ %m%*\ %y%h%r%w\ %<%F\ %*\ %=\ Lines:\ %L\ \ \ Col:\ %c\ \ \ [%n]
+"set laststatus=2 " always show status line
+"set statusline=%t\ %m%*\ %y%h%r%w\ %<%F\ %*\ %=\ Lines:\ %L\ \ \ Col:\ %c\ \ \ [%n]
 set noshowmode " mode unnecessary since shown in lightline
 
 " search
@@ -57,6 +57,10 @@ autocmd FileType ruby setlocal softtabstop=2
 autocmd FileType yaml setlocal tabstop=2 
 autocmd FileType yaml setlocal shiftwidth=2 
 autocmd FileType yaml setlocal softtabstop=2 
+
+autocmd FileType sh setlocal tabstop=2 
+autocmd FileType sh setlocal shiftwidth=2 
+autocmd FileType sh setlocal softtabstop=2 
 
 autocmd FileType javascript setlocal foldmethod=indent
 autocmd FileType javascript setlocal tabstop=2 
@@ -368,7 +372,8 @@ null_ls.setup({
 -- https://github.com/nvim-lualine/lualine.nvim/issues/697
 require('lualine').setup {
     options = {
-        theme = 'everforest'
+        theme = 'everforest',
+        icons_enabled = false
     },
     sections = {
         lualine_a = {'mode'},
