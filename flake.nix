@@ -337,6 +337,7 @@ channels:
                     pkgs.pre-commit
                     pkgs.micromamba
                     pkgs.zotero
+                    pkgs.tree
                     
                     #pkgs.nodePackages.vue-language-server
                     #pkgs.nodePackages.bash-language-server
