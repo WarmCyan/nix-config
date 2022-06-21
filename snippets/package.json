@@ -1,0 +1,11 @@
+{
+    "name": "my_local_snippets",
+    "contributes": {
+        "snippets": [
+            {
+                "language": "python",
+                "path": "./python.json"
+            }
+        ]
+    }
+}

@@ -236,16 +236,29 @@ autocmd BufRead,BufNewFile * highlight URL ctermfg=magenta cterm=underline guifg
 " LUA PLUGIN SETUP
 " ==============================================================================
 
-
-
-
-
-
 set completeopt=menu,menuone,noselect
+inoremap <c-u> <cmd>lua require("luasnip.extras.select_choice")()<cr>
 
 lua <<EOF
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
+-- TODO: can't figure out why it won't allow loading multiple paths
+require("luasnip.loaders.from_vscode").lazy_load({paths = { "~/.snippets" }})
+local types = require("luasnip.util.types")
+
+luasnip.config.setup({
+    ext_opts = {
+        [types.insertNode] = {
+            active = { virt_text = {{"[insert]", "Green"}} }
+        },
+        [types.choiceNode] = {
+            active = { virt_text = {{"[choice]", "Blue"}} }
+        },
+        [types.snippet] = {
+            passive = { virt_text = {{"[snippet active]", "Red"}} }
+        }
+    }
+})
 
 cmp.setup({
     snippet = {

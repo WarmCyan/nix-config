@@ -1,5 +1,5 @@
 # ==================================================
-# COMMON SHELL CAPABILITIES
+# COMMON SHELL CAPABILITIES (interactive shell)
 # ==================================================
 
 # every time we change directories, ls, because I always do that anyway.

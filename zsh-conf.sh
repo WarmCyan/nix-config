@@ -1,5 +1,5 @@
 # ==================================================
-# ZSH SPECIFIC STUFF
+# ZSH SPECIFIC STUFF (interactive shell)
 # ==================================================
 
 RPROMPT='[%D{%L:%M:%S %p}]'

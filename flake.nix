@@ -151,35 +151,36 @@
 			configuration = {pkgs, ...}: {
 				home.sessionVariables = { 
 					# https://github.com/nix-community/home-manager/pull/797
-					# #LOCALE_ARCHIVE_2_11 = "/usr/bin/locale";
-					# LOCALE_ARCHIVE = "/usr/bin/locale/locale-archive";
 					TERMINFO_DIRS = "/usr/share/terminfo"; 
 					LOCALE_ARCHIVE_2_11 = "/usr/bin/locale/locale-archive";
 					LOCALE_ARCHIVE_2_27 = "${pkgs.glibcLocales}/lib/locale/locale-archive";
 					LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
 				};
 				home.packages = [
-					pkgs.cowsay
+                    pkgs.figlet
+                    pkgs.lolcat
 					pkgs.shellcheck
                     pkgs.shfmt
 				];
 				targets.genericLinux.enable = true;
 				
 				programs.home-manager.enable = true;
+
+                home.file.".home".text = mylib.combine [
+                    "figlet 'Phantom' | lolcat"
+                ];
+                home.file.".snippets".source = ./snippets;
 				
                 programs.bash = {
 					enable = true;
 					shellAliases = import ./shell-aliases.nix;
-                    profileExtra = ''
-if [ -z "$DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ] && [ -z "$TMUX" ]; then
-	startx
-    ~/.screenlayout/normal.sh
-fi
-'';
-                    initExtra = mylib.combine [
-                        (builtins.readFile ./shell-common.sh)
-                        "zsh; exit"
+                    profileExtra = mylib.combine [
+                        ''if [ -z "$DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ] && [ -z "$TMUX" ]; then''
+                        ''  startx''
+                        ''  ~/.screenlayout/normal.sh''
+                        ''fi''
                     ];
+                    initExtra = mylib.combineFiles [ ./shell-common.sh ./bash-conf.sh ];
 				};
 				programs.zsh = {
 					enable = true;
