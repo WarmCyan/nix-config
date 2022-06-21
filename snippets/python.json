@@ -1,0 +1,14 @@
+{
+    "testing123": {
+        "prefix": "test",
+        "body": [
+            "# a test message",
+            "print(\"Hello world!\")",
+            "print(\"${2|I like trains,I do not like trains|}\")",
+            "# a comment with: ${1:comment}",
+            "# (that ${1:comment} is mirrored)",
+            "# The final text position: $0"
+        ],
+        "description": "Add simple test stuff"
+    }
+}
