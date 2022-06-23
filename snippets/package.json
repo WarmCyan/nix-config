@@ -5,6 +5,14 @@
             {
                 "language": "python",
                 "path": "./python.json"
+            },
+            {
+                "language": "json",
+                "path": "./json.json"
+            },
+            {
+                "language": "svelte",
+                "path": "./svelte.json"
             }
         ]
     }

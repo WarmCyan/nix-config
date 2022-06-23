@@ -51,16 +51,16 @@
 
 
 {
-	description = "HM Configs";
+    description = "HM Configs";
 
-	inputs = {
+    inputs = {
         nixpkgs.url = "github:nixos/nixpkgs/nixos-22.05";
         #nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-		home-manager = {
+        home-manager = {
             url = "github:nix-community/home-manager/release-22.05";
-			inputs.nixpkgs.follows = "nixpkgs";
-		};
-	};
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
+    };
 
     outputs = {self, nixpkgs, home-manager}@inputs: 
     let
@@ -87,7 +87,7 @@
                     };
                 })
             ];
-            
+
             # https://nixos.wiki/wiki/Overlays
             # this almost worked except that pip dependencies obviously didn't
             #overlays = [
@@ -111,69 +111,69 @@
     {
         # TODO: for let stuff and possibly patching/fixing pkgs, see https://github.com/nix-community/home-manager/issues/2954
 
-	
-		# the default is a script to bootstrap the installation of home manager. 
-		# you can run this by running `nix shell .` and then `bootstrap PROFILENAME`
-		defaultPackage.x86_64-linux = 
-			with import nixpkgs { system = "x86_64-linux"; }; 
-			stdenv.mkDerivation rec {
-				name = "hm-bootstrap";
 
-                # TODO: output a help script as well
-				installPhase = ''
-					mkdir -p $out/bin
-					echo "#!${runtimeShell}" >> $out/bin/bootstrap
-					echo "export TERMINFO_DIRS=/usr/share/terminfo" >> $out/bin/bootstrap
-					echo "nix build --no-write-lock-file home-manager" >> $out/bin/bootstrap
-                    echo "./result/bin/home-manager --flake \".#\$1\" switch --impure" >> $out/bin/bootstrap
-					chmod +x $out/bin/bootstrap
-				'';
-			
-				dontUnpack = true;
-			};
+        # the default is a script to bootstrap the installation of home manager. 
+        # you can run this by running `nix shell .` and then `bootstrap PROFILENAME`
+        defaultPackage.x86_64-linux = 
+        with import nixpkgs { system = "x86_64-linux"; }; 
+        stdenv.mkDerivation rec {
+            name = "hm-bootstrap";
+            
+            # TODO: output a help script as well
+            installPhase = ''
+                mkdir -p $out/bin
+                echo "#!${runtimeShell}" >> $out/bin/bootstrap
+                echo "export TERMINFO_DIRS=/usr/share/terminfo" >> $out/bin/bootstrap
+                echo "nix build --no-write-lock-file home-manager" >> $out/bin/bootstrap
+                echo "./result/bin/home-manager --flake \".#\$1\" switch --impure" >> $out/bin/bootstrap
+                chmod +x $out/bin/bootstrap
+            '';
+
+            dontUnpack = true;
+        };
 
 
 
-		homeConfigurations.default = home-manager.lib.homeManagerConfiguration {
-			configuration = {pkgs, ...}: {
-				targets.genericLinux.enable = true;
-				programs.home-manager.enable = true;
-			};
-			system = "x86_64-linux";
-			homeDirectory = "/home/dwl";
-			username = "dwl";
-			stateVersion = "22.05";
-		};
-		
+        homeConfigurations.default = home-manager.lib.homeManagerConfiguration {
+            configuration = {pkgs, ...}: {
+                targets.genericLinux.enable = true;
+                programs.home-manager.enable = true;
+            };
+            system = "x86_64-linux";
+            homeDirectory = "/home/dwl";
+            username = "dwl";
+            stateVersion = "22.05";
+        };
 
-		homeConfigurations.phantom = home-manager.lib.homeManagerConfiguration {
-			inherit pkgs;
-			configuration = {pkgs, ...}: {
-				home.sessionVariables = { 
-					# https://github.com/nix-community/home-manager/pull/797
-					TERMINFO_DIRS = "/usr/share/terminfo"; 
-					LOCALE_ARCHIVE_2_11 = "/usr/bin/locale/locale-archive";
-					LOCALE_ARCHIVE_2_27 = "${pkgs.glibcLocales}/lib/locale/locale-archive";
-					LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
-				};
-				home.packages = [
+
+        homeConfigurations.phantom = home-manager.lib.homeManagerConfiguration {
+            inherit pkgs;
+            configuration = {pkgs, ...}: {
+                home.sessionVariables = { 
+                    # https://github.com/nix-community/home-manager/pull/797
+                    TERMINFO_DIRS = "/usr/share/terminfo"; 
+                    LOCALE_ARCHIVE_2_11 = "/usr/bin/locale/locale-archive";
+                    LOCALE_ARCHIVE_2_27 = "${pkgs.glibcLocales}/lib/locale/locale-archive";
+                    LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
+                };
+                home.packages = [
                     pkgs.figlet
                     pkgs.lolcat
-					pkgs.shellcheck
+                    pkgs.shellcheck
                     pkgs.shfmt
-				];
-				targets.genericLinux.enable = true;
-				
-				programs.home-manager.enable = true;
+                ];
+                targets.genericLinux.enable = true;
+
+                programs.home-manager.enable = true;
 
                 home.file.".home".text = mylib.combine [
                     "figlet 'Phantom' | lolcat"
                 ];
                 home.file.".snippets".source = ./snippets;
-				
+
                 programs.bash = {
-					enable = true;
-					shellAliases = import ./shell-aliases.nix;
+                    enable = true;
+                    shellAliases = import ./shell-aliases.nix;
                     profileExtra = mylib.combine [
                         ''if [ -z "$DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ] && [ -z "$TMUX" ]; then''
                         ''  startx''
@@ -181,59 +181,59 @@
                         ''fi''
                     ];
                     initExtra = mylib.combineFiles [ ./shell-common.sh ./bash-conf.sh ];
-				};
-				programs.zsh = {
-					enable = true;
-					shellAliases = import ./shell-aliases.nix;
-					enableAutosuggestions = true;
-					oh-my-zsh = {
-						enable = true;
-						theme = "agnoster";
-						plugins = [ "git" "pip" ];
-					};
+                };
+                programs.zsh = {
+                    enable = true;
+                    shellAliases = import ./shell-aliases.nix;
+                    enableAutosuggestions = true;
+                    oh-my-zsh = {
+                        enable = true;
+                        theme = "agnoster";
+                        plugins = [ "git" "pip" ];
+                    };
                     initExtra = mylib.combine [
                         (mylib.combineFiles [ ./zsh-conf.sh ./shell-common.sh ])
                         "export LANG=en_US.UTF-8"
                         "export LC_ALL=en_US.UTF-8"
                     ];
-				};
-				programs.git = {
-					enable = true;
-					userName = "Martindale, Nathan";
-					userEmail = "nathanamartindale@gmail.com";
+                };
+                programs.git = {
+                    enable = true;
+                    userName = "Martindale, Nathan";
+                    userEmail = "nathanamartindale@gmail.com";
                     extraConfig = { core = { pager = "cat"; }; };
-				};
-				programs.tmux = {
-					enable = true;
-					shell = "${pkgs.zsh}/bin/zsh";
-					aggressiveResize = true;
-					shortcut = "a";
+                };
+                programs.tmux = {
+                    enable = true;
+                    shell = "${pkgs.zsh}/bin/zsh";
+                    aggressiveResize = true;
+                    shortcut = "a";
                     terminal = "xterm-256color";
                     keyMode = "vi";
                     sensibleOnTop = false;
                     extraConfig = builtins.readFile ./tmux.conf;
-				};
-				programs.neovim = {
-					enable = true;
+                };
+                programs.neovim = {
+                    enable = true;
                     viAlias = true;
                     vimAlias = true;
 
                     extraConfig = builtins.readFile ./vim-conf.vim;
-					plugins = with pkgs.vimPlugins; [
+                    plugins = with pkgs.vimPlugins; [
                         everforest
-                        
-						vim-nix
+
+                        vim-nix
 
                         indent-blankline-nvim
                         nvim-comment
                         vim-tmux-navigator
                         lualine-nvim
                         nvim-web-devicons
-                        
+
                         nvim-lspconfig
                         (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
                         null-ls-nvim
-                        
+
                         nvim-cmp
                         cmp-buffer
                         cmp-spell
@@ -243,12 +243,12 @@
                         luasnip
                         cmp_luasnip
                         cmp-nvim-lsp-signature-help
-					];
+                    ];
 
                     extraPackages = with pkgs; [
                         pkgs.nodePackages.bash-language-server  # should also have shellcheck installed
                         pkgs.nodePackages.vim-language-server
-                        
+
                         pkgs.python39Packages.python-lsp-server
                         pkgs.python39Packages.pylsp-mypy 
                         pkgs.python39Packages.pyls-isort
@@ -257,24 +257,24 @@
                     ];
 
                     extraPython3Packages = (ps: with ps; [
-                      jedi
-                      pynvim
+                        jedi
+                        pynvim
                     ]);
-				};
-			};
-			system = "x86_64-linux";
-			homeDirectory = "/home/dwl";
-			username = "dwl";
-			stateVersion = "22.05";
-		};
+                };
+            };
+            system = "x86_64-linux";
+            homeDirectory = "/home/dwl";
+            username = "dwl";
+            stateVersion = "22.05";
+        };
 
 
-		homeConfigurations.dwl-standard = home-manager.lib.homeManagerConfiguration {
-			configuration = {pkgs, ...}: {
-				targets.genericLinux.enable = true;
-				programs.home-manager.enable = true;
-				
-				home.packages = [
+        homeConfigurations.dwl-standard = home-manager.lib.homeManagerConfiguration {
+            configuration = {pkgs, ...}: {
+                targets.genericLinux.enable = true;
+                programs.home-manager.enable = true;
+
+                home.packages = [
                     pkgs.python39Packages.python-lsp-server
                     pkgs.python39Packages.pylsp-mypy 
                     pkgs.python39Packages.pyls-isort
@@ -283,63 +283,65 @@
 
                     # NOTE: python-language-server and company are kind of broken
                     # https://github.com/NixOS/nixpkgs/issues/151659
-				];
-				
+                ];
+
                 programs.bash = {
-					enable = true;
-					shellAliases = import ./shell-aliases.nix;
+                    enable = true;
+                    shellAliases = import ./shell-aliases.nix;
                 };
-				programs.neovim = {
-					enable = true;
+                programs.neovim = {
+                    enable = true;
 
                     extraConfig = builtins.readFile ./vim-conf.vim;
-					
-					plugins = with pkgs.vimPlugins; [
-						vim-nix
+
+                    plugins = with pkgs.vimPlugins; [
+                        vim-nix
                         vim-monokai
                         nvim-lspconfig
                         (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars)) # unclear how to tell if this is working
-					];
+                    ];
 
                     extraPython3Packages = (ps: with ps; [
-                      jedi
-                      pynvim
+                        jedi
+                        pynvim
                     ]);
-				};
-			};
-			system = "x86_64-linux";
-			homeDirectory = "/home/dwl";
-			username = "dwl";
-			stateVersion = "22.05";
-		};
-	
-		homeConfigurations.arcane = home-manager.lib.homeManagerConfiguration {
+                };
+            };
+            system = "x86_64-linux";
+            homeDirectory = "/home/dwl";
+            username = "dwl";
+            stateVersion = "22.05";
+        };
+
+        homeConfigurations.arcane = home-manager.lib.homeManagerConfiguration {
             inherit pkgs;
-			configuration = {pkgs, ...}: {
+            configuration = {pkgs, ...}: {
 
                 #nixpkgs.config.allowUnfree = true; # why doesn't this work?
                 # https://github.com/NixOS/nixpkgs/issues/171810
 
                 home.file.".mambarc".text = ''
-channels:
-    - conda-forge
+                    channels:
+                    - conda-forge
                 '';
-                
+                home.file.".snippets".source = ./snippets;
+
                 #let
                 #    pkgs.python39Packages.python-language-server = pkgs.python39.python-lsp-server;
                 #in # gah why does this not work
                 # TODO: how can I modularize the tsserver stuff if I don't want in all configs?
                 # I think instead of putting extras in extraPython3Packages, just put them in extraPackages.
                 # basically how can I import a string from file and parameterize it?
-				home.packages = [
-					pkgs.cowsay
+                home.packages = [
+                    pkgs.cowsay
                     pkgs.ripgrep
                     pkgs.bat
                     pkgs.pre-commit
                     pkgs.micromamba
                     pkgs.zotero
                     pkgs.tree
-                    
+                    pkgs.lolcat
+
                     #pkgs.nodePackages.vue-language-server
                     #pkgs.nodePackages.bash-language-server
                     #pkgs.nodePackages.typescript
@@ -348,14 +350,14 @@ channels:
 
                     # NOTE: python-language-server and company are kind of broken
                     # https://github.com/NixOS/nixpkgs/issues/151659
-				];
-				
-				targets.genericLinux.enable = true;
-				programs.home-manager.enable = true;
+                ];
+
+                targets.genericLinux.enable = true;
+                programs.home-manager.enable = true;
                 programs.bash = {
-					enable = true;
-					shellAliases = import ./shell-aliases.nix;
-                    
+                    enable = true;
+                    shellAliases = import ./shell-aliases.nix;
+
                     bashrcExtra = ''
                         # >>> mamba initialize >>>
                         export MAMBA_EXE='${pkgs.micromamba}/bin/micromamba';
@@ -372,11 +374,11 @@ channels:
                         fi
                         unset __mamba_setup
                         # <<< mamba initialize <<<
-                        '';
+                    '';
                 };
-				programs.zsh = {
-					enable = true;
-					shellAliases = import ./shell-aliases.nix;
+                programs.zsh = {
+                    enable = true;
+                    shellAliases = import ./shell-aliases.nix;
                     enableAutosuggestions = true;
                     oh-my-zsh = {
                         enable = true;
@@ -387,7 +389,7 @@ channels:
                         ];
                     };
                     initExtra = mylib.combine [
-                      ''
+                        ''
                         # >>> mamba initialize >>>
                         export MAMBA_EXE='${pkgs.micromamba}/bin/micromamba';
                         export MAMBA_ROOT_PREFIX='/home/81n/micromamba';
@@ -403,32 +405,37 @@ channels:
                         fi
                         unset __mamba_setup
                         # <<< mamba initialize <<<
-                      ''
-                      (mylib.combineFiles [ ./zsh-conf.sh ./shell-common.sh ])
-                    ];
-				};
-				programs.git = {
-					enable = true;
-					userName = "Martindale, Nathan";
-					userEmail = "martindalena@ornl.gov";
-                    extraConfig = { core = { pager = "cat"; }; };
-				};
-				programs.tmux = {
-					enable = true;
-					shell = "${pkgs.zsh}/bin/zsh";
-					aggressiveResize = true;
-					shortcut = "a";
-                    terminal = "xterm-256color";
-                    keyMode = "vi";
-                    sensibleOnTop = false;
-                    extraConfig = builtins.readFile ./tmux.conf;
-				};
-				programs.neovim = {
-					enable = true;
-                    viAlias = true;
-                    vimAlias = true;
+                        ''
+                        (mylib.combineFiles [ ./zsh-conf.sh ./shell-common.sh ])
+                        ];
+                    };
+                    programs.git = {
+                        enable = true;
+                        userName = "Martindale, Nathan";
+                        userEmail = "martindalena@ornl.gov";
+                        extraConfig = { 
+                            init = { defaultBranch = "main"; }; # seems to be the new standard
+                            core = { pager = "cat"; }; # less pager is annoying since output won't persist in console
+                            diff = { colorMoved = "zebra"; }; # differentiates edited code from code that was simply moved
+                            pull = { rebase = false; }; # default is to merge when pulling rather than rebase (potentially lose history and other's local branches will be out of whack)
+                        };
+                    };
+                    programs.tmux = {
+                        enable = true;
+                        shell = "${pkgs.zsh}/bin/zsh";
+                        aggressiveResize = true;
+                        shortcut = "a";
+                        terminal = "xterm-256color";
+                        keyMode = "vi";
+                        sensibleOnTop = false;
+                        extraConfig = builtins.readFile ./tmux.conf;
+                    };
+                    programs.neovim = {
+                        enable = true;
+                        viAlias = true;
+                        vimAlias = true;
 
-                    extraConfig = builtins.readFile ./vim-conf.vim;
+                        extraConfig = builtins.readFile ./vim-conf.vim;
 
                     # this is a working method for combining multiple files
                     #extraConfig = builtins.concatStringsSep "\n" [
@@ -437,84 +444,84 @@ channels:
                     #    (builtins.readFile ./vimlua.lua)
                     #    "EOF"
                     #];
-					
+
                     # to search:
                     # nix-env -f '<nixpkgs>' -qaP -A vimPlugins | grep "pluginname"
-					plugins = with pkgs.vimPlugins; [
-                        #vim-monokai
-                        everforest
-                        
-						vim-nix
-                        vim-vue
-                        vim-svelte
+                        plugins = with pkgs.vimPlugins; [
+                            #vim-monokai
+                            everforest
 
-                        indent-blankline-nvim
-                        nvim-comment
-                        vim-tmux-navigator
-                        lualine-nvim
-                        nvim-web-devicons
-                        
-                        nvim-lspconfig
-                        (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
-                        null-ls-nvim
-                        
-                        nvim-cmp
-                        cmp-buffer
-                        cmp-spell
-                        cmp-treesitter
-                        cmp-nvim-lsp
-                        cmp-path
-                        luasnip
-                        cmp_luasnip
-                        cmp-nvim-lsp-signature-help
-                        # TODO: there's also a fuzzy-buffer and fuzzy-path that I don't see in nixpkgs, see
-                        # https://github.com/hrsh7th/nvim-cmp/wiki/List-of-sources
+                            vim-nix
+                            vim-vue
+                            vim-svelte
 
-                        #lualine-lsp-progress
-					];
+                            indent-blankline-nvim
+                            nvim-comment
+                            vim-tmux-navigator
+                            lualine-nvim
+                            nvim-web-devicons
 
-                    extraPackages = with pkgs; [
-                        pkgs.nodePackages.vue-language-server
-                        pkgs.nodePackages.bash-language-server
-                        pkgs.nodePackages.vim-language-server
-                        pkgs.nodePackages.svelte-language-server
-                        pkgs.nodePackages.typescript-language-server
-                        
-                        pkgs.python39Packages.python-lsp-server
-                        pkgs.python39Packages.pylsp-mypy 
-                        pkgs.python39Packages.pyls-isort
-                        pkgs.python39Packages.python-lsp-black
-                        pkgs.python39Packages.flake8
+                            nvim-lspconfig
+                            (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
+                            null-ls-nvim
 
-                        #pkgs.vim-vint # (can be used with null_ls.builtins.diagnostics.vint)
-                        #pkgs.nodePackages.eslint
-                        # I was never able to get this to work, infuriating. I just installed npm 
-                        # and the requisite packages through OS pkg manager.
-                        #pkgs.nodePackages.typescript
-                    ];
+                            nvim-cmp
+                            cmp-buffer
+                            cmp-spell
+                            cmp-treesitter
+                            cmp-nvim-lsp
+                            cmp-path
+                            luasnip
+                            cmp_luasnip
+                            cmp-nvim-lsp-signature-help
+                            # TODO: there's also a fuzzy-buffer and fuzzy-path that I don't see in nixpkgs, see
+                            # https://github.com/hrsh7th/nvim-cmp/wiki/List-of-sources
 
-                    extraPython3Packages = (ps: with ps; [
-                      jedi
-                      pynvim
-                    
-                      #pkgs.python39Packages.python-lsp-server # ...this doesn't work, but it does when in pkgs
-                      #python-language-server
-                      #pkgs.python38Packages.python-language-server
-                      #pkgs.python39Packages.pyls-mypy
-                      #pkgs.python39Packages.pyls-isort
-                      #pkgs.python39Packages.pyls-black
-                    ]);
-				};
+                            #lualine-lsp-progress
+                        ];
+
+                        extraPackages = with pkgs; [
+                            pkgs.nodePackages.vue-language-server
+                            pkgs.nodePackages.bash-language-server
+                            pkgs.nodePackages.vim-language-server
+                            pkgs.nodePackages.svelte-language-server
+                            pkgs.nodePackages.typescript-language-server
+
+                            pkgs.python39Packages.python-lsp-server
+                            pkgs.python39Packages.pylsp-mypy 
+                            pkgs.python39Packages.pyls-isort
+                            pkgs.python39Packages.python-lsp-black
+                            pkgs.python39Packages.flake8
+
+                            #pkgs.vim-vint # (can be used with null_ls.builtins.diagnostics.vint)
+                            #pkgs.nodePackages.eslint
+                            # I was never able to get this to work, infuriating. I just installed npm 
+                            # and the requisite packages through OS pkg manager.
+                            #pkgs.nodePackages.typescript
+                        ];
+
+                        extraPython3Packages = (ps: with ps; [
+                            jedi
+                            pynvim
+
+                          #pkgs.python39Packages.python-lsp-server # ...this doesn't work, but it does when in pkgs
+                          #python-language-server
+                          #pkgs.python38Packages.python-language-server
+                          #pkgs.python39Packages.pyls-mypy
+                          #pkgs.python39Packages.pyls-isort
+                          #pkgs.python39Packages.pyls-black
+                      ]);
+                  };
 
                 #xdg.configFile."nvim/vimlua.lua".source = ./vimlua.lua;
-			};
-			system = "x86_64-linux";
-			homeDirectory = "/home/81n";
-			username = "81n";
-			stateVersion = "22.05";
-		};
-		
-		
-		#homeConfigurations.quark = homeConfigurations.dwl-standard;
-	};
+            };
+            system = "x86_64-linux";
+            homeDirectory = "/home/81n";
+            username = "81n";
+            stateVersion = "22.05";
+        };
+
+
+        #homeConfigurations.quark = homeConfigurations.dwl-standard;
+    };
 }
