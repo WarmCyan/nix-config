@@ -340,13 +340,36 @@ end
 
 vim.lsp.set_log_level("debug")
 
-local servers = { 'pylsp', 'bashls', 'vuels', 'vimls', 'svelte', 'tsserver' }
+local servers = { 'bashls', 'vuels', 'vimls', 'svelte', 'tsserver' }
 for _, lsp in pairs(servers) do
     lspconfig[lsp].setup {
         on_attach = on_attach,
         capabilities = capabilities
     }
 end
+
+-- https://neovim.discourse.group/t/pylsp-config-is-not-used/2545
+-- https://neovim.discourse.group/t/pylsp-config-is-not-taken-into-account/1846
+lspconfig.pylsp.setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+    settings = {
+        pylsp = {
+            configurationSources = {"flake8"},
+            plugins = {
+                pylint = { enabled = false },
+                flake8 = { enabled = true },
+                pycodestyle = { enabled = false },
+                pyflakes = { enabled = true },
+                -- https://github.com/python-lsp/pylsp-mypy/issues/35 conflicts with https://github.com/python-lsp/python-lsp-black ...
+                black = { enabled = true }, 
+                pylsp_black = { enabled = true },
+                pyls_isort = { enabled = true },
+                pylsp_mypy = { enabled = true, live_mode = true, dmypy = true },
+            }
+        }
+    }
+})
 
 local null_ls = require('null-ls')
 
@@ -428,3 +451,14 @@ require('nvim_comment').setup()
 
 EOF
 
+
+" https://github.com/liuchengxu/vista.vim/blob/master/doc/vista.txt
+let g:vista_default_executive = 'nvim_lsp'
+"let g:vista_update_on_text_changed = 1
+let g:vista_fzf_preview = ['right:50%']
+let g:vista_sidebar_width = 40
+let g:vista_echo_cursor_strategy = "floating_win"
+let g:vista_cursor_delay = 0
+let g:vista_floating_delay = 0
+"autocmd FileType vista,vista_kind nnoremap <buffer> <silent> / :<c-u>call vista#finder#fzf#Run()<CR>
+nnoremap // :<c-u>Vista finder<CR>

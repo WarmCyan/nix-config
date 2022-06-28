@@ -38,6 +38,10 @@
 # NOTE: I wonder if for places where I can't run nix, I can still probably get
 # all of my configuration files (maybe even bin stuff?) by building it on a
 # system I do have sudo on, and then scping all the stuff over.
+#
+# TODO: add ctrl+d = date insert into vim
+# TODO: add run line/selection as vim cmd, to allow "goto lines" in things like
+# engineering log
 
 
 # CONFIG COLLECTION 
@@ -335,6 +339,7 @@
                 home.packages = [
                     pkgs.cowsay
                     pkgs.ripgrep
+                    pkgs.fzf
                     pkgs.bat
                     pkgs.pre-commit
                     pkgs.micromamba
@@ -418,6 +423,8 @@
                             core = { pager = "cat"; }; # less pager is annoying since output won't persist in console
                             diff = { colorMoved = "zebra"; }; # differentiates edited code from code that was simply moved
                             pull = { rebase = false; }; # default is to merge when pulling rather than rebase (potentially lose history and other's local branches will be out of whack)
+                            commit = { verbose = true; }; # show diff in commit editor
+                            color = { ui = "always"; };
                         };
                     };
                     programs.tmux = {
@@ -465,7 +472,13 @@
                             (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
                             null-ls-nvim
 
-                            nvim-cmp
+                            # fzf-lsp # TODO: check this out, looks cool!
+                            fzfWrapper
+                            fzf-vim
+                            # nvim-fzf # didn't seem to work
+                            vista-vim # shows a "map" of all the symbols from lsp
+
+                            nvim-cmp # autocompletion
                             cmp-buffer
                             cmp-spell
                             cmp-treesitter
@@ -492,6 +505,9 @@
                             pkgs.python39Packages.pyls-isort
                             pkgs.python39Packages.python-lsp-black
                             pkgs.python39Packages.flake8
+
+                            pkgs.universal-ctags
+                            pkgs.fzf
 
                             #pkgs.vim-vint # (can be used with null_ls.builtins.diagnostics.vint)
                             #pkgs.nodePackages.eslint
