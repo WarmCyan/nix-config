@@ -462,3 +462,4 @@ let g:vista_cursor_delay = 0
 let g:vista_floating_delay = 0
 "autocmd FileType vista,vista_kind nnoremap <buffer> <silent> / :<c-u>call vista#finder#fzf#Run()<CR>
 nnoremap // :<c-u>Vista finder<CR>
+nnoremap <leader>v :Vista<CR>
