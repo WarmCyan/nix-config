@@ -47,10 +47,19 @@
 # CONFIG COLLECTION 
 # ----------------------------
 # https://github.com/Gerschtli/nix-config
-# https://github.com/Misterio77/nix-config
+# https://github.com/Misterio77/nix-config     
 # https://github.com/malob/nixpkgs
 # ----------------------------
 
+# the misterio77 one above seems to be doing something interesting with
+# "features" strings in a custom mkHome call
+#   he does this by having a home/ and then each directory is a "feature" and so
+#   you list the directories you want included? (imported?)
+#
+# I also like the way he does custom apps, through his pkgs, where he calls
+# pkgs.callPackage etc. Each directory here is an "app", and inside is a
+# single default.nix (most of the time.) Is this how actual nixpkgs is
+# constructed too? (yes)
 
 
 
@@ -165,6 +174,7 @@
                     pkgs.lolcat
                     pkgs.shellcheck
                     pkgs.shfmt
+                    pkgs.micromamba
                 ];
                 targets.genericLinux.enable = true;
 
@@ -174,6 +184,10 @@
                     "figlet 'Phantom' | lolcat"
                 ];
                 home.file.".snippets".source = ./snippets;
+                home.file.".mambarc".text = ''
+                    channels:
+                    - conda-forge
+                '';
 
                 programs.bash = {
                     enable = true;
@@ -229,7 +243,7 @@
                         vim-nix
 
                         indent-blankline-nvim
-                        nvim-comment
+                        nvim-comment # gcc to comment out lines
                         vim-tmux-navigator
                         lualine-nvim
                         nvim-web-devicons
