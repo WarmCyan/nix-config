@@ -7,7 +7,7 @@
 # amfora - https://github.com/makeworld-the-better-one/amfora (gemini terminal client)
 # bombadillo - https://bombadillo.colorfield.space/ (gemini and gopher and other client)
 
-{ pkgs, lib, ... }: 
+{ pkgs, lib, gitUsername, gitEmail, ... }: 
 
 let
     inherit (builtins) readFile;
@@ -40,8 +40,8 @@ in
     
     programs.git = {
         enable = true;
-        #userName  # TODO: these should get set from 
-        #userEmail
+        userName = gitUsername;
+        userEmail = gitEmail;
         init = { defaultBranch = "main"; }; # seems to be the new standard
         core = { pager = "cat"; }; # less pager is annoying since output won't persist in console
         diff = { colorMoved = "zebra"; }; # differentiates edited code from code that was simply moved
