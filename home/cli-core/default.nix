@@ -16,7 +16,7 @@ in
 {
     # imports = []
     
-    home.packages = with pkgs; {
+    home.packages = with pkgs; [
         # -- Basic utils --
         tree      # list a directory tree recursively, looks nicer than ls in select situations
         ripgrep   # speedy grep written in rust
@@ -36,7 +36,7 @@ in
         lolcat    # tool to vomit rainbow colors for input text
         tty-clock # best terminal clock around
         neofetch  # gotta show off my distro
-    };
+    ];
     
     programs.git = {
         enable = true;
