@@ -1,0 +1,19 @@
+{
+    "name": "my_local_snippets",
+    "contributes": {
+        "snippets": [
+            {
+                "language": "python",
+                "path": "./python.json"
+            },
+            {
+                "language": "json",
+                "path": "./json.json"
+            },
+            {
+                "language": "svelte",
+                "path": "./svelte.json"
+            }
+        ]
+    }
+}

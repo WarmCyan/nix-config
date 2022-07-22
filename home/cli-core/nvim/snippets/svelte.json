@@ -1,0 +1,20 @@
+{
+    "commentheader": {
+        "prefix": "comhead",
+        "body": [
+            "// ==================================================",
+            "// ${1}",
+            "// ==================================================",
+            "${0}"
+        ],
+        "description": "Level 1 comment section header"
+    },
+    "commentheader2": {
+        "prefix": "comhead2",
+        "body": [
+            "// ---- ${1} ----------------------------------------",
+            "${0}"
+        ],
+        "description": "Level 2 comment section header"
+    }
+}

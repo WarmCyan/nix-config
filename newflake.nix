@@ -2,6 +2,10 @@
 # elements I'm looking for: https://github.com/Misterio77/nix-config
 # TODO: he has a bunch of cool looking nix tools listed:
 # https://github.com/Misterio77/nix-config/blob/main/home/misterio/cli/default.nix
+#
+# (2022/07/21) NOTE: we can have each home-manager config have its own dedicated
+# folder in home too, if we want to specify individual machine stuff without
+# trying to figure out how to do a ton of abstraction
 
 # QUESTIONS
 # ===============================
@@ -28,6 +32,13 @@
 #
 #   - Wait, where's the "laptop" module? He mentions in /home/misterio/default
 #   "import features _that have modules_, are there features that don't?
+#
+#   - How do we get those other elements put into extraSpecialArgs? 
+#   A: They are passed as arguments to each module, so the beginning { ... }
+#   function def line.
+#
+#   - How do I get access to my library functions deep within modules?
+#   A: It's somehow still an argument being passed around.
 
 {
     description = "My awesome-sauce and cool-beans nix configuration-y things.";
