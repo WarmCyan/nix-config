@@ -7,6 +7,35 @@
 # folder in home too, if we want to specify individual machine stuff without
 # trying to figure out how to do a ton of abstraction
 
+# (2022/07/22) Is it possibly worth it to extract a lot of the vim config stuff 
+# into development modules? It would be nice if cli-core were actually pretty small,
+# and maybe there are quite a few systems where I don't really need any language 
+# servers.
+# TODO: also have a "minimal" hm that has almost nothing
+# Note that the way you update packages (I think) for a home mangaer configuration
+# is as they mention in their wiki, which is literally just "nix flake update":
+# https://rycee.gitlab.io/home-manager/index.html#sec-flakes-standalone
+# Also see the third-deep nested comment, discusses how you can explicitly set nix 
+# to directly follow a specific url
+# https://www.reddit.com/r/NixOS/comments/pmz2vi/how_do_i_update_nix_to_the_latest_unstable_version/
+
+# TODO's
+# ===============================
+# TODO: Add overlay for cmp-nvim-lsp-signature-help
+# TODO: Add bootstrapping capability
+# TODO: Start adding personal pkgs tools.
+# TODO: setup terminfo_dirs because I feel like that's been a problem? See phantom sessionVariables
+
+
+# MODULES NEEDED
+#================================
+# dev (-python -web -research) [unclear how much to break this up]
+# research
+# desktop/i3
+# radio
+# (hosting stuff)
+
+
 # QUESTIONS
 # ===============================
 #   - He has custom pkgs, but how does he reference them/pull them in?

@@ -1,3 +1,4 @@
+" TODO: could still use some cleanup
 
 if has('mouse')
     set mouse=a
@@ -19,7 +20,8 @@ if has('termguicolors')
       let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
     endif
 endif
-"set t_Co=256
+
+" colorscheme! 
 set background=dark
 let g:everforest_background='hard'
 colorscheme everforest
@@ -123,6 +125,11 @@ endif
 " KEY BINDINGS
 " ==============================================================================
 
+" -- <Core Bindings> -- 
+"  if using some other program's vim mode, if it allows at least minimal
+"  customization, use these bindings to get the most important shortcuts
+"  working. 
+" ------------------------------------------------------------------------------
 " ESC to leave insert mode is terrible! 'jk' is much nicer
 inoremap jk <SPACE><BS><ESC>
 inoremap JK <SPACE><BS><ESC>
@@ -134,6 +141,23 @@ nnoremap , ;
 " press ';' in normal mode instead of ':', it's too common to use shift all the time!
 nnoremap ; :
 vnoremap ; :
+
+" make yank work the same as the other keys
+nnoremap Y y$
+
+" more sane usages of H and L
+nnoremap H ^
+nnoremap L $
+
+" convert word before cursor (or on cursor) to upper case (uses z mark)
+inoremap <C-u> <esc>mzgUiw`za
+nnoremap <C-u> mzgUiw`z
+
+" leader shortcuts!
+nnoremap <LEADER><SPACE> :nohlsearch<CR>
+
+" ------------------------------------------------------------------------------
+"  -- </Core Bindings> --
 
 " better window navigation
 noremap <C-h> <C-w>h
@@ -164,22 +188,9 @@ nnoremap <tab>l :tabnext<cr>
 nnoremap <tab><enter> :tabnew<cr>
 nnoremap <tab>x :tabclose<cr>
 
-" make yank work the same as the other keys
-nnoremap Y y$
-
-" more sane usages of H and L
-nnoremap H ^
-nnoremap L $
-
-" convert word before cursor (or on cursor) to upper case (uses z mark)
-inoremap <C-u> <esc>mzgUiw`za
-nnoremap <C-u> mzgUiw`z
-
 " Split line (on next space)
 nnoremap S f<space>s<cr><esc>==
 
-" leader shortcuts!
-nnoremap <LEADER><SPACE> :nohlsearch<CR>
 
 " ==============================================================================
 " ABBREVIATIONS
@@ -202,7 +213,6 @@ autocmd BufRead,BufNewFile * syntax match TODO_wait "\vWAIT\:" containedin=ALL
 autocmd BufRead,BufNewFile * syntax match TODO_done "\vDONE\:" containedin=ALL
 autocmd BufRead,BufNewFile * syntax match TODO_canc "\vCANC\:" containedin=ALL
 
-" TODO: add noncterm colors too
 autocmd BufRead,BufNewFile * highlight TODO_todo ctermfg=magenta cterm=bold guifg=#af87ff gui=bold
 autocmd BufRead,BufNewFile * highlight TODO_strt ctermfg=cyan cterm=bold guifg=#51ceff gui=bold
 autocmd BufRead,BufNewFile * highlight TODO_wait ctermfg=yellow cterm=bold guifg=#fff26d gui=bold

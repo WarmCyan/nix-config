@@ -14,7 +14,7 @@ let
     inherit (lib) concatFiles;
 in
 {
-    # imports = []
+    imports = [ ./nvim ]
     
     home.packages = with pkgs; [
         # -- Basic utils --
@@ -25,6 +25,7 @@ in
         rsync     # better file transfer than scp and cp
 
         # -- TUI tools --
+        htop      # standard system cpu viewer
         bottom    # a cool-looking system viewer in rust
         ncdu      # disk usage, useful for discovering where all your diskspace went
         w3m       # terminal web browser
