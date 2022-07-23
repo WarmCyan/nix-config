@@ -21,11 +21,13 @@
 
 # TODO's
 # ===============================
+# TODO: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
 # TODO: Add overlay for cmp-nvim-lsp-signature-help
 # TODO: Add bootstrapping capability
 # TODO: Start adding personal pkgs tools.
 # TODO: setup terminfo_dirs because I feel like that's been a problem? See phantom sessionVariables
-
+# TODO: package/cmd to grab the sha256 of a repo, see old flake
+# TODO: way to automate firefox speedups? https://www.drivereasy.com/knowledge/speed-up-firefox/
 
 # MODULES NEEDED
 #================================
@@ -34,6 +36,7 @@
 # desktop/i3
 # radio
 # (hosting stuff)
+# gaming
 
 
 # QUESTIONS
@@ -70,20 +73,33 @@
 #   A: It's somehow still an argument being passed around.
 
 {
-    description = "My awesome-sauce and cool-beans nix configuration-y things.";
+  description = "My awesome-sauce and cool-beans nix configuration-y things.";
 
-    inputs = {
-        nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-        home-manager = {
-            url = "github:nix-community/home-manager/release-22.05";
-            inputs.nixpkgs.follows = "nixpkgs"; # unsure what this actually does
-        };
-
-        # TODO: add in nix-colors! 
+    home-manager = {
+      url = "github:nix-community/home-manager/release-22.05";
+      inputs.nixpkgs.follows = "nixpkgs"; # unsure what this actually does. (It
+      # makes it so that home-manager isn't downloading it's own set of nixpkgs,
+      # we're "overriding" the nixpkgs input home-manager defines by default)
     };
 
-    outputs = inputs:
-        let
-            lib = import ./lib { inherit inputs; };
+    # TODO: add in nix-colors! 
+  };
+
+  outputs = inputs:
+  let
+      lib = import ./lib { inherit inputs; };
+      inherit (lib) mkHome forAllSystems;
+  in
+  rec {
+    inherit lib; # TODO: ....why is this here?
+
+    overlays = {
+      default = import ./overlay { inherit inputs; };
+    };
+    
+    homeConfigurations = {};
+  };
 }
