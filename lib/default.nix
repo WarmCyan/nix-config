@@ -24,8 +24,11 @@ rec {
     # https://nixos.wiki/wiki/Home_Manager#Usage_on_non-NixOS_Linux
     noNixos ? false, 
     
-    gitUsername ? null, 
-    gitEmail ? null,
+    gitUsername ? "Martindale, Nathan",  # TODO: there's probably a way via
+    #overlays to make these "official options" without having to pass as
+    #extraspecialargs (no actually, via modules on home-manager and calling
+    #mkOption
+    gitEmail ? "nathanamartindale@gmail.com",
   }:
   builtins.trace "\nBuilding home for ${username}@${hostname}...\nsystem: ${system}"
   homeManagerConfiguration {

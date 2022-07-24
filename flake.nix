@@ -29,6 +29,7 @@
 # TODO: package/cmd to grab the sha256 of a repo, see old flake
 # TODO: way to automate firefox speedups? https://www.drivereasy.com/knowledge/speed-up-firefox/ (will need to add nur which has firefox and extensions)
 # TODO: script to keep backup ref to home-manager gen and make it easy to switch to that one
+# TODO: add pre-commit stuff to this
 
 # MODULES NEEDED
 #================================
@@ -118,11 +119,18 @@
       phantom = mkHome {
         username = "dwl";
         hostname = "phantom";
-        #system = "x86_64-linux";
 
+        features = [ "dev" ];
         noNixos = true;
-        gitUsername = "Martindale, Nathan";
-        gitEmail = "nathanamartindale@gmail.com";
+      };
+
+      arcane = mkHome {
+        username = "81n";
+        hostname = "arcane";
+
+        features = [ "dev" ];
+        noNixos = true;
+        gitEmail = "martindalena@ornl.gov";
       };
     };
   };
