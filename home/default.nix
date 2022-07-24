@@ -20,5 +20,9 @@ in
     inherit username;
     stateVersion = "22.05";
     homeDirectory = "/home/${username}";
+    sessionVariables = {
+      # https://github.com/nix-community/home-manager/pull/797
+      TERMINFO_DIRS = "/usr/share/terminfo"; 
+    };
   };
 }

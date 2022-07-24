@@ -19,11 +19,14 @@
 # to directly follow a specific url
 # https://www.reddit.com/r/NixOS/comments/pmz2vi/how_do_i_update_nix_to_the_latest_unstable_version/
 
+# (2022/07/24) Current problem with bootstrap: the first time you run it never
+# works because I guess nix isn't found in path yet?
+
 # TODO's
 # ===============================
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
 # DONE: Add overlay for cmp-nvim-lsp-signature-help
-# TODO: Add bootstrapping capability
+# DONE: Add bootstrapping capability
 # TODO: Start adding personal pkgs tools.
 # TODO: setup terminfo_dirs because I feel like that's been a problem? See phantom sessionVariables
 # TODO: package/cmd to grab the sha256 of a repo, see old flake
@@ -96,13 +99,45 @@
 
   outputs = inputs:
   let
-      lib = import ./lib { inherit inputs; };
-      inherit (lib) mkHome forAllSystems;
-      inherit (builtins) attrValues;
+    lib = import ./lib { inherit inputs; };
+    inherit (lib) mkHome forAllSystems;
+    inherit (builtins) attrValues;
   in
   rec {
     inherit lib; # TODO: ....why is this here?
 
+    # =================== HOME CONFIGURATIONS =================== 
+    homeConfigurations = {
+      # primary desktop
+      phantom = mkHome {
+        username = "dwl";
+        hostname = "phantom";
+
+        features = [ "dev" ];
+        noNixos = true;
+      };
+	
+      # primary laptop
+      delta = mkHome {
+        username = "dwl";
+        hostname = "delta";
+
+        features = [ "dev" ];
+        noNixos = true;
+      };
+
+      # work linux workstation 
+      arcane = mkHome {
+        username = "81n";
+        hostname = "arcane";
+
+        features = [ "dev" ];
+        noNixos = true;
+        gitEmail = "martindalena@ornl.gov";
+      };
+    };
+    # =========================================================== 
+	
     overlays = {
       default = import ./overlay { inherit inputs; };
     };
@@ -115,23 +150,22 @@
       }
     );
     
-    homeConfigurations = {
-      phantom = mkHome {
-        username = "dwl";
-        hostname = "phantom";
-
-        features = [ "dev" ];
-        noNixos = true;
+    # home-manager bootstrap script. If home-manager isn't yet installed, run
+    # `nix shell .` and then `bootstrap [NAME OF HOME CONFIG]`
+    packages = forAllSystems (system: {
+      default = with legacyPackages.${system}; 
+      stdenv.mkDerivation rec {
+        name = "bootstrap-script";
+        installPhase = /* bash */ ''
+          mkdir -p $out/bin
+          echo "#!${runtimeShell}" >> $out/bin/bootstrap
+          echo "export TERMINFO_DIRS=/usr/share/terminfo" >> $out/bin/bootstrap
+          echo "nix build --no-write-lock-file home-manager" >> $out/bin/bootstrap
+          echo "./result/bin/home-manager --flake \".#\$1\" switch --impure" >> $out/bin/bootstrap
+          chmod +x $out/bin/bootstrap
+        '';
+        dontUnpack = true;
       };
-
-      arcane = mkHome {
-        username = "81n";
-        hostname = "arcane";
-
-        features = [ "dev" ];
-        noNixos = true;
-        gitEmail = "martindalena@ornl.gov";
-      };
-    };
+    });
   };
 }

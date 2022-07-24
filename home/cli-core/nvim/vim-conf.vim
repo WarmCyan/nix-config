@@ -64,6 +64,10 @@ autocmd FileType sh setlocal tabstop=2
 autocmd FileType sh setlocal shiftwidth=2 
 autocmd FileType sh setlocal softtabstop=2 
 
+autocmd FileType nix setlocal tabstop=2 
+autocmd FileType nix setlocal shiftwidth=2 
+autocmd FileType nix setlocal softtabstop=2 
+
 autocmd FileType javascript setlocal foldmethod=indent
 autocmd FileType javascript setlocal tabstop=2 
 autocmd FileType javascript setlocal shiftwidth=2 
