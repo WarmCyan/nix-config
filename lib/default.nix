@@ -27,16 +27,17 @@ rec {
     gitUsername ? null, 
     gitEmail ? null,
   }:
-    homeManagerConfiguration {
-      pkgs = outputs.legacyPackages.${system};
-      extraSpecialArgs = { # these are args that get passed to all modules
-        inherit inputs, outputs, hostname, username, wallpaper, features,
-        gitUsername, gitEmail, noNixos; # TODO: break into multiple lines? 
-        # maybe a way to pass in an entire "configuration" like you would
-        # normally that "updates" any stuff from the modules? I don't
-        # understand how the order of this works.
-      };
-      modules = [ ../home ]; 
+  builtins.trace "\nBuilding home for ${username}@${hostname}...\nsystem: ${system}"
+  homeManagerConfiguration {
+    pkgs = outputs.legacyPackages.${system};
+    extraSpecialArgs = { # these are args that get passed to all modules
+      inherit self inputs outputs hostname username wallpaper features
+        gitUsername gitEmail noNixos; 
+      # maybe a way to pass in an entire "configuration" like you would
+      # normally that "updates" any stuff from the modules? I don't
+      # understand how the order of this works.
+    };
+    modules = [ ../home ]; 
   };
 
   concatFiles = filesArray: builtins.concatStringsSep "\n" (builtins.map (x: builtins.readFile x) filesArray);
