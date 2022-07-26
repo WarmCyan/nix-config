@@ -23,4 +23,4 @@
         };
       });
   }; # // import ../pkgs/vim-plugins { pkgs = prev } # TODO: !!!
-} # // import ../pkgs { pkgs = prev; } # TODO: !!!
+} // import ../pkgs { pkgs = prev; }
