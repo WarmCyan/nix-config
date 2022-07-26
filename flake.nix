@@ -27,12 +27,15 @@
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
 # DONE: Add overlay for cmp-nvim-lsp-signature-help
 # DONE: Add bootstrapping capability
-# TODO: Start adding personal pkgs tools.
+# STRT: Start adding personal pkgs tools.
 # TODO: setup terminfo_dirs because I feel like that's been a problem? See phantom sessionVariables
 # TODO: package/cmd to grab the sha256 of a repo, see old flake
 # TODO: way to automate firefox speedups? https://www.drivereasy.com/knowledge/speed-up-firefox/ (will need to add nur which has firefox and extensions)
 # TODO: script to keep backup ref to home-manager gen and make it easy to switch to that one
 # TODO: add pre-commit stuff to this
+# TODO: make a exportshellcolors script that exports vars for colors, since it's easy to include that as a runtime dependency with  the writeshellapplication
+# TODO: snippet for nix header block
+# TODO: make a modified writeshellapplication that takes a version and a description and adds it to a special list that I can view with a separate package
 
 # MODULES NEEDED
 #================================
@@ -122,7 +125,7 @@
         username = "dwl";
         hostname = "delta";
 
-        features = [ "dev" ];
+        features = [ "dev" "beta" ];
         noNixos = true;
       };
 
