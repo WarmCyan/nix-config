@@ -135,6 +135,16 @@
         noNixos = true;
         gitEmail = "martindalena@ornl.gov";
       };
+
+      # work laptop (wsl)
+      wlap = mkHome {
+        username = "dwl";
+        hostname = "LAP124750";
+
+        features = [ "dev" ];
+        noNixos = true;
+        gitEmail = "martindalena@ornl.gov";
+      };
     };
     # =========================================================== 
 	
