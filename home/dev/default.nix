@@ -1,3 +1,5 @@
+# TODO: put in juptyer configuration files
+
 { pkgs, username, ... }:
 let
   inherit (builtins) readFile;
@@ -16,6 +18,9 @@ in
 
     pre-commit  # we want this separately so we can apply even to non-python projects
     micromamba  # python environment management
+
+    # -- MY tools! --
+    add-jupyter-env # run inside a conda env to add jupyter lab setup
   ];
 
   # TODO: put in fancier vim plugins stuff

@@ -6,8 +6,10 @@ writeShellApplication {
     micromamba install \
       jupyter \
       jupyterlab \
+      nodejs \
       jupyterlab_vim \
       jupyterlab-drawio \
+      dask_labextension \
       jupyterlab-lsp \
       python-language-server \
       jupyterlab_code_formatter \
