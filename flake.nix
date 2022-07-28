@@ -134,7 +134,7 @@
         username = "81n";
         hostname = "arcane";
 
-        features = [ "dev" ];
+        features = [ "dev" "arcane.nix" ];
         noNixos = true;
         gitEmail = "martindalena@ornl.gov";
       };

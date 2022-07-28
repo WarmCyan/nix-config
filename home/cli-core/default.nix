@@ -43,12 +43,14 @@ in
     enable = true;
     userName = gitUsername;
     userEmail = gitEmail;
-      extraConfig = {
+    extraConfig = {
       init = { defaultBranch = "main"; }; # seems to be the new standard
       core = { pager = "cat"; }; # less pager is annoying since output won't persist in console
       diff = { colorMoved = "zebra"; }; # differentiates edited code from code that was simply moved
       pull = { rebase = false; }; # default is to merge when pulling rather than rebase (potentially lose history and other's local branches will be out of whack)
-      commit = { verbose = true; }; # show diff in commit editor
+      commit = { verbose = false; }; # show diff in commit editor (changed to
+      # false, because for very large commits this is ridiculous. Note that you
+      # can still get this in a commit with the `-v` flag) 
     };
   };
 
