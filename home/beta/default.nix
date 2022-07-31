@@ -2,6 +2,7 @@
 {
   home.packages = with pkgs; [
     testing # my first nix shell package thingy!
+    testing2
   ];
 
   # (move to dev when tested)
@@ -26,7 +27,7 @@
     }
   '';
 
-  home.file.".jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings" = /* json */ ''
+  home.file.".jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings".text = /* json */ ''
   {
     // Theme
     // @jupyterlab/apputils-extension:themes
@@ -54,7 +55,7 @@
   }
   '';
 
-  home.file.".jupyter/lab/user-settings/@jupyterlab/extensionmanager-extension/plugin.jupyterlab-settings" = /* json */ ''
+  home.file.".jupyter/lab/user-settings/@jupyterlab/extensionmanager-extension/plugin.jupyterlab-settings".text = /* json */ ''
   {
     // Extension Manager
     // @jupyterlab/extensionmanager-extension:plugin

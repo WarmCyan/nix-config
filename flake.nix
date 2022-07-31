@@ -28,7 +28,7 @@
 # DONE: Add overlay for cmp-nvim-lsp-signature-help
 # DONE: Add bootstrapping capability
 # STRT: Start adding personal pkgs tools.
-# TODO: setup terminfo_dirs because I feel like that's been a problem? See phantom sessionVariables
+# DONE: setup terminfo_dirs because I feel like that's been a problem? See phantom sessionVariables
 # TODO: package/cmd to grab the sha256 of a repo, see old flake
 # TODO: way to automate firefox speedups? https://www.drivereasy.com/knowledge/speed-up-firefox/ (will need to add nur which has firefox and extensions)
 # TODO: script to keep backup ref to home-manager gen and make it easy to switch to that one
@@ -116,7 +116,7 @@
         username = "dwl";
         hostname = "phantom";
 
-        features = [ "dev" ];
+        features = [ "dev" "beta" ];
         noNixos = true;
       };
 	
