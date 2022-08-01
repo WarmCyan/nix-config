@@ -23,10 +23,10 @@
     ${paramFlagList param})
     ${paramSwitch name param}''
   ) params else ""));
-      
+  
   parseParamsFunction = params:
   /* bash */ ''
-    function parse_params() {
+    function parse_params () {
       local param
       while [[ $# -gt 0 ]]; do
         param="$1"
@@ -37,6 +37,52 @@
       done
     }
   '';
+
+  helpParameters = params:
+  builtins.concatStringsSep "\n"
+  (builtins.attrValues 
+  (if params != null then
+  builtins.mapAttrs (name: param: 
+  ''echo -e "  ${builtins.concatStringsSep " " param.flags}\t\t${param.description}"''
+  ) params else ""));
+  
+
+  helpFunction = description: usage: params: 
+  /* bash */ ''
+  function print_help () {
+    echo "${description}"
+    ${if usage != null then "echo -e \"\\nusage: ${usage}\"" else ""}
+    echo ""
+    ${helpParameters params}
+  }
+  '';
+
+  versionCheck = version:
+  if version != null then
+  /* bash */ ''
+    if [[ ''${version-false} == true ]]; then
+      echo "${version}"
+      exit 0;
+    fi
+  '' else "";
+
+  # TODO: nocolor check/init color check
+  expandParameters = params: version:
+  params // { 
+    help = { 
+      flags = [ "-h" "--help" ];
+      description = "Display this help message.";
+      option = true;
+    };
+  } // (if version != null then 
+  {
+    version = {
+      flags = [ "-v" "--version" ];
+      description = "Print the script version.";
+      option = true;
+    };
+  } else {});
+  
 
   # allow a version number to be associated with a text file
   # this is basically a direct copy of trivial builders writeTextFile, but with
@@ -77,13 +123,16 @@
   writeTemplatedShellApplication = { 
     name,
     text,
-    version ? null,
     description,
+    version ? null,
+    usage ? null,
     parameters ? null, # expects a dictionary with descriptions and possible flags
     # e.g. parameters = { bash_var_name = { description = "testing"; flags = [
     # "-t" "--testing"; option = false ] } }
     initColors ? false,
+    parameterParser ? true,
     runtimeInputs ? [ ]
+    
   }:
   writeVersionedTextFile {
     inherit name version;
@@ -91,13 +140,17 @@
     destination = "/bin/${name}";
     
     # TODO: need to add the help/version/verbose/nocolor params
+    # TODO: add debug stuff from script template
     
     # TODO: add header and license and stuff
     # TODO: add color stuff
-    # NOTE: is runtimeShell supposed to come from pkgs?
     text = ''
       #!${pkgs.runtimeShell}
-      # 
+      
+      # ===============================================================
+      # ${name}${if version != null then " (${version})" else ""}
+      # ${description}
+      # ===============================================================
       
       set -o errexit
       set -o nounset
@@ -105,10 +158,21 @@
 
       export PATH="${lib.makeBinPath runtimeInputs}:$PATH"
 
-      ${parseParamsFunction parameters}
+      ${parseParamsFunction (expandParameters parameters version)}
+
+      ${helpFunction description usage (expandParameters parameters version)}
 
       parse_params "$@"
 
+      if [[ ''${help-false} == true ]]; then
+        print_help
+        exit 0;
+      fi
+
+      ${versionCheck version}
+
+      # ---------- MAIN SCRIPT CODE ----------
+      
       ${text}
     '';
     
