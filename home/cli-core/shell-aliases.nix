@@ -49,5 +49,6 @@
 	gl = "git log --oneline -n 10";
 
 
-    mm = "micromamba";
+  mm = "micromamba";
+  conda = "micromamba";
 }
