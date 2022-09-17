@@ -23,4 +23,16 @@
         };
       });
   }; # // import ../pkgs/vim-plugins { pkgs = prev } # TODO: !!!
+
+  # TODO: could submit this as a pull request to
+  # nixpkgs/pkgs/applications/editors/vscode/extensions/default.nix
+  vscode-extensions = prev.vscode-extensions // {
+    sainnhe.everforest = prev.vscode-utils.extensionFromVscodeMarketplace {
+      name = "Everforest";
+      publisher = "sainnhe";
+      version = "0.2.1";
+      sha256 = "sha256-g2zpR+1P99WhUk/AFR/IYoxJwSPohCLbCc35cI2rgL4=";
+    };
+  };
+  
 } // import ../pkgs { pkgs = prev; lib = inputs.nixpkgs.lib; }

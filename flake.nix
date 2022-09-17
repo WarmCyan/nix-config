@@ -42,8 +42,11 @@
 # TODO: snippet for nix header block
 # TODO: make a modified writeshellapplication that takes a version and a description and adds it to a special list that I can view with a separate package
 # TODO: fix vim auto line break to be how I used to have it
-# TODO: fix non writable settings.json for vscode
-# TODO: add everforest vscode theme overlay
+# STRT: fix non writable settings.json for vscode
+# DONE: add everforest vscode theme overlay
+# TODO: submit everforest theme extension to nixpkgs, use https://github.com/NixOS/nixpkgs/pull/191145 as a model
+# TODO: the nix lock file should be per machine, that way if I update on one I don't break it in the others 
+# TODO: tool to build flake and grab configs and publish to separate repo for when nix unavailable
 
 # MODULES NEEDED
 #================================
@@ -124,7 +127,7 @@
         username = "dwl";
         hostname = "phantom";
 
-        features = [ "dev" "beta" ];
+        features = [ "dev" "beta" "vscode" ];
         noNixos = true;
       };
 	
@@ -142,7 +145,7 @@
         username = "81n";
         hostname = "arcane";
 
-        features = [ "dev" "arcane.nix" ];
+        features = [ "dev" "arcane.nix" "vscode" ];
         noNixos = true;
         gitEmail = "martindalena@ornl.gov";
       };
