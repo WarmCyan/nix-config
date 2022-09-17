@@ -22,6 +22,11 @@
 # (2022/07/24) Current problem with bootstrap: the first time you run it never
 # works because I guess nix isn't found in path yet?
 
+# (2022/09/14) I added a basic vscode install to arcane, but there's a lot of
+# features that don't work since you can't edit the settings on the fly. There's
+# a solution to this that modifies home activation for that package, seems
+# fairly straightfoward: https://github.com/nix-community/home-manager/issues/1800
+
 # TODO's
 # ===============================
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
@@ -36,6 +41,9 @@
 # TODO: make a exportshellcolors script that exports vars for colors, since it's easy to include that as a runtime dependency with  the writeshellapplication
 # TODO: snippet for nix header block
 # TODO: make a modified writeshellapplication that takes a version and a description and adds it to a special list that I can view with a separate package
+# TODO: fix vim auto line break to be how I used to have it
+# TODO: fix non writable settings.json for vscode
+# TODO: add everforest vscode theme overlay
 
 # MODULES NEEDED
 #================================

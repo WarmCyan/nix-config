@@ -8,9 +8,6 @@ writeShellApplication {
       jupyterlab \
       nodejs \
       jupyterlab_vim \
-      # jupyterlab-drawio 
-      # ipydrawio supports RTC, jupyterlab-drawio does not. Also there's cool 
-      # mermaid/insert functionality in ipydrawio 
       ipydrawio \
       dask_labextension \
       jupyterlab-lsp \

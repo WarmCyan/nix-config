@@ -25,18 +25,30 @@
   ) params else ""));
   
   parseParamsFunction = params:
+  if params != null then
   /* bash */ ''
     function parse_params () {
+      positional_args=()
       local param
       while [[ $# -gt 0 ]]; do
         param="$1"
         shift
         case $param in
           ${paramsSwitchCollection params}
+          *)
+            positional_args+=("$param")
+            ;;
         esac
       done
     }
-  '';
+  '' else "";
+  
+  parseParams = params:
+  if params != null then /* bash */ ''
+      parse_params "$@"
+      set -- "''${positional_args[@]}"
+    ''
+    else "";
 
   helpParameters = params:
   builtins.concatStringsSep "\n"
@@ -57,8 +69,8 @@
   }
   '';
 
-  versionCheck = version:
-  if version != null then
+  versionCheck = version: params:
+  if version != null && params != null then
   /* bash */ ''
     if [[ ''${version-false} == true ]]; then
       echo "${version}"
@@ -66,8 +78,18 @@
     fi
   '' else "";
 
+  helpCheck = params:
+  if params != null then
+  /* bash */ ''
+    if [[ ''${help-false} == true ]]; then
+      print_help
+      exit 0;
+    fi
+  '' else "";
+
   # TODO: nocolor check/init color check
-  expandParameters = params: version:
+  expandParameters = params: version: parameterParser:
+  if parameterParser then (
   params // { 
     help = { 
       flags = [ "-h" "--help" ];
@@ -81,7 +103,8 @@
       description = "Print the script version.";
       option = true;
     };
-  } else {});
+  } else {}))
+  else null;
   
 
   # allow a version number to be associated with a text file
@@ -134,6 +157,9 @@
     runtimeInputs ? [ ]
     
   }:
+  let 
+    resolved_params = expandParameters parameters version parameterParser;
+  in
   writeVersionedTextFile {
     inherit name version;
     executable = true;
@@ -159,20 +185,17 @@
 
       export PATH="${lib.makeBinPath runtimeInputs}:$PATH"
 
-      ${parseParamsFunction (expandParameters parameters version)}
+      ${parseParamsFunction resolved_params}
 
-      ${helpFunction description usage (expandParameters parameters version)}
+      ${helpFunction description usage resolved_params}
 
-      parse_params "$@"
+      ${parseParams resolved_params}
 
-      if [[ ''${help-false} == true ]]; then
-        print_help
-        exit 0;
-      fi
+      ${helpCheck resolved_params}
 
-      ${versionCheck version}
+      ${versionCheck version resolved_params}
 
-      # ---------- MAIN SCRIPT CODE ----------
+      # ---------------------- MAIN SCRIPT CODE -----------------------
       
       ${text}
     '';
