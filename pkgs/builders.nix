@@ -144,6 +144,7 @@
     
     # TODO: add header and license and stuff
     # TODO: add color stuff
+    # TODO: how to deal with positional parameters?
     text = ''
       #!${pkgs.runtimeShell}
       
