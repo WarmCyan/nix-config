@@ -113,7 +113,7 @@
 
   outputs = inputs:
   let
-    lib = import ./lib { inherit inputs; };
+    lib = import ./lib { inherit inputs; }; # This feels problematic, should probably be "mylib" instead
     inherit (lib) mkHome forAllSystems;
     inherit (builtins) attrValues;
   in

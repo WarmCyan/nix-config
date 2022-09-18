@@ -40,7 +40,7 @@ rec {
       # normally that "updates" any stuff from the modules? I don't
       # understand how the order of this works.
     };
-    modules = [ ../home ]; 
+    modules = [ ../home ../home/vscode-mutable.nix ]; 
   };
 
   concatFiles = filesArray: builtins.concatStringsSep "\n" (builtins.map (x: builtins.readFile x) filesArray);

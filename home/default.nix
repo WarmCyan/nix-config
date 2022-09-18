@@ -7,6 +7,7 @@ let
 in
 {
   imports = [
+    #./vscode-mutable.nix
     ./cli-core
   ]
   # import feature modules, features are passed by directory name 

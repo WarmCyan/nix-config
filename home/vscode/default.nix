@@ -3,6 +3,7 @@
   programs.vscode = {
     enable = true;
     mutableExtensionsDir = true; # allows vscode to install/update extensions without going thru nix
+    #mutable = true;
 
     extensions = with pkgs.vscode-extensions; [
       vscodevim.vim
