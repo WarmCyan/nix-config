@@ -90,8 +90,8 @@ set encoding=utf-8
 set autoindent " smart indenting based on filetype
 set textwidth=80 " cols before auto wrap text
 " see :h fo-table
-"set formatoptions=l " long lines won't be broken up if entering insert mode and already past textwidth
-set formatoptions=t " auto-wrap lines based on textwidth
+set formatoptions=l " long lines won't be broken up if entering insert mode and already past textwidth
+"set formatoptions=t " auto-wrap lines based on textwidth
 set formatoptions+=c " auto-wrap comments using text width and auto insert comment leader
 set formatoptions+=j " be all smart and when joing a comment line, take out the extra comment leader
 set formatoptions+=q " allow formatting of comments with 'gq'
