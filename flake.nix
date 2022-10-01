@@ -127,7 +127,7 @@
         username = "dwl";
         hostname = "phantom";
 
-        features = [ "dev" "beta" "vscode" ];
+        features = [ "dev" "beta" "vscode" "phantom.nix" ];
         noNixos = true;
       };
 	
