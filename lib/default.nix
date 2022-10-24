@@ -4,12 +4,25 @@
 { inputs, ... }:
 let
   inherit (inputs) self home-manager nixpkgs;
-  inherit (nixpkgs.lib) systems genAttrs;
+  inherit (nixpkgs.lib) systems genAttrs nixosSystem;
   inherit (self) outputs; # what is self? How are we getting outputs??? (oh, this is the self from the output parameters in flake.nix)
   inherit (home-manager.lib) homeManagerConfiguration;
 in
 rec {
   forAllSystems = genAttrs systems.flakeExposed;
+
+  mkSystem = {
+    hostname,
+    timezone ? "America/New_York";
+  }:
+  builtins.trace "\nBuilding system for host ${hostname}"
+  nixosSystem {
+    inherit pkgs;
+    specialArgs = { # these are args that get passed to all modules
+      inherit inputs outputs hostname timezone
+    };
+    modules = [ ../hosts ];
+  };
 
   mkHome = {
     username,

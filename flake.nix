@@ -27,6 +27,12 @@
 # a solution to this that modifies home activation for that package, seems
 # fairly straightfoward: https://github.com/nix-community/home-manager/issues/1800
 
+# (2022/10/23) I regularly get a "tput: unknown terminal 'xterm-kitty'" error the 
+# time I'm trying to install things. This might be related to 
+# https://sw.kovidgoyal.net/kitty/faq/#i-get-errors-about-the-terminal-being-unknown-or-opening-the-terminal-failing-when-sshing-into-a-different-computer
+# where the solution is to ssh with `kitty +kitten ssh myserver` It might be worth
+# it to eventually include that terminfo directly in my config and copy over?
+
 # TODO's
 # ===============================
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
@@ -47,6 +53,10 @@
 # TODO: submit everforest theme extension to nixpkgs, use https://github.com/NixOS/nixpkgs/pull/191145 as a model
 # TODO: the nix lock file should be per machine, that way if I update on one I don't break it in the others 
 # TODO: tool to build flake and grab configs and publish to separate repo for when nix unavailable
+# TODO: it would be cool if features could be specified without ".nix" if it's
+# just a file and not a folder
+# TODO: investigate allowing serving a nix store via ssh https://nixos.org/manual/nix/stable/package-management/ssh-substituter.html
+# TODO: make some nice plymouth boot stuff! 
 
 # MODULES NEEDED
 #================================
@@ -114,13 +124,27 @@
   outputs = inputs:
   let
     lib = import ./lib { inherit inputs; }; # This feels problematic, should probably be "mylib" instead
-    inherit (lib) mkHome forAllSystems;
+    inherit (lib) mkHome mkSystem forAllSystems;
     inherit (builtins) attrValues;
   in
   rec {
     inherit lib; # TODO: ....why is this here?
 
-    # =================== HOME CONFIGURATIONS =================== 
+
+    # =================== NIXOS CONFIGURATIONS ==================
+
+    nixosConfigurations = {
+      therock = mkSystem {
+        hostname = "therock";
+        pkgs = legacyPackages."x86_64-linux";
+      };
+    };
+
+    # ===========================================================
+
+
+
+    # =================== HOME CONFIGURATIONS ===================
     homeConfigurations = {
       # primary desktop
       phantom = mkHome {
@@ -138,6 +162,14 @@
 
         features = [ "dev" "beta" ];
         noNixos = true;
+      };
+
+      # homeserver
+      therock = mkHome {
+        username = "dwl";
+        hostname = "therock";
+
+        features = [ "dev" ];
       };
 
       # work linux workstation 
@@ -160,7 +192,7 @@
         gitEmail = "martindalena@ornl.gov";
       };
     };
-    # =========================================================== 
+    # ===========================================================
 	
     overlays = {
       default = import ./overlay { inherit inputs; };
