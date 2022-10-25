@@ -109,11 +109,14 @@
   description = "My awesome-sauce and cool-beans nix configuration-y things.";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    #nixpkgs.url = "github:nixos/nixpkgs/nixos-22.05";
+
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.05";
 
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs"; # unsure what this actually does. (It
+      inputs.nixpkgs.follows = "nixpkgs-unstable"; # unsure what this actually does. (It
       # makes it so that home-manager isn't downloading it's own set of nixpkgs,
       # we're "overriding" the nixpkgs input home-manager defines by default)
     };
@@ -136,7 +139,8 @@
     nixosConfigurations = {
       therock = mkSystem {
         hostname = "therock";
-        pkgs = legacyPackages."x86_64-linux";
+        system = "x86_64-linux";
+        pkgs = legacyPackagesStable."x86_64-linux";
       };
     };
 
@@ -199,7 +203,15 @@
     };
 
     legacyPackages = forAllSystems (system:
-      import inputs.nixpkgs {
+      import inputs.nixpkgs-unstable {
+        inherit system;
+        overlays = attrValues overlays;
+        config.allowUnfree = true;
+      }
+    );
+    
+    legacyPackagesStable = forAllSystems (system:
+      import inputs.nixpkgs-stable {
         inherit system;
         overlays = attrValues overlays;
         config.allowUnfree = true;

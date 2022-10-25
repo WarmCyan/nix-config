@@ -15,12 +15,12 @@
 
   # networking
   networking = {
-    useDHCP = true;
+    useDHCP = false; # networkmanager does this?
     networkmanager.enable = true;
     
     firewall = {
       enable = true; # default
-      allowedTCPPorts = [ 80 443 ];
+      allowedTCPPorts = [ 22 80 443 ];
     };
   };
 
@@ -41,12 +41,15 @@
     git
     wget
     htop
+    curl
+    ncdu
+    iproute2  # ip link etc.
   ];
 
   # sound
   sound.enable = true;
   hardware.pulseaudio.enable = false;
-  security.rtkit.enable = true
+  security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -68,31 +71,29 @@
   services.openssh = {
     enable = true;
     passwordAuthentication = true; # TODO: set this to false
-    permitRootLogin = "no"
+    permitRootLogin = "no";
   };
 
   services.nextcloud = {
     enable = true;
     home = "/var/lib/nextcloud"; # default
-
-    hostName = "localhost"
-
-    nginx.enable = true;
-
+  
+    hostName = "localhost";
+  
     config = {
       dbtype = "pgsql";
       dbuser = "nextcloud";
       dbhost = "/run/postgresql";
       dbname = "nextcloud";
       dbpassFile = "/var/nextcloud-db-pass";
-      
+     
       adminpassFile = "/var/nextcloud-admin-pass";
       adminuser = "admin";
     };
-
+  
     maxUploadSize = "10G";
   };
-
+  
   services.postgresql = {
     enable = true;
     ensureDatabases = [ "nextcloud" ];
@@ -103,8 +104,8 @@
       }
     ];
   };
-
-
+  
+  
   # ensure postgres is running before running the nextcloud setup
   systemd.services."nextcloud-setup" = {
     requires = ["postgresql.service"];

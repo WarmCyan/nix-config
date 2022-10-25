@@ -1,7 +1,7 @@
 # Top level import module for all nixos systems. We load
 # the system-specific module based on the passed hostname.
 
-{ inputs, lib, hostname, timezone, ... }:
+{ inputs, lib, hostname, timezone, pkgs, ... }:
 {
   imports = [ ./${hostname} ];
 
@@ -37,7 +37,7 @@
     # none of my systems are probably going to be regularly experiencing high
     # CPU load, so let's just make it work better for responsiveness, and only
     # allow nix daemon to do things in times of cpu idle
-    daemonCPUSchedPolicy = "idle" 
+    daemonCPUSchedPolicy = "idle" ;
     
     gc = {
       automatic = true;
