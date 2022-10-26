@@ -44,6 +44,7 @@
     curl
     ncdu
     iproute2  # ip link etc.
+    gnufdisk
   ];
 
   # sound
@@ -77,7 +78,9 @@
   services.nextcloud = {
     enable = true;
     home = "/var/lib/nextcloud"; # default
+    datadir = "/var/lib/nextcloud"; # default
   
+    #hostName = "localhost";
     hostName = "localhost";
   
     config = {
@@ -89,6 +92,8 @@
      
       adminpassFile = "/var/nextcloud-admin-pass";
       adminuser = "admin";
+
+      extraTrustedDomains = [ "192.168.1.225" "therock" ];
     };
   
     maxUploadSize = "10G";
@@ -112,9 +117,19 @@
     after = ["postgresql.service"];
   };
 
+  # NOTE: this doesn't work if I'm not using an actual domain name.
   # security.acme = {
   #   acceptTerms = true;
   #   email = "nmblenderdude0@gmail.com";
+  # };
+  # services.nginx = {
+  #   enable = true;
+  #   virtualHosts = {
+  #     "192.168.1.225" = {
+  #       forceSSL = true;
+  #       enableACME = true;
+  #     };
+  #   };
   # };
   
   

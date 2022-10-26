@@ -9,6 +9,7 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
+  # 500G ssd
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/bb8a1b85-f8d9-46e0-bf26-6d5b2f966465";
       fsType = "ext4";
@@ -18,12 +19,18 @@
     { device = "/dev/disk/by-uuid/B519-BA0F";
       fsType = "vfat";
     };
-
+    
   swapDevices =
     [ { device = "/dev/disk/by-uuid/61304672-bad1-429b-9992-f7156d1fb9c8"; }
     ];
+    
+  # 500G hard disk
+  fileSystems."/storage" = { 
+    device = "/dev/disk/by-uuid/15a5eafa-4cb3-42c5-ac26-2ab4d1fb5e93";
+    fsType = "ext4";
+  };
 
-    networking.useDHCP = lib.mkDefault true;
+  networking.useDHCP = lib.mkDefault true;
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "ondemand";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
