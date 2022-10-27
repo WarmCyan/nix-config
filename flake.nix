@@ -33,6 +33,9 @@
 # where the solution is to ssh with `kitty +kitten ssh myserver` It might be worth
 # it to eventually include that terminfo directly in my config and copy over?
 
+
+# (2022/10/26) Another valuable set of dotfiles to reference: https://man.sr.ht/~hutzdog/dotfiles/
+
 # TODO's
 # ===============================
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
@@ -142,6 +145,14 @@
         system = "x86_64-linux";
         pkgs = legacyPackagesStable."x86_64-linux";
       };
+
+
+      therock2 = inputs.nixpkgs-stable.lib.nixosSystem {
+        system = "x86_64-linux";
+        pkgs = inputs.nixpkgs-stable.legacyPackages."x86_64-linux";
+        modules = [ ];
+      };
+      
     };
 
     # ===========================================================
@@ -202,10 +213,25 @@
       default = import ./overlay { inherit inputs; };
     };
 
-    legacyPackages = forAllSystems (system:
+    # https://nixos.wiki/wiki/Flakes (see section "Importing packages from multiple channels")
+    overlay-unstable = final: prev: {
+      unstable = import inputs.nixpkgs-unstable {
+        system = prev.system;
+        config.allowUnfree = true;
+      };
+    };
+
+    overlay-stable = final: prev: {
+      stable = import inputs.nixpkgs-stable {
+        system = prev.system;
+        config.allowUnree = true;
+      };
+    };
+
+    legacyPackagesUnstable = forAllSystems (system:
       import inputs.nixpkgs-unstable {
         inherit system;
-        overlays = attrValues overlays;
+        overlays = attrValues overlays ++ [ overlay-stable ];
         config.allowUnfree = true;
       }
     );
@@ -213,7 +239,7 @@
     legacyPackagesStable = forAllSystems (system:
       import inputs.nixpkgs-stable {
         inherit system;
-        overlays = attrValues overlays;
+        overlays = attrValues overlays ++ [ overlay-unstable ];
         config.allowUnfree = true;
       }
     );
@@ -221,7 +247,7 @@
     # home-manager bootstrap script. If home-manager isn't yet installed, run
     # `nix shell .` and then `bootstrap [NAME OF HOME CONFIG]`
     packages = forAllSystems (system: {
-      default = with legacyPackages.${system}; 
+      default = with legacyPackagesUnstable.${system}; 
       stdenv.mkDerivation rec {
         name = "bootstrap-script";
         installPhase = /* bash */ ''

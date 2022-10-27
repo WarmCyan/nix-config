@@ -35,4 +35,4 @@
     };
   };
   
-} // import ../pkgs { pkgs = prev; lib = inputs.nixpkgs.lib; }
+} // import ../pkgs { pkgs = prev; lib = inputs.nixpkgs-unstable.lib; }

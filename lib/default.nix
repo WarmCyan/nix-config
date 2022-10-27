@@ -48,7 +48,7 @@ rec {
   }:
   builtins.trace "\nBuilding home for ${username}@${hostname}...\nsystem: ${system}"
   homeManagerConfiguration {
-    pkgs = outputs.legacyPackages.${system};
+    pkgs = outputs.legacyPackagesUnstable.${system};
     extraSpecialArgs = { # these are args that get passed to all modules
       inherit self inputs outputs hostname username wallpaper features
         gitUsername gitEmail noNixos; 
