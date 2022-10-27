@@ -110,8 +110,6 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    #nixpkgs.url = "github:nixos/nixpkgs/nixos-22.05";
-
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.05";
 
     home-manager = {
@@ -220,6 +218,8 @@
     
     # home-manager bootstrap script. If home-manager isn't yet installed, run
     # `nix shell .` and then `bootstrap [NAME OF HOME CONFIG]`
+    # TODO: why isn't this just using the writeshellscript whatever?
+    # checkout the bootstrap used in https://github.com/Misterio77/nix-starter-configs/blob/main/standard/shell.nix
     packages = forAllSystems (system: {
       default = with legacyPackages.${system}; 
       stdenv.mkDerivation rec {

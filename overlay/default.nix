@@ -1,3 +1,4 @@
+# TODO: we need probably an exclusively unstable set of overlays and stable set?
 { inputs, ... }: final: prev:
 {
   vimPlugins = prev.vimPlugins // {
@@ -35,4 +36,4 @@
     };
   };
   
-} // import ../pkgs { pkgs = prev; lib = inputs.nixpkgs.lib; }
+} // import ../pkgs { pkgs = prev; lib = inputs.nixpkgs.lib; } # TODO: this shouldn't work anymore???? make it so lib is passed in here, and set it differnetly from the flake for legacypackages vs legacyPackagesStable
