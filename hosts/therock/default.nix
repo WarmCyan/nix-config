@@ -40,7 +40,7 @@
     vim
     git
     wget
-    htop
+    unstable.htop  # just testing if this works...it does!!
     curl
     ncdu
     iproute2  # ip link etc.
