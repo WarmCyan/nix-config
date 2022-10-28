@@ -60,6 +60,7 @@
 # just a file and not a folder
 # TODO: investigate allowing serving a nix store via ssh https://nixos.org/manual/nix/stable/package-management/ssh-substituter.html
 # TODO: make some nice plymouth boot stuff! 
+# TODO: my lib should prob be called iris-lib to avoid ambiguity and confusion.
 
 # MODULES NEEDED
 #================================
@@ -113,8 +114,6 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    #nixpkgs.url = "github:nixos/nixpkgs/nixos-22.05";
-
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.05";
 
     home-manager = {
@@ -130,20 +129,20 @@
   outputs = inputs:
   let
     lib = import ./lib { inherit inputs; }; # This feels problematic, should probably be "mylib" instead
-    inherit (lib) mkHome mkSystem forAllSystems;
+    inherit (lib) mkHome mkSystem mkStableSystem forAllSystems;
     inherit (builtins) attrValues;
   in
   rec {
-    inherit lib; # TODO: ....why is this here?
+    inherit lib; # TODO: ....why is this here? does this let you do outputs.lib? or self.lib?
 
 
     # =================== NIXOS CONFIGURATIONS ==================
 
     nixosConfigurations = {
-      therock = mkSystem {
+      therock = mkStableSystem {
+        configName = "therock";
         hostname = "therock";
         system = "x86_64-linux";
-        pkgs = legacyPackagesStable."x86_64-linux";
       };
 
 
@@ -163,6 +162,7 @@
     homeConfigurations = {
       # primary desktop
       phantom = mkHome {
+        configName = "phantom";
         username = "dwl";
         hostname = "phantom";
 
@@ -172,6 +172,7 @@
 	
       # primary laptop
       delta = mkHome {
+        configName = "delta";
         username = "dwl";
         hostname = "delta";
 
@@ -181,6 +182,7 @@
 
       # homeserver
       therock = mkHome {
+        configName = "therock";
         username = "dwl";
         hostname = "therock";
 
@@ -189,6 +191,7 @@
 
       # work linux workstation 
       arcane = mkHome {
+        configName = "arcane";
         username = "81n";
         hostname = "arcane";
 
@@ -199,6 +202,7 @@
 
       # work laptop (wsl)
       wlap = mkHome {
+        configName = "wlap";
         username = "dwl";
         hostname = "LAP124750";
 
@@ -210,28 +214,44 @@
     # ===========================================================
 	
     overlays = {
-      default = import ./overlay { inherit inputs; };
+      # https://nixos.wiki/wiki/Flakes (see section "Importing packages from multiple channels")
+      # a single overlay that always includes both,
+      # this would allow modules that get imported from both a stable and 
+      # unstable context to work if they require a specific channel, and all the
+      # rest of the packages will just default to whatever context called from.
+      
+      stable-unstable-combo = final: prev: {
+        unstable = import inputs.nixpkgs-unstable {
+          system = prev.system;
+          config.allowUnfree = true;
+        };
+        stable = import inputs.nixpkgs-stable {
+          system = prev.system;
+          config.allowUnfree = true;
+        };
+      };
+      
+      custom-pkgs = import ./overlay { inherit inputs; };
     };
 
-    # https://nixos.wiki/wiki/Flakes (see section "Importing packages from multiple channels")
-    overlay-unstable = final: prev: {
-      unstable = import inputs.nixpkgs-unstable {
-        system = prev.system;
-        config.allowUnfree = true;
-      };
-    };
-
-    overlay-stable = final: prev: {
-      stable = import inputs.nixpkgs-stable {
-        system = prev.system;
-        config.allowUnree = true;
-      };
-    };
+    # overlay-unstable = final: prev: {
+    #   unstable = import inputs.nixpkgs-unstable {
+    #     system = prev.system;
+    #     config.allowUnfree = true;
+    #   };
+    # };
+    #
+    # overlay-stable = final: prev: {
+    #   stable = import inputs.nixpkgs-stable {
+    #     system = prev.system;
+    #     config.allowUnree = true;
+    #   };
+    # };
 
     legacyPackagesUnstable = forAllSystems (system:
       import inputs.nixpkgs-unstable {
         inherit system;
-        overlays = attrValues overlays ++ [ overlay-stable ];
+        overlays = attrValues overlays; # ++ [ overlay-stable ];
         config.allowUnfree = true;
       }
     );
@@ -239,7 +259,7 @@
     legacyPackagesStable = forAllSystems (system:
       import inputs.nixpkgs-stable {
         inherit system;
-        overlays = attrValues overlays ++ [ overlay-unstable ];
+        overlays = attrValues overlays; # ++ [ overlay-unstable ];
         config.allowUnfree = true;
       }
     );

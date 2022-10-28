@@ -1,28 +1,32 @@
 # Top level import module for all nixos systems. We load
 # the system-specific module based on the passed hostname.
 
-{ inputs, lib, hostname, timezone, pkgs, ... }:
+{ inputs, lib, hostname, configName, configLocation, timezone, pkgs, ... }:
 {
-  imports = [ ./${hostname} ];
+  imports = [ ./${configName} ];
 
-  networking.hostName = hostname;
+  networking.hostName = hostname; # TODO: no move this to the machine
 
-  # always have these packages!
+  # always have these packages! These are for basic debugging purposes
   environment.systemPackages = with pkgs; [
     vim
     git
     wget
+    curl
+    iproute2
+    gnufdisk
+    htop
+    ncdu
   ];
 
-  environment.etc."iris/hostname" = {
-    text = hostname
-  }
+  environment.etc."iris/configname".text = configName;
+  environment.etc."iris/configlocation".text = configLocation;
 
   
   # internationalisation properties.
-  i18n.defaultLocale = "en_US.utf8";
+  i18n.defaultLocale = lib.mkDefault "en_US.utf8";
 
-  # set timezone
+  # set timezone # TODO: no move this to the machine
   time.timeZone = timezone;
   
   # nix settings
@@ -31,7 +35,7 @@
 
     settings = {
       # detects files in store with identical contents and uses single copy
-      auto-optimise-store = true; 
+      auto-optimise-store = lib.mkDefault true; 
     };
     
     extraOptions = ''
@@ -41,22 +45,12 @@
     # none of my systems are probably going to be regularly experiencing high
     # CPU load, so let's just make it work better for responsiveness, and only
     # allow nix daemon to do things in times of cpu idle
-    daemonCPUSchedPolicy = "idle" ;
+    # daemonCPUSchedPolicy = lib.mkDefault "idle";
     
     gc = {
-      automatic = true;
-      dates = "weekly";
+      automatic = lib.mkDefault true;
+      dates = lib.mkDefault "weekly";
     };
   };
   nixpkgs.config.allowUnfree = true;
-
-  # ssh stuff
-  # services.openssh = {
-  #   enable = true;
-  #   passwordAuthentication = false;
-  #   permitRootLogin = "no"
-  # };
-  # programs.ssh = {
-  #   knownHostsFiles = lib.filesystem.listFilesRecursive ./public_ssh_keys;
-  # };
 }

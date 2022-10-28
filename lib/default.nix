@@ -4,32 +4,55 @@
 { inputs, ... }:
 let
   inherit (inputs) self home-manager nixpkgs-unstable nixpkgs-stable;
-  inherit (nixpkgs-stable.lib) systems genAttrs nixosSystem;
+  inherit (nixpkgs-stable.lib) systems genAttrs;
   inherit (self) outputs; # what is self? How are we getting outputs??? (oh, this is the self from the output parameters in flake.nix)
   inherit (home-manager.lib) homeManagerConfiguration;
 in
 rec {
   forAllSystems = genAttrs systems.flakeExposed;
 
-  mkSystem = {
+  mkStableSystem = {
+    configName,  # this should match the attribute name in the flake
     hostname,
-    pkgs,
     system,
     timezone ? "America/New_York",
+    modules ? [ ../hosts ],
+    configLocation ? "/home/dwl/lab/nix-config"
   }:
-  builtins.trace "\nBuilding system for host ${hostname}"
-  nixosSystem {
-    inherit pkgs system;
+  builtins.trace "\nBuilding (STABLE) system configuration ${configName} for host ${hostname}...\nsystem: ${system}"
+  nixpkgs-stable.lib.nixosSystem {
+    inherit system modules;
+    pkgs = outputs.legacyPackagesStable.${system};
     specialArgs = { # these are args that get passed to all modules
-      inherit inputs outputs hostname timezone;
+      inherit inputs outputs configName hostname timezone configLocation;
+      stable = true;
     };
-    modules = [ ../hosts ];
+  };
+  
+  mkSystem = {
+    configName,  # this should match the attribute name in the flake
+    hostname,
+    system,
+    timezone ? "America/New_York",
+    modules ? [ ../hosts ],
+    configLocation ? "/home/dwl/lab/nix-config"
+  }:
+  builtins.trace "\nBuilding system configuration ${configName} for host ${hostname}...\nsystem: ${system}"
+  nixpkgs-unstable.lib.nixosSystem {
+    inherit system modules;
+    pkgs = outputs.legacyPackagesUnstable.${system};
+    specialArgs = { # these are args that get passed to all modules
+      inherit inputs outputs configName hostname timezone configLocation;
+      stable = false;
+    };
   };
 
-
+  # TODO: switch to passing in modules here with a default to the config name,
+  # same as systems above.
   mkHome = {
-    username,
+    configName,
     hostname ? null, # null seems bad
+    username ? "dwl",
     system ? "x86_64-linux", # TODO: when actually move to nixos, switch to his default, it's better
     # colorscheme ? null, # nix-colors stuff
     wallpaper ? null,
@@ -45,13 +68,14 @@ rec {
     #extraspecialargs (no actually, via modules on home-manager and calling
     #mkOption
     gitEmail ? "nathanamartindale@gmail.com",
+    configLocation ? "/home/dwl/lab/nix-config"
   }:
   builtins.trace "\nBuilding home for ${username}@${hostname}...\nsystem: ${system}"
   homeManagerConfiguration {
     pkgs = outputs.legacyPackagesUnstable.${system};
     extraSpecialArgs = { # these are args that get passed to all modules
       inherit self inputs outputs hostname username wallpaper features
-        gitUsername gitEmail noNixos; 
+        gitUsername gitEmail noNixos configLocation configName; 
       # maybe a way to pass in an entire "configuration" like you would
       # normally that "updates" any stuff from the modules? I don't
       # understand how the order of this works.
