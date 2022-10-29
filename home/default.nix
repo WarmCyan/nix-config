@@ -30,8 +30,8 @@ in
       TERMINFO_DIRS = "/usr/share/terminfo"; 
     };
 
-    activation.report-changes = config.lib.dag.entryAnywhere /* bash */ ''
-      ${pkgs.nvd}/bin/nvd diff $oldGenPath $newGenPath
-    '';
+    # activation.report-changes = config.lib.dag.entryAnywhere /* bash */ ''
+    #   ${pkgs.nvd}/bin/nvd diff $oldGenPath $newGenPath
+    # '';
   };
 }

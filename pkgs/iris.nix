@@ -101,7 +101,7 @@ builders.writeTemplatedShellApplication {
     }
 
     function update_flake () {
-      echo "Updating nix flake..."
+      echo -e "\nUpdating nix flake..."
       ensure_config
       pushd "''${config_location}" &> /dev/null
         nix flake update
@@ -109,9 +109,11 @@ builders.writeTemplatedShellApplication {
     }
 
     function build_system () {
-      echo "Running system build..."
+      echo -e "\nRunning system build..."
       ensure_config
       pushd "''${config_location}" &> /dev/null
+
+        # TODO: check for if we're not on nixos (sys_config is "")
 
         # TODO: handle if another configuration was specified (this will be the
         # second positional argument, and should only work if only 's' was
@@ -130,7 +132,7 @@ builders.writeTemplatedShellApplication {
             case "''${response}" in
               [nN][oO]|[nN])
                 echo "System build not applied."
-                echo "Build results are at ''${config_location}/result-system, they can be manually inspected and applied by navigating to its bin/ directory and running 'switch-to-configuration switch'"
+                echo "Build results are at ''${config_location}/result-system, they can be manually inspected and applied by navigating to its bin/ directory and running 'switch-to-configuration switch'."
                 exit 0
                 ;;
               [yY][eE][sS]|[yY])
@@ -153,7 +155,67 @@ builders.writeTemplatedShellApplication {
         sudo result-system/bin/switch-to-configuration switch
       popd &> /dev/null
     }
+    
+    function build_home () {
+      echo -e "\nRunning home build..."
+      ensure_config
+      pushd "''${config_location}" &> /dev/null
 
+        # TODO: handle if home-manager not in use
+
+        # TODO: handle if another configuration was specified (this will be the
+        # second positional argument, and should only work if only 's' was
+        # specified
+        
+        home-manager build --flake .\#"''${hm_config}"
+        rm -f result-home
+        mv result result-home
+        nvd diff "/nix/var/nix/profiles/per-user/''${USER}/home-manager" result-home
+        
+        if [[ ''${yes-false} == false ]]; then
+          # prompt loop
+          valid_response=false
+          while [[ ''${valid_response} == false ]]; do
+            read -r -p "Apply home build result? [Y/n]" response 
+            case "''${response}" in
+              [nN][oO]|[nN])
+                echo "Home build not applied."
+                echo "Build results are at ''${config_location}/result-home, they can be manually inspected and applied by running 'activate' in its root directory."
+                exit 0
+                ;;
+              [yY][eE][sS]|[yY])
+                valid_response=true
+                break
+                ;;
+              "")
+                valid_response=true
+                break
+                ;;
+              *)
+                echo "Invalid response, please enter [y]es or [n]o." 
+                ;;
+            esac
+          done
+        fi
+
+        # if we've hit this point, we're good to do the build! 
+        echo "Applying home result..."
+        result-home/activate
+      popd &> /dev/null
+    }
+
+    function list_home_configs () {
+      ensure_config
+      echo -e "\nAvailable home configurations:"
+      grep ".*\ =\ mkHome" "''${config_location}/flake.nix" | sed -e "s/\s*\([A-Za-z0-9\-\_\@]*\)\ =.*/\1/g"
+    }
+
+    function list_system_configs () {
+      echo -e "\nAvailable system configurations:"
+      # the -P is necessary for grep to handle the parens correctly (perl regex?)
+      grep -P ".*\ =\ mk(StableSystem|System)" "''${config_location}/flake.nix" | sed -e "s/\s*\([A-Za-z0-9\-\_\@]*\)\ =.*/\1/g"
+    }
+    
     print_header
     collect_and_print_info
 
@@ -165,16 +227,60 @@ builders.writeTemplatedShellApplication {
     fi
 
     if [[ $# -gt 0 ]]; then
-      # TODO: life will be easier if we handle this with case like we do the
-      # yes/no above
-      if [[ "$1" == "s" || "$1" == "hs" || "$1" == "sh" ]]; then
-        if [[ ''${build-false} == true ]]; then
-          build_system
-        fi
-
-        # TODO: handle just displaying lots more info about the system
-        # generation
-      fi
+      case "$1" in
+        hs|sh)
+          if [[ ''${build-false} == true ]]; then
+            build_system
+            build_home
+          fi
+          # TODO: handle just displaying lots more info about the system
+          # generation
+          ;;
+        s)
+          if [[ ''${build-false} == true ]]; then
+            build_system
+          fi
+          ;;
+        h)
+          if [[ ''${build-false} == true ]]; then
+            build_home
+          fi
+          ;;
+        ls)
+          if [[ $# -gt 1 ]]; then
+            case "$2" in
+              hs|sh)
+                list_home_configs
+                list_system_configs
+                ;;
+              h)
+                list_home_configs
+                ;;
+              s)
+                list_system_configs
+                ;;
+              *)
+                echo "No"
+                ;;
+            esac
+          else
+            list_home_configs
+            list_system_configs
+          fi
+          ;;
+        *)
+          echo "No"
+          ;;
+      esac
+  
+      # if [[ "$1" == "s" || "$1" == "hs" || "$1" == "sh" ]]; then
+      #   if [[ ''${build-false} == true ]]; then
+      #     build_system
+      #   fi
+      #
+      #   # TODO: handle just displaying lots more info about the system
+      #   # generation
+      # fi
     fi
   '';
 }
