@@ -50,7 +50,7 @@
     unstable.nvd
     
     iris
-    testing2
+    #testing2
   ];
 
   # system.activationScripts.report-changes = /* bash */ ''

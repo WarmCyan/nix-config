@@ -2,16 +2,21 @@
 # This file is where we deal with the "features" list that gets passed in.
 
 { inputs, lib, username, features, noNixos, configName, configLocation, pkgs, config, ... }:
-let
-  inherit (builtins) map pathExists filter;
-in
+# let
+#   inherit (builtins) map pathExists filter;
+# in
 {
   imports = [
     #./vscode-mutable.nix
-    ./cli-core
-  ]
+    #./cli-core
+    ./${configName}
+  ];
   # import feature modules, features are passed by directory name 
-  ++ filter pathExists (map (feature: ./${feature}) features);
+  #++ filter pathExists (map (feature: ./${feature}) features);
+  
+  home.packages = with pkgs; [
+    iris
+  ];
 
   targets.genericLinux.enable = noNixos;
   programs.home-manager.enable = true;

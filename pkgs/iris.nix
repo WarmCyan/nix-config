@@ -153,6 +153,7 @@ builders.writeTemplatedShellApplication {
         # if we've hit this point, we're good to do the build! 
         echo "Applying system result..."
         sudo result-system/bin/switch-to-configuration switch
+        sudo nix-env --profile /nix/var/nix/profiles/system --set ./result-system
       popd &> /dev/null
     }
     
@@ -201,6 +202,7 @@ builders.writeTemplatedShellApplication {
         # if we've hit this point, we're good to do the build! 
         echo "Applying home result..."
         result-home/activate
+        sudo nix-env --profile "/nix/var/nix/profiles/per-user/''${USER}/home-manager" --set ./result-home
       popd &> /dev/null
     }
 
@@ -269,18 +271,8 @@ builders.writeTemplatedShellApplication {
           fi
           ;;
         *)
-          echo "No"
           ;;
       esac
-  
-      # if [[ "$1" == "s" || "$1" == "hs" || "$1" == "sh" ]]; then
-      #   if [[ ''${build-false} == true ]]; then
-      #     build_system
-      #   fi
-      #
-      #   # TODO: handle just displaying lots more info about the system
-      #   # generation
-      # fi
     fi
   '';
 }
