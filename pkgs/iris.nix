@@ -2,26 +2,28 @@
 # to interact with my nix-config flake and shortcuts for my common 
 # commands
 
-# TODO: the edit command
 # TODO: command to regenerate hardware config and copy in?
+# TODO: it would be cool if we could "star" generations or something
 
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
-  version = "0.1.0";
+  version = "0.3.0";
   description = "Management tool for my systems/nix-config flake.";
-  usage = "";
+  usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom";
+    # the basic positional arguments:
+    # iris [command:{b|build}{e|edit}{n|new}{ls}] [system types: s/h] [configuration name(s) if relevant]
   parameters = {
     update = {
       flags = [ "-u" "--update" ];
       description = "Update the flake lock file. (This runs before a build step if specified)";
       option = true;
     };
-    build = {
-      flags = [ "-b" "--build" ];
-      description = "Build the specified (h)ome and/or (s)ystem configuration, and switch";
-      option = true;
-    };
+    # build = {
+    #   flags = [ "-b" "--build" ];
+    #   description = "Build the specified (h)ome and/or (s)ystem configuration, and switch";
+    #   option = true;
+    # };
     yes = {
       flags = [ "-y" "--yes" ];
       description = "Automatically apply the (h)ome and/or (s)ystem configuration without prompting.";
@@ -29,24 +31,14 @@ builders.writeTemplatedShellApplication {
     };
   };
   runtimeInputs = [ 
-    pkgs.expect 
-    pkgs.unstable.nix-output-monitor 
+    #pkgs.expect 
+    #pkgs.unstable.nix-output-monitor 
     pkgs.unstable.figlet # unstable to get new contributed fonts
     pkgs.unstable.nvd
     pkgs.lolcat
     # pkgs.testing2 # this just demonstrates that I can indeed require my own scripts
   ];
   text = /* bash */ ''
-
-    # make pushd and popd silent
-    # pushd () {
-    #   command pushd "$@" &> /dev/null
-    # }
-    # popd () {
-    #   command popd "$@" &> /dev/null
-    # }
-
-
     function print_header () {
       figlet -f cyberlarge IRIS | lolcat
     }
@@ -118,11 +110,16 @@ builders.writeTemplatedShellApplication {
 
         # TODO: check for if we're not on nixos (sys_config is "")
 
-        # TODO: handle if another configuration was specified (this will be the
-        # second positional argument, and should only work if only 's' was
-        # specified
+        config_file="''${sys_config}"
+        if [[ "$1" != "" ]]; then
+          config_file="$1"
+        fi
+        if [[ "''${config_file}" == "" ]]; then
+          echo "System build was requested, but no configuration name was specified and no previous configuration was found. Please run 'iris build s [CONFIGNAME]'"
+          exit 1
+        fi
       
-        nixos-rebuild build --fast --flake .\#"''${sys_config}"
+        nixos-rebuild build --fast --flake .\#"''${config_file}"
         rm -f result-system
         mv result result-system
         nvd diff "/nix/var/nix/profiles/system" result-system
@@ -167,9 +164,14 @@ builders.writeTemplatedShellApplication {
 
         # TODO: handle if home-manager not in use
 
-        # TODO: handle if another configuration was specified (this will be the
-        # second positional argument, and should only work if only 's' was
-        # specified
+        config_file="''${hm_config}"
+        if [[ "$1" != "" ]]; then
+          config_file="$1"
+        fi
+        if [[ "''${config_file}" == "" ]]; then
+          echo "Home build was requested, but no configuration name was specified and no previous configuration was found. Please run 'iris build h [CONFIGNAME]'"
+          exit 1
+        fi
         
         home-manager build --flake .\#"''${hm_config}"
         rm -f result-home
@@ -212,13 +214,32 @@ builders.writeTemplatedShellApplication {
     function list_home_configs () {
       ensure_config
       echo -e "\nAvailable home configurations:"
-      grep ".*\ =\ mkHome" "''${config_location}/flake.nix" | sed -e "s/\s*\([A-Za-z0-9\-\_\@]*\)\ =.*/\1/g"
+      grep -P ".*\ =\ mkHome" "''${config_location}/flake.nix" | sed -e "s/\s*\([A-Za-z0-9\-\_\@]*\)\ =.*/\1/g"
     }
 
     function list_system_configs () {
+      ensure_config
       echo -e "\nAvailable system configurations:"
       # the -P is necessary for grep to handle the parens correctly (perl regex?)
       grep -P ".*\ =\ mk(StableSystem|System)" "''${config_location}/flake.nix" | sed -e "s/\s*\([A-Za-z0-9\-\_\@]*\)\ =.*/\1/g"
+    }
+
+    function open_for_edit () {
+      ensure_config
+      pushd "''${config_location}" &> /dev/null
+      echo "Pulling latest from repo..."
+      git pull
+      # NOTE: vim is not in requested runtimeInputs because we're assuming nvim
+      # is on the machine - this is a potentially faulty assumption...but I want
+      # to use whatever is already there.
+      if [[ $# -gt 1 ]]; then
+        echo "Editing $1 and $2..."
+        vim -O "$1" "$2"
+      else
+        echo "Editing $1..."
+        vim "$1"
+      fi
+      popd &> /dev/null
     }
     
     print_header
@@ -227,53 +248,132 @@ builders.writeTemplatedShellApplication {
     #echo "''${sys_config}" # yes this works
 
 
+
+
     if [[ ''${update-false} == true ]]; then
       update_flake
     fi
 
     if [[ $# -gt 0 ]]; then
-      case "$1" in
-        hs|sh)
-          if [[ ''${build-false} == true ]]; then
-            build_system
-            build_home
-          fi
-          # TODO: handle just displaying lots more info about the system
-          # generation
+      cmd_word=$1
+
+      # positional argument parsing
+      if [[ $# -gt 1 ]]; then
+        config_types=$2
+      fi
+      if [[ $# -gt 2 ]]; then
+        config1=$3
+        if [[ $# -gt 3 ]]; then
+          config2=$4
+        else
+          config2=$3
+        fi
+      else
+        config1=""
+        config2=""
+      fi
+
+      # command word
+      case "''${cmd_word}" in
+        b|build)
+          case "''${config_types}" in
+            sh)
+              build_system "''${config1}"
+              build_home "''${config2}"
+              ;;
+            hs)
+              build_system "''${config2}"
+              build_home "''${config1}"
+              ;;
+            s)
+              build_system "''${config1}"
+              ;;
+            h)
+              build_home "''${config1}"
+              ;;
+            *)
+              echo "Invalid config types, please specify 'h' and/or 's'"
+              exit 1
+              ;;
+          esac
           ;;
-        s)
-          if [[ ''${build-false} == true ]]; then
-            build_system
-          fi
+        e|edit)
+          case "''${config_types}" in
+            sh)
+              config_path1="''${config1}"
+              if [[ "''${config_path1}" == "" ]]; then
+                config_path1="''${sys_config}"
+              fi
+              config_path2="''${config2}"
+              if [[ "''${config_path2}" == "" ]]; then
+                config_path2="''${hm_config}"
+              fi
+              config_path1="hosts/''${config_path1}/default.nix"
+              config_path2="home/''${config_path2}/default.nix"
+
+              open_for_edit "''${config_path1}" "''${config_path2}"
+              ;;
+            hs)
+              config_path1="''${config1}"
+              if [[ "''${config_path1}" == "" ]]; then
+                config_path1="''${hm_config}"
+              fi
+              config_path2="''${config2}"
+              if [[ "''${config_path2}" == "" ]]; then
+                config_path2="''${sys_config}"
+              fi
+              config_path1="home/''${config_path1}/default.nix"
+              config_path2="hosts/''${config_path2}/default.nix"
+
+              open_for_edit "''${config_path1}" "''${config_path2}"
+              ;;
+            s)
+              config_path1="''${config1}"
+              if [[ "''${config_path1}" == "" ]]; then
+                config_path1="''${sys_config}"
+              fi
+              config_path1="hosts/''${config_path1}/default.nix"
+              open_for_edit "''${config_path1}"
+              ;;
+            h)
+              config_path1="''${config1}"
+              if [[ "''${config_path1}" == "" ]]; then
+                config_path1="''${hm_config}"
+              fi
+              config_path1="home/''${config_path1}/default.nix"
+              open_for_edit "''${config_path1}"
+              ;;
+            *)
+              echo "Invalid config types, please specify 'h' and/or 's'"
+              exit 1
+              ;;
+          esac
           ;;
-        h)
-          if [[ ''${build-false} == true ]]; then
-            build_home
-          fi
+        n|new)
+          # TODO: give an option to copy an existing config, and use fzf/bat
+          # with just the appropriate default.nix files to show them.
           ;;
         ls)
-          if [[ $# -gt 1 ]]; then
-            case "$2" in
-              hs|sh)
-                list_home_configs
-                list_system_configs
-                ;;
-              h)
-                list_home_configs
-                ;;
-              s)
-                list_system_configs
-                ;;
-              *)
-                echo "No"
-                ;;
-            esac
-          else
-            list_home_configs
-            list_system_configs
-          fi
+          case "''${config_types}" in
+            hs|sh)
+              list_home_configs
+              list_system_configs
+              ;;
+            h)
+              list_home_configs
+              ;;
+            s)
+              list_system_configs
+              ;;
+            *)
+              echo "Invalid config types, please specify 'h' and/or 's'"
+              exit 1
+              ;;
+          esac
           ;;
         *)
+          echo "Invalid command, please specify [b|build]|[e|edit]|[n|new]|ls"
+          exit 1
           ;;
       esac
     fi
