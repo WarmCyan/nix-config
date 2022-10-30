@@ -8,7 +8,7 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
-  version = "0.3.0";
+  version = "0.3.1";
   description = "Management tool for my systems/nix-config flake.";
   usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom";
     # the basic positional arguments:
@@ -260,6 +260,8 @@ builders.writeTemplatedShellApplication {
       # positional argument parsing
       if [[ $# -gt 1 ]]; then
         config_types=$2
+      else
+        config_types=""
       fi
       if [[ $# -gt 2 ]]; then
         config1=$3
@@ -355,7 +357,7 @@ builders.writeTemplatedShellApplication {
           ;;
         ls)
           case "''${config_types}" in
-            hs|sh)
+            hs|sh|"")
               list_home_configs
               list_system_configs
               ;;

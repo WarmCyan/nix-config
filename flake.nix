@@ -144,14 +144,6 @@
         hostname = "therock";
         system = "x86_64-linux";
       };
-
-
-      therock2 = inputs.nixpkgs-stable.lib.nixosSystem {
-        system = "x86_64-linux";
-        pkgs = inputs.nixpkgs-stable.legacyPackages."x86_64-linux";
-        modules = [ ];
-      };
-      
     };
 
     # ===========================================================
@@ -165,8 +157,6 @@
         configName = "phantom";
         username = "dwl";
         hostname = "phantom";
-
-        features = [ "dev" "beta" "vscode" "phantom.nix" ];
         noNixos = true;
       };
 	
@@ -175,8 +165,6 @@
         configName = "delta";
         username = "dwl";
         hostname = "delta";
-
-        features = [ "dev" "beta" ];
         noNixos = true;
       };
 
@@ -185,8 +173,6 @@
         configName = "therock";
         username = "dwl";
         hostname = "therock";
-
-        features = [ "dev" ];
       };
 
       # work linux workstation 
@@ -194,8 +180,6 @@
         configName = "arcane";
         username = "81n";
         hostname = "arcane";
-
-        features = [ "dev" "arcane.nix" "vscode" ];
         noNixos = true;
         gitEmail = "martindalena@ornl.gov";
       };

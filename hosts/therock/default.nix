@@ -1,4 +1,4 @@
-# therock server system configuration
+# therock, system configuration for homeserver
 
 { pkgs, lib, inputs, hostname, ... }: {
   imports = [
@@ -48,15 +48,7 @@
     
     unstable.nix-output-monitor  # nix-output-monitor, maybe don't actually include this, just make it so my custom packages require it as a dependency.
     unstable.nvd
-    
-    iris
-    #testing2
   ];
-
-  # system.activationScripts.report-changes = /* bash */ ''
-  #   PATH=$PATH:${lib.makeBinPath [ pkgs.unstable.nvd pkgs.nix ]}
-  #   nvd diff $(ls -dv /nix/var/nix/profiles/system-*-link | tail -2)
-  # '';
 
   # sound
   sound.enable = true;

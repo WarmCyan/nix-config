@@ -1,3 +1,5 @@
+# therock, home configuration for homeserver
+
 { pkgs, ... }:
 {
   imports = [
@@ -6,6 +8,5 @@
   ];
 
   home.packages = with pkgs; [
-    #testing2
   ];
 }

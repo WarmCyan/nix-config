@@ -1,3 +1,5 @@
+# phantom, home configuration for primary desktop
+
 { pkgs, ... }:
 {
   imports = [
