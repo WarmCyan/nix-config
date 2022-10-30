@@ -151,6 +151,7 @@
 
 
     # =================== HOME CONFIGURATIONS ===================
+      
     homeConfigurations = {
       # primary desktop
       phantom = mkHome {
@@ -182,6 +183,7 @@
         hostname = "arcane";
         noNixos = true;
         gitEmail = "martindalena@ornl.gov";
+        configLocation = "/home/81n/lab/nix-config";
       };
 
       # work laptop (wsl)
@@ -195,6 +197,7 @@
         gitEmail = "martindalena@ornl.gov";
       };
     };
+    
     # ===========================================================
 	
     overlays = {

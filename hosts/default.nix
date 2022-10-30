@@ -17,6 +17,8 @@
     gnufdisk
     htop
     ncdu
+
+    iris
   ];
 
   environment.etc."iris/configname".text = configName;
