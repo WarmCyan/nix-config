@@ -8,22 +8,20 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
-  version = "0.3.1";
+  version = "0.4.0";
   description = "Management tool for my systems/nix-config flake.";
   usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom";
-    # the basic positional arguments:
-    # iris [command:{b|build}{e|edit}{n|new}{ls}] [system types: s/h] [configuration name(s) if relevant]
   parameters = {
+    sync = {
+      flags = [ "-S" "--sync" ];
+      description = "Sync the nix-config git repository. (This runs before a build step if specified)";
+      option = true;
+    };
     update = {
       flags = [ "-u" "--update" ];
       description = "Update the flake lock file. (This runs before a build step if specified)";
       option = true;
     };
-    # build = {
-    #   flags = [ "-b" "--build" ];
-    #   description = "Build the specified (h)ome and/or (s)ystem configuration, and switch";
-    #   option = true;
-    # };
     yes = {
       flags = [ "-y" "--yes" ];
       description = "Automatically apply the (h)ome and/or (s)ystem configuration without prompting.";
@@ -93,6 +91,14 @@ builders.writeTemplatedShellApplication {
         echo "Config location was empty, cloning repository..."
         git clone https://github.com/WildfireXIII/nix-config.git "''$config_location"
       fi
+    }
+
+    function sync_repo () { 
+      echo -e "\nSyncing configuration repository..."
+      ensure_config
+      pushd "''${config_location}" &> /dev/null
+        git pull
+      popd &> /dev/null
     }
 
     function update_flake () {
@@ -227,8 +233,6 @@ builders.writeTemplatedShellApplication {
     function open_for_edit () {
       ensure_config
       pushd "''${config_location}" &> /dev/null
-      echo "Pulling latest from repo..."
-      git pull
       # NOTE: vim is not in requested runtimeInputs because we're assuming nvim
       # is on the machine - this is a potentially faulty assumption...but I want
       # to use whatever is already there.
@@ -248,7 +252,9 @@ builders.writeTemplatedShellApplication {
     #echo "''${sys_config}" # yes this works
 
 
-
+    if [[ ''${sync-false} == true ]]; then
+      sync_repo
+    fi
 
     if [[ ''${update-false} == true ]]; then
       update_flake

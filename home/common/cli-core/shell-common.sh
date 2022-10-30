@@ -7,6 +7,16 @@ function cd {
     builtin cd "$@" && ls -F
 }
 
+function irisdir {
+  if [[ -e "/etc/iris/configlocation" ]]; then
+    config_location=$(cat "/etc/iris/configlocation")
+  fi
+  if [[ -e "${XDG_DATA_HOME-$HOME/.local/share}/iris/configlocation" ]]; then
+    config_location=$(cat "${XDG_DATA_HOME-$HOME/.local/share}/iris/configlocation")
+  fi
+  cd "${config_location}"
+}
+
 # allow running scripts in current directory without needing ./
 export PATH=.:$PATH
 
