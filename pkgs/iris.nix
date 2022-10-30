@@ -2,6 +2,9 @@
 # to interact with my nix-config flake and shortcuts for my common 
 # commands
 
+# TODO: the edit command
+# TODO: command to regenerate hardware config and copy in?
+
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
@@ -152,8 +155,8 @@ builders.writeTemplatedShellApplication {
 
         # if we've hit this point, we're good to do the build! 
         echo "Applying system result..."
-        sudo result-system/bin/switch-to-configuration switch
         sudo nix-env --profile /nix/var/nix/profiles/system --set ./result-system
+        sudo result-system/bin/switch-to-configuration switch
       popd &> /dev/null
     }
     
@@ -201,8 +204,8 @@ builders.writeTemplatedShellApplication {
 
         # if we've hit this point, we're good to do the build! 
         echo "Applying home result..."
+        nix-env --profile "/nix/var/nix/profiles/per-user/''${USER}/home-manager" --set ./result-home
         result-home/activate
-        sudo nix-env --profile "/nix/var/nix/profiles/per-user/''${USER}/home-manager" --set ./result-home
       popd &> /dev/null
     }
 

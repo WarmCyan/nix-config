@@ -68,11 +68,13 @@ rec {
     #extraspecialargs (no actually, via modules on home-manager and calling
     #mkOption
     gitEmail ? "nathanamartindale@gmail.com",
-    configLocation ? "/home/dwl/lab/nix-config"
+    configLocation ? "/home/dwl/lab/nix-config",
+    modules ? [ ../home ]
   }:
   builtins.trace "\nBuilding home for ${username}@${hostname}...\nsystem: ${system}"
   homeManagerConfiguration {
     pkgs = outputs.legacyPackagesUnstable.${system};
+    inherit modules;
     extraSpecialArgs = { # these are args that get passed to all modules
       inherit self inputs outputs hostname username wallpaper features
         gitUsername gitEmail noNixos configLocation configName; 
@@ -80,7 +82,6 @@ rec {
       # normally that "updates" any stuff from the modules? I don't
       # understand how the order of this works.
     };
-    modules = [ ../home ../home/vscode-mutable.nix ]; 
   };
 
   concatFiles = filesArray: builtins.concatStringsSep "\n" (builtins.map (x: builtins.readFile x) filesArray);
