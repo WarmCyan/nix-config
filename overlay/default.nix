@@ -36,4 +36,7 @@
     };
   };
   
-} // import ../pkgs { pkgs = prev; lib = inputs.nixpkgs.lib; } # TODO: this shouldn't work anymore???? make it so lib is passed in here, and set it differnetly from the flake for legacypackages vs legacyPackagesStable
+# NOTE: I have no IDEA: why passing pkgs final versus prev works, but if I don't
+# pass final, then my own packages can't require each-other. It seems like this
+# should be recursive but....nix for you I guess?
+} // import ../pkgs { pkgs = final; lib = inputs.nixpkgs-unstable.lib; }

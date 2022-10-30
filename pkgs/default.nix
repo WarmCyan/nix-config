@@ -5,6 +5,8 @@
   builders = import ./builders.nix { inherit pkgs lib; };
 
   add-jupyter-env = pkgs.callPackage ./add-jupyter-env.nix { };
+
+  iris = pkgs.callPackage ./iris.nix { inherit pkgs builders; };
   
   testing = pkgs.callPackage ./testing.nix { };
   testing2 = pkgs.callPackage ./testing2.nix { inherit builders; };

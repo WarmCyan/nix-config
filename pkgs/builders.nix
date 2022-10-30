@@ -99,7 +99,7 @@
   } // (if version != null then 
   {
     version = {
-      flags = [ "-v" "--version" ];
+      flags = [ "--version" ];
       description = "Print the script version.";
       option = true;
     };

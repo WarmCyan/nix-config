@@ -1,6 +1,6 @@
-# therock server system configuration
+# therock, system configuration for homeserver
 
-{ pkgs, inputs, ... }: {
+{ pkgs, lib, inputs, hostname, ... }: {
   imports = [
     ./hardware-configuration.nix
   ];
@@ -40,11 +40,14 @@
     vim
     git
     wget
-    htop
+    unstable.htop  # just testing if this works...it does!!
     curl
     ncdu
     iproute2  # ip link etc.
     gnufdisk
+    
+    unstable.nix-output-monitor  # nix-output-monitor, maybe don't actually include this, just make it so my custom packages require it as a dependency.
+    unstable.nvd
   ];
 
   # sound
