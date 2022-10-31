@@ -60,6 +60,24 @@ in {
       "workbench.colorTheme" = "Everforest Dark";
       "everforest.darkContrast" = "hard";
       "everforest.darkWorkbench" = "flat";
+      "editor.tokenColorCustomizations" = {
+        "[Everforest Dark]" = {
+          "textMateRules" = [
+            { 
+              "scope" = "string.quoted.docstring.multi.python";
+              "settings" = { "foreground" = "#859289"; };
+            }
+            { 
+              "scope" = [ "punctuation.definition.string.begin.python" "string.quoted.docstring.multi.python" ];
+              "settings" = { "foreground" = "#859289"; };
+            }
+            { 
+              "scope" = [ "punctuation.definition.string.end.python" "string.quoted.docstring.multi.python" ];
+              "settings" = { "foreground" = "#859289"; };
+            }
+          ];
+        };
+      };
       
       "terminal.integrated.inheritEnv" = false;
       
