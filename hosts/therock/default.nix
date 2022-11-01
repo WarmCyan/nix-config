@@ -111,6 +111,7 @@
         ensurePermissions."DATABASE nextcloud" = "ALL PRIVILEGES";
       }
     ];
+    # https://unix.stackexchange.com/questions/378711/how-do-i-configure-postgress-authorization-settings-in-nixos
     authentication = lib.mkForce ''
       # Generated file; do not edit!
       # TYPE  DATABASE        USER            ADDRESS                 METHOD
