@@ -24,10 +24,10 @@
 
   xdg.dataFile."iris/configname".text = configName;
   xdg.dataFile."iris/configlocation".text = configLocation;
-  xdg.dataFile."iris/configRev".text = self.rev or "dirty"
-  xdg.dataFile."iris/configShortRev".text = self.shortRev or "dirty"
-  xdg.dataFile."iris/configRevCount".text = self.revCount or "dirty"
-  xdg.dataFile."iris/configLastModified".text = self.lastModified or "dirty"
+  xdg.dataFile."iris/configRev".text = self.rev or "dirty";
+  xdg.dataFile."iris/configShortRev".text = self.shortRev or "dirty";
+  xdg.dataFile."iris/configRevCount".text = self.revCount or "dirty";
+  xdg.dataFile."iris/configLastModified".text = self.lastModified or "dirty";
 
   # the power of modules!
   home = {
