@@ -72,7 +72,7 @@ builders.writeTemplatedShellApplication {
           sys_lastMod=$(cat "/etc/iris/configLastModified")
         fi
       
-        #system_generation_pointer=$(readlink "/nix/var/nix/profiles/system")
+        system_generation_pointer=$(readlink "/nix/var/nix/profiles/system")
         system_generation_number=$(readlink "/nix/var/nix/profiles/system" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
         #system_nix_store_pointer=$(readlink "/nix/var/nix/profiles/''${system_generation_pointer}")
         system_generation_date=$(stat -c %y "/nix/var/nix/profiles/''${system_generation_pointer}")
@@ -98,7 +98,7 @@ builders.writeTemplatedShellApplication {
           hm_revCount=$(cat "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configLastModified")
         fi
       
-        #hm_generation_pointer=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager")
+        hm_generation_pointer=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager")
         hm_generation_number=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
         #hm_nix_store_pointer=$(readlink "/nix/var/nix/profiles/''${hm_generation_pointer}")
         hm_generation_date=$(stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${hm_generation_pointer}")
