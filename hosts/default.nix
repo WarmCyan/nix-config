@@ -2,6 +2,9 @@
 # the system-specific module based on the passed hostname.
 
 { self, inputs, lib, hostname, configName, configLocation, timezone, pkgs, ... }:
+let
+  inherit (builtins) toString;
+in
 {
   imports = [ ./${configName} ];
 
@@ -26,7 +29,7 @@
   environment.etc."iris/configRev".text = self.rev or "dirty";
   environment.etc."iris/configShortRev".text = self.shortRev or "dirty";
   environment.etc."iris/configRevCount".text = self.revCount or "dirty";
-  environment.etc."iris/configLastModified".text = self.lastModified or "dirty";
+  environment.etc."iris/configLastModified".text = if (self ? lastModified) then toString self.lastModified else "dirty";
   
 
   
