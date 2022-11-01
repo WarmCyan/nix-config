@@ -24,7 +24,7 @@ rec {
     inherit system modules;
     pkgs = outputs.legacyPackagesStable.${system};
     specialArgs = { # these are args that get passed to all modules
-      inherit inputs outputs configName hostname timezone configLocation;
+      inherit self inputs outputs configName hostname timezone configLocation;
       stable = true;
     };
   };
@@ -42,7 +42,7 @@ rec {
     inherit system modules;
     pkgs = outputs.legacyPackagesUnstable.${system};
     specialArgs = { # these are args that get passed to all modules
-      inherit inputs outputs configName hostname timezone configLocation;
+      inherit self inputs outputs configName hostname timezone configLocation;
       stable = false;
     };
   };

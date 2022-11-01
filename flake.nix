@@ -60,7 +60,7 @@
 # just a file and not a folder
 # TODO: investigate allowing serving a nix store via ssh https://nixos.org/manual/nix/stable/package-management/ssh-substituter.html
 # TODO: make some nice plymouth boot stuff! 
-# TODO: my lib should prob be called iris-lib to avoid ambiguity and confusion.
+# TODO: my lib should prob be called iris-lib to avoid ambiguity and confusion. (call it utils like in https://jdisaacs.com/blog/nixos-config/
 
 # MODULES NEEDED
 #================================

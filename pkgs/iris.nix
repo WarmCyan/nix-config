@@ -4,11 +4,12 @@
 
 # TODO: command to regenerate hardware config and copy in?
 # TODO: it would be cool if we could "star" generations or something
+# TODO: once we store git hash, allow grabbing the git log up to that hash for given generation.
 
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
-  version = "0.4.0";
+  version = "0.4.1";
   description = "Management tool for my systems/nix-config flake.";
   usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom";
   parameters = {
@@ -43,7 +44,15 @@ builders.writeTemplatedShellApplication {
 
     function collect_and_print_info () {
       sys_config=""
+      sys_hash=""
+      sys_revCount=""
+      sys_lastMod=""
+      
       hm_config=""
+      hm_hash=""
+      hm_revCount=""
+      hm_lastMod=""
+      
       config_location=""
       
       if [[ -e "/nix/var/nix/profiles/system" ]]; then
@@ -53,12 +62,22 @@ builders.writeTemplatedShellApplication {
         if [[ -e "/etc/iris/configlocation" ]]; then
           config_location=$(cat "/etc/iris/configlocation")
         fi
+        if [[ -e "/etc/iris/configShortRev" ]]; then
+          sys_hash=$(cat "/etc/iris/configShortRev")
+        fi
+        if [[ -e "/etc/iris/configRevCount" ]]; then
+          sys_revCount=$(cat "/etc/iris/configRevCount")
+        fi
+        if [[ -e "/etc/iris/configLastModified" ]]; then
+          sys_lastMod=$(cat "/etc/iris/configLastModified")
+        fi
       
-        system_generation_pointer=$(readlink "/nix/var/nix/profiles/system")
+        #system_generation_pointer=$(readlink "/nix/var/nix/profiles/system")
+        system_generation_number=$(readlink "/nix/var/nix/profiles/system" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
         #system_nix_store_pointer=$(readlink "/nix/var/nix/profiles/''${system_generation_pointer}")
         system_generation_date=$(stat -c %y "/nix/var/nix/profiles/''${system_generation_pointer}")
         system_generation_date_time=''${system_generation_date:0:10}
-        echo "System generation: ''${system_generation_pointer} (''${system_generation_date_time}) - ''${sys_config}"
+        echo "System gen: ''${system_generation_number} (''${system_generation_date_time})  |''${sys_config}| - ''${sys_hash} ''${sys_revCount} (''${sys_lastMod})"
         #echo -e "\t-> ''${system_nix_store_pointer}"
       fi
       
@@ -69,12 +88,23 @@ builders.writeTemplatedShellApplication {
         if [[ -e "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configlocation" ]]; then
           config_location=$(cat "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configlocation")
         fi
+        if [[ -e "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configShortRev" ]]; then
+          hm_hash=$(cat "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configShortRev")
+        fi
+        if [[ -e "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configRevCount" ]]; then
+          hm_revCount=$(cat "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configRevCount")
+        fi
+        if [[ -e "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configLastModified" ]]; then
+          hm_revCount=$(cat "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configLastModified")
+        fi
       
-        hm_generation_pointer=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager")
+        #hm_generation_pointer=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager")
+        hm_generation_number=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
         #hm_nix_store_pointer=$(readlink "/nix/var/nix/profiles/''${hm_generation_pointer}")
         hm_generation_date=$(stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${hm_generation_pointer}")
         hm_generation_date_time=''${hm_generation_date:0:10}
         echo "Home generation: ''${hm_generation_pointer} (''${hm_generation_date_time}) - ''${hm_config}"
+        echo "Home gen: ''${hm_generation_number} (''${hm_generation_date_time})  |''${hm_config}| - ''${hm_hash} ''${hm_revCount} (''${hm_lastMod})"
         #echo -e "\t-> ''${hm_nix_store_pointer}"
       fi
     }

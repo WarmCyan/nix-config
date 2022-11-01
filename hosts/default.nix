@@ -1,7 +1,7 @@
 # Top level import module for all nixos systems. We load
 # the system-specific module based on the passed hostname.
 
-{ inputs, lib, hostname, configName, configLocation, timezone, pkgs, ... }:
+{ self, inputs, lib, hostname, configName, configLocation, timezone, pkgs, ... }:
 {
   imports = [ ./${configName} ];
 
@@ -23,6 +23,10 @@
 
   environment.etc."iris/configname".text = configName;
   environment.etc."iris/configlocation".text = configLocation;
+  environment.etc."iris/configRev".text = self.rev or "dirty"
+  environment.etc."iris/configShortRev".text = self.shortRev or "dirty"
+  environment.etc."iris/configRevCount".text = self.revCount or "dirty"
+  
 
   
   # internationalisation properties.
