@@ -111,6 +111,13 @@
         ensurePermissions."DATABASE nextcloud" = "ALL PRIVILEGES";
       }
     ];
+    authentication = lib.mkForce ''
+      # Generated file; do not edit!
+      # TYPE  DATABASE        USER            ADDRESS                 METHOD
+      local   all             all                                     trust
+      host    all             all             127.0.0.1/32            trust
+      host    all             all             ::1/128                 trust
+    '';
   };
   
   
@@ -119,6 +126,48 @@
     requires = ["postgresql.service"];
     after = ["postgresql.service"];
   };
+
+
+  
+  # let 
+  #   backupScript = pkgs.writeTextFile {
+  #     name = "nextcloud-backup-script";
+  #     executable = true;
+  #     destination = "/bin/nextcloud-backup.sh";
+  #     text = /* bash */ ''
+  #       mkdir -p "/storage/nextcloud-backup"
+  #       sudo -u www-data php occ maintenance:mode --on
+  #       rsync -Aavx /var/lib/nextcloud/ 
+  #     '';
+  #   };
+  # in {
+  # https://docs.nextcloud.com/server/latest/admin_manual/maintenance/backup.html
+  systemd.services."nextcloud-backup" = {
+    serviceConfig.Type = "oneshot";
+    path = with pkgs; [ bash sudo rsync postgresql ];
+    script = /* bash */ ''
+      echo "Backing up nextcloud..."
+      mkdir -p "/storage/nextcloud-backup"
+      # NOTE: couldn't get it to find "occ"?
+      #sudo -u nextcloud php occ maintenance:mode --on
+      rsync -Aavx /var/lib/nextcloud/ /storage/nextcloud-backup/nextcloud-dirbkp_`date +"%Y-%m-%d"`/
+      PGPASSWORD=$(cat "/var/nextcloud-db-pass") pg_dump "nextcloud" -h "localhost" -U "nextcloud" -f /storage/nextcloud-backup/nextcloud-sqlbkp_`date +"%Y-%m-%d"`.bak
+      echo "Done!"
+      #sudo -u nextcloud php occ maintenance:mode --off
+    '';
+  };
+  # }
+
+  systemd.timers."nextcloud-backup" = {
+    wantedBy = [ "timers.target" ];
+    partOf = [ "nextcloud-backup.service" ];
+    timerConfig = {
+      Unit = "nextcloud-backup.service";
+      OnCalendar = "Sun *-*-* 00:00:00"; # every sunday at midnight
+    };
+  };
+  
+  
 
   # NOTE: this doesn't work if I'm not using an actual domain name.
   # security.acme = {
