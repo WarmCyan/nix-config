@@ -28,7 +28,7 @@ in
   environment.etc."iris/configlocation".text = configLocation;
   environment.etc."iris/configRev".text = self.rev or "dirty";
   environment.etc."iris/configShortRev".text = self.shortRev or "dirty";
-  environment.etc."iris/configRevCount".text = self.revCount or "dirty";
+  environment.etc."iris/configRevCount".text = if (self ? revCount) then toString self.revCount else "dirty";
   environment.etc."iris/configLastModified".text = if (self ? lastModified) then toString self.lastModified else "dirty";
   
 

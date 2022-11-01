@@ -29,7 +29,7 @@ in
   xdg.dataFile."iris/configlocation".text = configLocation;
   xdg.dataFile."iris/configRev".text = self.rev or "dirty";
   xdg.dataFile."iris/configShortRev".text = self.shortRev or "dirty";
-  xdg.dataFile."iris/configRevCount".text = self.revCount or "dirty";
+  xdg.dataFile."iris/configRevCount".text = if (self ? revCount) then toString self.revCount else "dirty";
   xdg.dataFile."iris/configLastModified".text = if (self ? lastModified) then toString self.lastModified else "dirty";
 
   # the power of modules!
