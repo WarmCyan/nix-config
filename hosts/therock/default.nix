@@ -48,6 +48,7 @@
     
     unstable.nix-output-monitor  # nix-output-monitor, maybe don't actually include this, just make it so my custom packages require it as a dependency.
     unstable.nvd
+    tree
   ];
 
   # sound
