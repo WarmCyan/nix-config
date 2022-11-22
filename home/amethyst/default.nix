@@ -5,8 +5,11 @@
   imports = [
     ../common/cli-core
     ../common/dev
+    ../common/vscode
+    ../common/beta
   ];
 
   home.packages = with pkgs; [
+    # flameshot
   ];
 }
