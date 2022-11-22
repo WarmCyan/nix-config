@@ -139,6 +139,11 @@
     # =================== NIXOS CONFIGURATIONS ==================
 
     nixosConfigurations = {
+    amethyst = mkSystem {
+	    configName = "amethyst";
+	    hostname = "amethyst";
+	    system = "x86_64-linux";
+    };  
       therock = mkStableSystem {
         configName = "therock";
         hostname = "therock";
@@ -159,6 +164,11 @@
         username = "dwl";
         hostname = "phantom";
         noNixos = true;
+      };
+      amethyst = mkHome {
+        configName = "amethyst";
+        username = "dwl";
+        hostname = "amethyst";
       };
 	
       # primary laptop

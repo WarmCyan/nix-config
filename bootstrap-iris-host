@@ -43,7 +43,7 @@ if [[ "${unstable}" != "y" && "${unstable}" != "n" ]]; then
 fi
 
 # create the new host directory and copy in the configs
-mkdir "hosts/${config_name}"
+mkdir -p "hosts/${config_name}"
 cp /etc/nixos/configuration.nix "hosts/${config_name}/default.nix"
 cp /etc/nixos/hardware-configuration.nix "hosts/${config_name}"
 
@@ -52,7 +52,7 @@ git add "hosts/${config_name}/default.nix" "hosts/${config_name}"
 
 # add a new configuration to flake.nix
 if [[ "${unstable}" == "y" ]]; then
-  sed -e "/nixosConfigurations = {/a\
+  sed -i "/nixosConfigurations = {/a\
   ${config_name} = mkSystem {\n\
   configName = \"${config_name}\";\n\
   hostname = \"${hostname}\";\n\
@@ -60,14 +60,14 @@ if [[ "${unstable}" == "y" ]]; then
 };\
   " flake.nix
 else
-  sed "/nixosConfigurations = {/a\
+  sed -i "/nixosConfigurations = {/a\
   ${config_name} = mkStableSystem {\n\
   configName = \"${config_name}\";\n\
   hostname = \"${hostname}\";\n\
   system = \"${system}\";\n\
 };\
-  " flake.nix
+  " flake.nix > flake.nix
 fi
 
 # run the appropriate nixos-rebuild command
-sudo nixos-rebuild build --flake .\#"${config_name}"
+sudo nixos-rebuild switch --flake .\#"${config_name}"
