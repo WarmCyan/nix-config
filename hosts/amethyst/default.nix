@@ -23,17 +23,17 @@
       devices = [ "nodev" ];
       efiSupport = true;
       useOSProber = true;
-
-      extraEntries = ''
-        menuentry "Windows" {
-          insmod part_gpt
-          insmod fat
-          insmod search_fs_uuid
-          insmod change
-          search --fs-uuid --set=root 185A-1363
-          chainloader /EFI/Microsoft/Boot/bootmgfw.efi
-        }
-      '';
+      
+      # extraEntries = ''
+      #   menuentry "Windows" {
+      #     insmod part_gpt
+      #     insmod fat
+      #     insmod search_fs_uuid
+      #     insmod change
+      #     search --fs-uuid --set=root 185A-1363
+      #     chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+      #   }
+      # '';
     };
   };
   
