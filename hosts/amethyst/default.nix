@@ -23,21 +23,9 @@
       devices = [ "nodev" ];
       efiSupport = true;
       useOSProber = true;
-      
-      # extraEntries = ''
-      #   menuentry "Windows" {
-      #     insmod part_gpt
-      #     insmod fat
-      #     insmod search_fs_uuid
-      #     insmod change
-      #     search --fs-uuid --set=root 185A-1363
-      #     chainloader /EFI/Microsoft/Boot/bootmgfw.efi
-      #   }
-      # '';
     };
   };
   
-
   networking.hostName = "amethyst"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -79,18 +67,9 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
+    jack.enable = true;
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
@@ -100,19 +79,25 @@
       kate
       git
       vim
-    #  thunderbird
     ];
   };
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  git
-  wget
+    vim
+    git
+    wget
+
+    curl
+    ncdu
+    iproute2
+    openrgb
+
+    # experimental audio control
+    qpwgraph
+    pavucontrol
+    # easyeffects # can't seem to get this to work, crashes when adding any
+    # effect
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

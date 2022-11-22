@@ -11,5 +11,9 @@
 
   home.packages = with pkgs; [
     # flameshot
+    # easyeffects
   ];
+
+  #programs.dconf.enable = true; # required for easyeffects to work?
+  # https://github.com/NixOS/nixpkgs/issues/158476
 }
