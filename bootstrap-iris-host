@@ -66,7 +66,7 @@ else
   hostname = \"${hostname}\";\n\
   system = \"${system}\";\n\
 };\
-  " flake.nix > flake.nix
+  " flake.nix
 fi
 
 # run the appropriate nixos-rebuild command
