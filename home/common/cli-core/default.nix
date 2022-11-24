@@ -77,6 +77,11 @@ in
     enable = true;
     shellAliases = import ./shell-aliases.nix;
     initExtra = concatFiles [ ./shell-common.sh ./shell-zsh-conf.sh ];
+    envExtra = ''
+      # trying to get down ohmyzsh start times 
+      # https://blog.patshead.com/2011/04/improve-your-oh-my-zsh-startup-time-maybe.html
+      skip_global_compinit=1
+    '';
     oh-my-zsh = {
       enable = true;
       theme = "agnoster";

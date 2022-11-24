@@ -1,7 +1,17 @@
 # amethyst, system configuration for BEAST HOME PC!
 
-{ config, pkgs, hostname, ... }:
-
+{ config, pkgs, hostname, lib, ... }:
+let
+  capsLockKBLayout = pkgs.writeText "xkb-layout" ''
+    clear lock
+    clear mod4
+    clear mod5
+    keycode 66 = Hyper_L
+    !add lock = Hyper_L
+    add mod4 = Super_L Super_R
+    add mod5 = Hyper_L
+  '';
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -34,20 +44,63 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
-  networking.networkmanager.enable = true;
+  networking = {
+    useDHCP = false; # networkmanager does this?
+    networkmanager.enable = true;
+    
+    firewall = {
+      enable = true; # default
+      allowedTCPPorts = [ 22 ];
+    };
+  };
 
   # Set your time zone.
   time.timeZone = "America/New_York";
 
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.utf8";
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
   # Enable the KDE Plasma Desktop Environment.
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
+  #services.xserver.
+  #services.xserver.desktopManager.plasma5.enable = false;
+  # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
+  services.xserver = {
+    enable = true;
+    displayManager.sddm.enable = true;
+    desktopManager.session = [
+      {
+        name = "xsession";
+        start = ''
+          ${pkgs.runtimeShell} $HOME/.xsession &
+          waitPID=$!
+        '';
+      }
+    ];
+  };
+  
+  hardware.opengl.enable = true;
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  # https://discourse.nixos.org/t/xmodmap-keyboard-layout-customization-question/11522
+  # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
+  # enable using the caps lock key has Mod5
+  services.xserver.displayManager.sessionCommands = /* bash */''
+    # set up the monitors
+    LEFT="DP-3"
+    CENTER="DP-0"
+    RIGHT="DP-5"
+    HDMI="HDMI"
+    ${pkgs.xorg.xrandr}/bin/xrandr \
+      --output $LEFT --mode 1920x1080 --pos 0x10 --rotate normal \
+      --output $RIGHT --mode 1920x1080 --pos 4480x10 --rotate normal \
+      --output $CENTER --mode 2560x1440 --pos 1920x0 --rotate normal \
+      --output $HDMI --off
+      
+    
+    # set up my caps lock keyboard configuration
+    ${pkgs.xorg.xmodmap}/bin/xmodmap ${capsLockKBLayout}
+
+    # allow keyring authentication, apparently fails without this
+    ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
+  '';
+  
 
   # Configure keymap in X11
   services.xserver = {
@@ -77,25 +130,25 @@
     packages = with pkgs; [
       firefox
       kate
-      git
-      vim
     ];
+    shell = pkgs.zsh;
+  };
+
+  #programs.zsh.enable = true;
+  
+  services.openssh = {
+    enable = true;
+    passwordAuthentication = true; # TODO: set this to false
+    permitRootLogin = "no";
   };
 
 
   environment.systemPackages = with pkgs; [
-    vim
-    git
-    wget
-
-    curl
-    ncdu
-    iproute2
     openrgb
 
     # experimental audio control
-    qpwgraph
-    pavucontrol
+    #qpwgraph
+    #pavucontrol
     # easyeffects # can't seem to get this to work, crashes when adding any
     # effect
   ];
