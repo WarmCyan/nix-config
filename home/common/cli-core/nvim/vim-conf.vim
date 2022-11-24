@@ -78,6 +78,8 @@ autocmd FileType vue setlocal tabstop=2
 autocmd FileType vue setlocal shiftwidth=2 
 autocmd FileType vue setlocal softtabstop=2
 
+autocmd FileType make setlocal noexpandtab
+autocmd FileType make setlocal softtabstop=0
 
 " folding
 set foldenable
