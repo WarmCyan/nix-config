@@ -27,6 +27,8 @@ in
       efiSysMountPoint = "/boot/efi";
     };
 
+    timeout = 2;
+
     grub = {
       enable = true;
       version = 2;
@@ -36,17 +38,12 @@ in
     };
   };
   
-  networking.hostName = "amethyst"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
   # Enable networking
   networking = {
     useDHCP = false; # networkmanager does this?
     networkmanager.enable = true;
+    
+    hostName = hostname;
     
     firewall = {
       enable = true; # default
@@ -57,13 +54,16 @@ in
   # Set your time zone.
   time.timeZone = "America/New_York";
 
-  # Enable the KDE Plasma Desktop Environment.
-  #services.xserver.
-  #services.xserver.desktopManager.plasma5.enable = false;
   # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
   services.xserver = {
     enable = true;
     displayManager.sddm.enable = true;
+    displayManager.sddm.theme = "${(pkgs.fetchFromGitHub {
+      owner = "WildfireXIII";
+      repo = "sddm-chili";
+      rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
+      sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
+    })}";
     desktopManager.session = [
       {
         name = "xsession";
@@ -145,6 +145,10 @@ in
 
   environment.systemPackages = with pkgs; [
     openrgb
+
+    # necessary for sddm theme
+    libsForQt5.qt5.qtquickcontrols
+    libsForQt5.qt5.qtgraphicaleffects
 
     # experimental audio control
     #qpwgraph
