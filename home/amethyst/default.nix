@@ -66,11 +66,14 @@ in
 
   programs.kitty = {
     enable = true;
+    theme = "Gruvbox Material Dark Hard";
+    #theme = "Everforest Dark Hard";
     settings = {
       font_family = "Droid Sans Mono Slashed for Powerline";
       font_size = "9.0";
-      background = "#050505";
+      #background = "#050505";
       confirm_os_window_close = "0";
+      color0 = "#151414"; # gruvbox's black is waaay too light
     };
   };
 
