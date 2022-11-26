@@ -86,10 +86,50 @@ in
       modifier = caps;
       bars = [ ];
 
+      fonts = {
+        names = [ "Iosevka Nerd Font" ];
+        style = "Bold";
+        size = 11.0;
+      };
+
+      window = {
+        border = 1;
+        hideEdgeBorders = "smart";
+      };
+      floating = {
+        border = 1;
+      };
+
       # gaps = {
       #   inner = 10;
       #   outer = 5;
       # };
+
+      colors = {
+        focused = {
+          border = "#FF9866FF";
+          background = "#FF9866FF";
+          text = "#000000";
+          indicator = "#FF000000";
+          childBorder = "#FF9866FF";
+        };
+        unfocused = {
+          border = "#343332FF";
+          background = "#343332FF";
+          text = "#FFFFFF";
+          indicator = "#FF000000";
+          childBorder = "#343332FF";
+        };
+        focusedInactive = {
+          border = "#343332FF";
+          background = "#343332FF";
+          text = "#FFFFFF";
+          indicator = "#FF000000";
+          childBorder = "#343332FF";
+        };
+      };
+
+      terminal = "${pkgs.kitty}/bin/kitty";
 
       keybindings = lib.mkOptionDefault {
 
@@ -140,6 +180,12 @@ in
     extraConfig = ''
       # don't automatically focus the window the mouse is over
       focus_follows_mouse no
+
+      #for_window [class=".*"] title_format "█<span size='smaller'>  %title</span>"  #ue0be
+      #for_window [class=".*"] title_format "█  %title"  #ue0be
+      #for_window [class=".*"] title_format "█  %title"  #ue0be
+      for_window [class=".*"] title_format "█<span size='smaller'>  %title</span>"  #ue0c6
+      #for_window [class=".*"] normal 0px
     '';
   };
 
@@ -154,7 +200,8 @@ in
       i3Support = true; i3 = pkgs.i3; 
     };
 
-    script = "PATH=$PATH:${pkgs.i3}/bin polybar -q -r top &";
+    script = /* bash */ ''for m in $(polybar --list-monitors | ${pkgs.coreutils-full}/bin/cut -d":" -f1); do PATH=$PATH:${pkgs.i3}/bin MONITOR="$m" polybar -q -r top & done'';
+    #script = "for m in $(polybar --list-monitors | cut -d':' -f1); do PATH=$PATH:${pkgs.i3}/bin MONITOR=$m polybar -q -r top & done";
 
     config = {
       "settings" = {
@@ -170,6 +217,7 @@ in
       };
 
       "bar/top" = {
+        monitor = "\${env:MONITOR}";
         bottom = false;
         fixed-center = true;
         height = 25;
@@ -183,6 +231,8 @@ in
         font-2 = "Iosevka Nerd Font:pixelsize=20;3";
         font-3 = "Iosevka Nerd Font:pixelsize=15;3";
         
+        font-4 = "Iosevka Nerd Font:size=12;3";
+        
         # font-0 = "Droid Sans Mono Slashed for Powerline:size=12;3";
         # font-1 = "Droid Sans Mono Slashed for Powerline:style=Bold:size=12;3";
         
@@ -194,8 +244,10 @@ in
         # radius-top = "0.0";
         # radius-bottom = "0.0";
 
-        underline-size = 2;
-        underline-color = "#FF0000";
+        background = "#232222";
+
+        line-size = 2;
+        line-color = "#FF0000";
 
         padding = 0;
         module-margin = 0;
@@ -216,10 +268,30 @@ in
 
       "module/i3" = {
         type = "internal/i3";
-        pin-workspaces = false;
+        pin-workspaces = true;
         strip-wsnumbers=false;
         format = "<label-state> <label-mode>";
         format-background = "#232222";
+
+        label-unfocused = "%index%";
+        label-focused = "%index%";
+        label-visible = "%index%";
+        label-inactive = "%index%";
+        
+        label-focused-font = 5;
+        label-unfocused-font = 5;
+        label-visible-font = 5;
+        label-inactive-font = 5;
+        #label-visible = "%index% ";
+
+        label-focused-padding = 1;
+        label-unfocused-padding = 1;
+        label-visible-padding = 1;
+        label-inactive-padding = 1;
+
+        label-focused-underline = "#FF9866";
+        format-font = 5;
+        #label-focused-underline-color = "#FF0000";
       };
 
       "module/time" = {
@@ -246,7 +318,7 @@ in
         type = "custom/text";
         content = " "; # ue0be
         content-foreground = "#FF9866";
-        content-background = "#000000";
+        content-background = "#232222";
         content-font = 3;
       };
     };
