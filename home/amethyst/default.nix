@@ -178,9 +178,10 @@ in
 
         locale = "en_US.UTF-8";
         
-        font-0 = "Iosevka Nerd Font:pixelsize=16;3";
+        font-0 = "Iosevka Nerd Font:pixelsize=12;3";
         font-1 = "Iosevka Nerd Font:style=Bold:size=12;3";
-        font-2 = "Iosevka Nerd Font:pixelsize=25;3";
+        font-2 = "Iosevka Nerd Font:pixelsize=20;3";
+        font-3 = "Iosevka Nerd Font:pixelsize=15;3";
         
         # font-0 = "Droid Sans Mono Slashed for Powerline:size=12;3";
         # font-1 = "Droid Sans Mono Slashed for Powerline:style=Bold:size=12;3";
@@ -210,6 +211,7 @@ in
         content-foreground = "#FF9866";
         content-background = "#353432";
         content-padding = 2;
+        content-font = 4;
       };
 
       "module/i3" = {
@@ -226,9 +228,10 @@ in
         time = "%H:%M:%S";
 
         format = "<label>";
-        format-padding = 0;
+        format-padding = 1;
         format-background = "#FF9866";
         format-foreground = "#232222";
+        format-font = 2;
         label = "%time%";
       };
 
