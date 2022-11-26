@@ -51,6 +51,13 @@ in
     };
   };
 
+  # debug with `fc-list | grep 'fontname'`
+  fonts.fontDir.enable = true;
+  fonts.fonts = with pkgs; [
+    powerline-fonts
+    nerdfonts
+  ];
+
   # Set your time zone.
   time.timeZone = "America/New_York";
 
@@ -76,6 +83,7 @@ in
   };
   
   hardware.opengl.enable = true;
+  hardware.opengl.driSupport32Bit = true; # recommended from https://linuxhint.com/how-to-instal-steam-on-nixos/
   services.xserver.videoDrivers = [ "nvidia" ];
 
   # https://discourse.nixos.org/t/xmodmap-keyboard-layout-customization-question/11522
@@ -135,6 +143,14 @@ in
   };
 
   #programs.zsh.enable = true;
+
+  # https://linuxhint.com/how-to-instal-steam-on-nixos/
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+  };
+  
   
   services.openssh = {
     enable = true;
@@ -149,6 +165,14 @@ in
     # necessary for sddm theme
     libsForQt5.qt5.qtquickcontrols
     libsForQt5.qt5.qtgraphicaleffects
+
+    # steam stuff
+    steamcmd
+    steam-run
+    #steam-run-native # ???
+    #(steam.override { extraPkgs = pkgs: [ mono gtk3 gtk3-x11 libgdiplus zlib ]; nativeOnly = true; }).run
+    #(steam.override { withPrimus = true; extraPkgs = pkgs: [ bumblebee glxinfo ]; nativeOnly = true; }).run
+    #(steam.override { withJava = true; })
 
     # experimental audio control
     #qpwgraph
