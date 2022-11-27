@@ -15,6 +15,12 @@
 # https://github.com/ryanoasis/nerd-fonts/wiki/Glyph-Sets-and-Code-Points
 # https://github.com/adi1090x/polybar-themes/blob/master/simple/shapes/config.ini
 
+
+
+# https://wiki.archlinux.org/title/i3#Tips_and_tricks
+# https://github.com/ray-pH/polybar-cava
+# https://github.com/DaveDavenport/Rofication
+
 { pkgs, lib, ... }:
 let 
 
@@ -57,6 +63,8 @@ in
     psensor
     
     obsidian
+
+    pcmanfm
   ];
 
   home.sessionVariables = {
@@ -75,6 +83,10 @@ in
       confirm_os_window_close = "0";
       color0 = "#151414"; # gruvbox's black is waaay too light
     };
+  };
+
+  programs.rofi = {
+    enable = true;
   };
 
   #programs.dconf.enable = true; # required for easyeffects to work?
@@ -157,6 +169,13 @@ in
         "XF86AudioMute" = "exec amixer set Master toggle";
         "XF86AudioLowerVolume" = "exec amixer set Master 4%-";
         "XF86AudioRaiseVolume" = "exec amixer set Master 4%+";
+
+        # https://github.com/i3/i3/issues/3343, for_window doesn't work for
+        # containers, so the title format doesn't get applied.
+        "${caps}+v" = "split v, focus parent, title_format \"█<span size='smaller'>  %title</span>\", focus child";
+
+        
+        #"${alt}+Tab" = "exec rofi -show window -kb-accept-entry '!Alt+Tab' -kb-element-next 'Alt+Tab'"; #-kb-element-previous 'Alt+Shift+Tab'";
       };
       
       startup = [
@@ -165,6 +184,31 @@ in
         #   always = false;
         #   notification = false;
         # }
+        # 1, 3, 10, 1
+
+        # for some weird reason, it starts with an odd set of workspaces open
+        # (10 on the main one), so rejigger them a bit.
+        {
+          command = "exec i3-msg workspace 1";
+          always = true;
+          notification = false;
+        }
+        {
+          command = "exec i3-msg workspace 3";
+          always = true;
+          notification = false;
+        }
+        {
+          command = "exec i3-msg workspace 10";
+          always = true;
+          notification = false;
+        }
+        {
+          command = "exec i3-msg workspace 1";
+          always = true;
+          notification = false;
+        }
+        
         {
           command = "systemctl --user restart polybar.service";
           always = true;
@@ -187,7 +231,8 @@ in
       #for_window [class=".*"] title_format "█<span size='smaller'>  %title</span>"  #ue0be
       #for_window [class=".*"] title_format "█  %title"  #ue0be
       #for_window [class=".*"] title_format "█  %title"  #ue0be
-      for_window [class=".*"] title_format "█<span size='smaller'>  %title</span>"  #ue0c6
+      #for_window [class=".*"] title_format "█<span size='smaller'>  %title</span>"  #ue0c6
+      for_window [all] title_format "█<span size='smaller'>  %title</span>"  #ue0c6
       #for_window [class=".*"] normal 0px
     '';
   };
@@ -229,6 +274,8 @@ in
 
         locale = "en_US.UTF-8";
         
+        # don't forget, annoyingly, when referencing these fonts it's 1-based
+        # instead of 0-based...using font-4 means setting format-font = 5, etc.
         font-0 = "Iosevka Nerd Font:pixelsize=12;3";
         font-1 = "Iosevka Nerd Font:style=Bold:size=12;3";
         font-2 = "Iosevka Nerd Font:pixelsize=20;3";
@@ -262,7 +309,7 @@ in
 
       "module/launcher-distro-icon" = {
         type = "custom/text";
-        content = ""; # uf313 (in vim, use insert mode ctrl+v)
+        content = "  Amethyst"; # uf313 (in vim, use insert mode ctrl+v)
         content-foreground = "#FF9866";
         content-background = "#353432";
         content-padding = 2;
