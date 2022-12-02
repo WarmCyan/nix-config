@@ -35,6 +35,8 @@
       sha256 = "sha256-g2zpR+1P99WhUk/AFR/IYoxJwSPohCLbCc35cI2rgL4=";
     };
   };
+
+  micromamba = prev.callPackage ./micromamba.nix { };
   
 # NOTE: I have no IDEA: why passing pkgs final versus prev works, but if I don't
 # pass final, then my own packages can't require each-other. It seems like this

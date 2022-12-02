@@ -65,11 +65,16 @@ in
     obsidian
 
     pcmanfm
+
+    #python311
+
+    discord
   ];
 
   home.sessionVariables = {
     TERMINAL = "kitty";
     EDITOR = "nvim";
+    #NIX_LD = "${pkgs.glibc}/lib/ld-linux-x86-64.so.2";
   };
 
   programs.kitty = {

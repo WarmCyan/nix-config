@@ -21,6 +21,7 @@ in
 
     # -- MY tools! --
     add-jupyter-env # run inside a conda env to add jupyter lab setup
+    sri-hash        # quick nix utility to grab the sri from a github repo
   ];
 
   # TODO: put in fancier vim plugins stuff
@@ -38,7 +39,7 @@ in
     # >>> mamba initialize >>>
     export MAMBA_EXE='${pkgs.micromamba}/bin/micromamba';
     export MAMBA_ROOT_PREFIX='/home/${username}/micromamba';
-    __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell zsh --prefix '/home/81n/micromamba' 2> /dev/null)"
+    __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell zsh --prefix '/home/${username}/micromamba' 2> /dev/null)"
     if [ $? -eq 0 ]; then 
         eval "$__mamba_setup"
     else
@@ -56,7 +57,7 @@ in
     # >>> mamba initialize >>>
     export MAMBA_EXE='${pkgs.micromamba}/bin/micromamba';
     export MAMBA_ROOT_PREFIX='/home/${username}/micromamba';
-    __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell bash --prefix '/home/81n/micromamba' 2> /dev/null)"
+    __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell bash --prefix '/home/${username}/micromamba' 2> /dev/null)"
     if [ $? -eq 0 ]; then 
         eval "$__mamba_setup"
     else

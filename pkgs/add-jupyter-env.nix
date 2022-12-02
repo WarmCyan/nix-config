@@ -11,7 +11,7 @@ writeShellApplication {
       ipydrawio \
       dask_labextension \
       jupyterlab-lsp \
-      python-language-server \
+      python-lsp-server \
       jupyterlab_code_formatter \
       black \
       isort

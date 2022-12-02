@@ -149,7 +149,7 @@
     description,
     version ? null,
     usage ? null,
-    parameters ? null, # expects a dictionary with descriptions and possible flags
+    parameters ? {}, # expects a dictionary with descriptions and possible flags
     # e.g. parameters = { bash_var_name = { description = "testing"; flags = [
     # "-t" "--testing"; option = false ] } }
     initColors ? false,

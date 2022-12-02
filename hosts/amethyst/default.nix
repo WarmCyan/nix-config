@@ -150,6 +150,8 @@ in
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
   };
+
+  programs.nix-ld.enable = true;
   
   
   services.openssh = {
@@ -158,6 +160,15 @@ in
     permitRootLogin = "no";
   };
 
+  environment.variables = {
+    #NIX_LD = builtins.readFile "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
+    # the above does not work because it's accessing a restricted path (can't
+    # access nix store directly) A workaround discussed in https://github.com/Mic92/nix-ld/pull/31
+    NIX_LD = "${pkgs.glibc}/lib/ld-linux-x86-64.so.2";
+    # NIX LD is a fancy dynamic linker so that packages that require a more FHS
+    # like environment (micromamba!!) will still work. Note the
+    # programs.nix-ld.enable above.
+  };
 
   environment.systemPackages = with pkgs; [
     openrgb
