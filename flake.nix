@@ -118,6 +118,7 @@
   description = "My awesome-sauce and cool-beans nix configuration-y things.";
 
   inputs = {
+    #nixpkgs-unstable.url = "path:/home/dwl/lab/nixpkgs";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.05";
 

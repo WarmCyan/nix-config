@@ -69,6 +69,8 @@ in
     #python311
 
     discord
+
+    flameshot
   ];
 
   home.sessionVariables = {
