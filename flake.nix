@@ -39,16 +39,7 @@
 # TODO's
 # ===============================
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
-# DONE: Add overlay for cmp-nvim-lsp-signature-help
-# DONE: Add bootstrapping capability
 # STRT: Start adding personal pkgs tools.
-# DONE: setup terminfo_dirs because I feel like that's been a problem? See phantom sessionVariables
-# STRT: package/cmd to grab the sha256 of a repo, see old flake
-    # use "nix-prefetch-url --unpack GITHUBURL/archive/COMMIT.tar.gz"
-    # then use nix hash to-sri sha256:[sha256 hash]
-    # NOTE: that you can go to the releases page if one exists, right click on
-    # the "Soruce code (tar.gz)" link and copy that  instead of the manual
-    # archive/commit link
 # TODO: way to automate firefox speedups? https://www.drivereasy.com/knowledge/speed-up-firefox/ (will need to add nur which has firefox and extensions)
 # TODO: script to keep backup ref to home-manager gen and make it easy to switch to that one
 # TODO: add pre-commit stuff to this
@@ -57,8 +48,6 @@
 # TODO: make a modified writeshellapplication that takes a version and a description and adds it to a special list that I can view with a separate package
 # TODO: fix vim auto line break to be how I used to have it
 # STRT: fix non writable settings.json for vscode
-# DONE: add everforest vscode theme overlay
-# TODO: submit everforest theme extension to nixpkgs, use https://github.com/NixOS/nixpkgs/pull/191145 as a model
 # TODO: the nix lock file should be per machine, that way if I update on one I don't break it in the others 
 # TODO: tool to build flake and grab configs and publish to separate repo for when nix unavailable
 # TODO: it would be cool if features could be specified without ".nix" if it's
