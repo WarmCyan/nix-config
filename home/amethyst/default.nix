@@ -31,6 +31,8 @@
 
     ../common/i3
     ../common/polybar
+
+    ../common/discord
   ];
 
   home.packages = with pkgs; [
@@ -45,9 +47,9 @@
     gimp
     feh
     
-    betterlockscreen
+    betterlockscreen  # super cool lock screen based on i3lock
 
-    dunst
+    dunst             # notifications
 
     glances
     nvtop
@@ -60,9 +62,6 @@
 
     python311
 
-    # https://github.com/Misterio77/nix-config/blob/main/home/misterio/features/desktop/common/discord.nix
-    discord
-    discocss
 
     flameshot
   ];
