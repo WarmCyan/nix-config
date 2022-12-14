@@ -95,12 +95,19 @@ in
     CENTER="DP-0"
     RIGHT="DP-5"
     HDMI="HDMI"
-    ${pkgs.xorg.xrandr}/bin/xrandr \
-      --output $LEFT --mode 1920x1080 --pos 0x10 --rotate normal \
-      --output $RIGHT --mode 1920x1080 --pos 4480x10 --rotate normal \
-      --output $CENTER --mode 2560x1440 --pos 1920x0 --rotate normal \
-      --output $HDMI --off
+    
+    # old 3 side by side normal orientations
+    # ${pkgs.xorg.xrandr}/bin/xrandr \
+    #   --output $LEFT --mode 1920x1080 --pos 0x10 --rotate normal \
+    #   --output $RIGHT --mode 1920x1080 --pos 4480x10 --rotate normal \
+    #   --output $CENTER --mode 2560x1440 --pos 1920x0 --rotate normal \
+    #   --output $HDMI --off
       
+    ${pkgs.xorg.xrandr}/bin/xrandr \
+      --output $LEFT --mode 1920x1080 --pos 0x420 --rotate normal \
+      --output $RIGHT --mode 1920x1080 --pos 4480x0 --rotate right \
+      --output $CENTER --mode 2560x1440 --pos 1920x1440 --rotate normal \
+      --output $HDMI --off
     
     # set up my caps lock keyboard configuration
     ${pkgs.xorg.xmodmap}/bin/xmodmap ${capsLockKBLayout}
