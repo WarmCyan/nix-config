@@ -37,6 +37,9 @@ in
     lolcat    # tool to vomit rainbow colors for input text
     tty-clock # best terminal clock around
     neofetch  # gotta show off my distro
+
+    # -- My stuff! --
+    td-state  # todo-status cycler, used in my nvim config with shift-t
   ];
   
   programs.git = {
