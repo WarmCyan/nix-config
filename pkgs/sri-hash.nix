@@ -2,7 +2,7 @@
 builders.writeTemplatedShellApplication {
   name = "sri-hash";
   description = "Quickly get the sri hash from the passed .tar.gz archive link for the source code release from a github repo";
-  usage = "";
+  usage = "sri-hash [ARCHIVE_URL]";
   text = /* bash */ ''
 
     if [[ $# -lt 1 ]]; then

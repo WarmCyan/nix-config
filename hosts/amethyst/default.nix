@@ -106,7 +106,7 @@ in
     ${pkgs.xorg.xrandr}/bin/xrandr \
       --output $LEFT --mode 1920x1080 --pos 0x420 --rotate normal \
       --output $RIGHT --mode 1920x1080 --pos 4480x0 --rotate right \
-      --output $CENTER --mode 2560x1440 --pos 1920x1440 --rotate normal \
+      --output $CENTER --mode 2560x1440 --pos 1920x240 --rotate normal \
       --output $HDMI --off
     
     # set up my caps lock keyboard configuration

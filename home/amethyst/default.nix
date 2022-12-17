@@ -64,6 +64,12 @@
 
 
     flameshot
+
+    # creative
+    blender
+
+    # custom tool to turn mic monitor on and off
+    mic-monitor
   ];
 
   home.sessionVariables = {
