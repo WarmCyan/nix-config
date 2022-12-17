@@ -110,7 +110,8 @@ in
       --output $HDMI --off
     
     # set up my caps lock keyboard configuration
-    ${pkgs.xorg.xmodmap}/bin/xmodmap ${capsLockKBLayout}
+    #${pkgs.xorg.xmodmap}/bin/xmodmap ${capsLockKBLayout}
+    ${pkgs.kbd-capslock}
 
     # allow keyring authentication, apparently fails without this
     ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
@@ -183,6 +184,8 @@ in
     # necessary for sddm theme
     libsForQt5.qt5.qtquickcontrols
     libsForQt5.qt5.qtgraphicaleffects
+
+    kbd-capslock
 
     # steam stuff
     steamcmd

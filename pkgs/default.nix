@@ -8,8 +8,11 @@
 
   iris = pkgs.callPackage ./iris.nix { inherit pkgs builders; };
   sri-hash = pkgs.callPackage ./sri-hash.nix { inherit builders; };
-  mic-monitor = pkgs.callPackage ./mic-monitor.nix { inherit builders; };
+  mic-monitor = pkgs.callPackage ./mic-monitor.nix { inherit pkgs builders; };
   td-state = pkgs.callPackage ./td-state.nix { inherit builders; };
+
+  kbd-capslock = pkgs.callPackage ./kbd-capslock.nix { inherit pkgs builders; };
+  
   
   testing = pkgs.callPackage ./testing.nix { };
   testing2 = pkgs.callPackage ./testing2.nix { inherit builders; };
