@@ -111,7 +111,7 @@ in
     
     # set up my caps lock keyboard configuration
     #${pkgs.xorg.xmodmap}/bin/xmodmap ${capsLockKBLayout}
-    ${pkgs.kbd-capslock}
+    ${pkgs.kbd-capslock}/bin/kbd-capslock
 
     # allow keyring authentication, apparently fails without this
     ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all

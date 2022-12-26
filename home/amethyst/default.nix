@@ -55,6 +55,7 @@
     nvtop
     # xsensors
     psensor
+    dconf  # this is required so psensor can save changes to theme (think it's a gtk thing)
     
     obsidian
 
@@ -98,6 +99,7 @@
     enable = true;
   };
 
+  # https://github.com/nix-community/home-manager/issues/3113 (and psensor?)
   #programs.dconf.enable = true; # required for easyeffects to work?
   # https://github.com/NixOS/nixpkgs/issues/158476
 
