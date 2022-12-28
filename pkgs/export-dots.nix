@@ -61,7 +61,11 @@ builders.writeTemplatedShellApplication {
     chmod 777 "''${target_bashrc}"
     
     # fix micromamba nix paths
-    sed -i -E "s/(.*)\/nix\/store\/.*\/bin\/micromamba(.*)/\1micromamba\2/g" "''${target_bashrc}"
+    #sed -i -E "s/(.*)\/nix\/store\/.*\/bin\/micromamba(.*)/\1\$HOME\/.local\/bin\/micromamba\2/g" "''${target_bashrc}"
+    sed -i -E "s/export MAMBA_EXE=.*/export MAMBA_EXE=\$HOME\/.local\/bin\/micromamba/" "''${target_bashrc}"
+    sed -i -E "s/export MAMBA_ROOT_PREFIX=.*/export MAMBA_ROOT_PREFIX=\$HOME\/micromamba/" "''${target_bashrc}"
+    sed -i -E "s/__mamba_setup=.*/__mamba_setup=\"\$\(\$MAMBA_EXE shell hook --shell bash --prefix \$MAMBA_ROOT_PREFIX 2\> \/dev\/null\)\"/" "''${target_bashrc}"
+    sed -i -E "s/\/home\/dwl\/micromamba/\$MAMBA_ROOT_PREFIX/g" "''${target_bashrc}"
 
     # remove bash_completion path
     # TODO: the original path looks to be /etc/profile.d/bash_completion.sh,
