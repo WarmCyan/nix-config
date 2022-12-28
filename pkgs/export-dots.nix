@@ -105,6 +105,9 @@ builders.writeTemplatedShellApplication {
     # remove lua plugins
     # delete everything below line LUA PLUGIN SETUP
     sed -i "/LUA PLUGIN SETUP/Q" "''${target_vimrc}"
+
+    # remove colorscheme
+    sed -i "/colorscheme everforest/d" "''${target_vimrc}"
     
     # change init.lua to init.vim and replace content with https://vi.stackexchange.com/questions/12794/how-to-share-config-between-vim-and-neovim
     target_initvim="''${export_folder}/home/.config/nvim/init.vim"
@@ -150,7 +153,7 @@ mkdir -p ~/.config/nvim
 cp home/.config/nvim/init.vim ~/.config/nvim
 mkdir -p ~/bin
 echo "export PATH=\"\$HOME/bin:\\\$PATH\"" >> ~/.bashrc
-cp -r bin/ "\$HOME/bin"
+cp bin/* "\$HOME/bin"
 set +o xtrace
 EOF
     chmod +x "''${installer_path}"
