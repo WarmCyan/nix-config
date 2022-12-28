@@ -172,7 +172,8 @@ in
     #NIX_LD = builtins.readFile "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
     # the above does not work because it's accessing a restricted path (can't
     # access nix store directly) A workaround discussed in https://github.com/Mic92/nix-ld/pull/31
-    NIX_LD = "${pkgs.glibc}/lib/ld-linux-x86-64.so.2";
+    #NIX_LD = "${pkgs.glibc}/lib/ld-linux-x86-64.so.2";  # NOTE: this is what I had before update on 2022-12-26
+    
     # NIX LD is a fancy dynamic linker so that packages that require a more FHS
     # like environment (micromamba!!) will still work. Note the
     # programs.nix-ld.enable above.
@@ -180,6 +181,7 @@ in
 
   environment.systemPackages = with pkgs; [
     openrgb
+    i2c-tools
 
     # necessary for sddm theme
     libsForQt5.qt5.qtquickcontrols

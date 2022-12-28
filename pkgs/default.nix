@@ -14,6 +14,8 @@
   kbd-capslock = pkgs.callPackage ./kbd-capslock.nix { inherit pkgs builders; };
   
   export-dots = pkgs.callPackage ./export-dots.nix { inherit pkgs builders; };
+
+  tools = pkgs.callPackage ./tools.nix { inherit pkgs builders; };
   
   testing = pkgs.callPackage ./testing.nix { };
   testing2 = pkgs.callPackage ./testing2.nix { inherit builders; };

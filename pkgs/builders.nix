@@ -87,6 +87,17 @@
     fi
   '' else "";
 
+  # eventually need params to help do nocolor check
+  colorInitFunction = initColors: params:
+  if initColors then
+  /* bash */ ''
+  ${builtins.readFile ./color_init.sh}
+
+  # SC2119 - yes I know I'm not passing local args yet
+  # shellcheck disable=SC2119
+  color_init
+  '' else "";
+
   # TODO: nocolor check/init color check
   expandParameters = params: version: parameterParser:
   if parameterParser then (
@@ -127,7 +138,7 @@
         preferLocalBuild = true;
         allowSubstitutes = false;
       }
-      ''
+      /* bash */ ''
         target=$out${lib.escapeShellArg destination}
         mkdir -p "$(dirname "$target")"
         if [ -e "$textPath" ]; then
@@ -171,7 +182,7 @@
     # TODO: add header and license and stuff
     # TODO: add color stuff
     # TODO: how to deal with positional parameters?
-    text = ''
+    text = /* bash */ ''
       #!${pkgs.runtimeShell}
       
       # ===============================================================
@@ -194,6 +205,8 @@
       ${helpCheck resolved_params}
 
       ${versionCheck version resolved_params}
+
+      ${colorInitFunction initColors resolved_params}
 
       # ---------------------- MAIN SCRIPT CODE -----------------------
       

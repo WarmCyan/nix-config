@@ -123,12 +123,12 @@
 
   outputs = inputs:
   let
-    lib = import ./lib { inherit inputs; }; # This feels problematic, should probably be "mylib" instead
-    inherit (lib) mkHome mkSystem mkStableSystem forAllSystems;
+    mylib = import ./lib { inherit inputs; }; # This feels problematic, should probably be "mylib" instead
+    inherit (mylib) mkHome mkSystem mkStableSystem forAllSystems;
     inherit (builtins) attrValues;
   in
   rec {
-    inherit lib; # TODO: ....why is this here? does this let you do outputs.lib? or self.lib?
+    inherit mylib; # TODO: ....why is this here? does this let you do outputs.lib? or self.lib?
 
 
     # =================== NIXOS CONFIGURATIONS ==================

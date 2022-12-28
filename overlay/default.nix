@@ -36,7 +36,8 @@
     };
   };
 
-  micromamba = prev.callPackage ./micromamba.nix { };
+  # don't need anymore because it's been updated
+  #micromamba = prev.callPackage ./micromamba.nix { };
   
 # NOTE: I have no IDEA: why passing pkgs final versus prev works, but if I don't
 # pass final, then my own packages can't require each-other. It seems like this

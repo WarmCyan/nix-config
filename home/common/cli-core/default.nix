@@ -11,7 +11,7 @@
 
 let
   inherit (builtins) readFile;
-  inherit (self.lib) concatFiles;
+  inherit (self.mylib) concatFiles;
 in
 {
   imports = [ ./nvim ];
@@ -40,6 +40,7 @@ in
 
     # -- My stuff! --
     td-state  # todo-status cycler, used in my nvim config with shift-t
+    tools     # check which of my tools are installed (and also reminders of what my tools are!)
   ];
   
   programs.git = {
