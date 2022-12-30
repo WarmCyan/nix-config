@@ -1,5 +1,17 @@
+# Things I want:
+# in the middle, music controls
+# on the left, right before the workspaces, a terminal button
+# on the right, date, time, IP-addr (global and local)? battery if applicable,
+# vol
+
+# TODO: clicking on amethyst brings up "rofi start menu"
+
 { pkgs, lib, ... }:
-{
+let
+  cPrimary = "#FF9866"; # pleasent bright peach
+  cWarmDark = "#353432";
+  cBackground = "#232222";
+in {
   # test by manually running `polybar -l info`
   services.polybar = {
     enable = true;
@@ -51,13 +63,13 @@
         
         modules-left = "launcher-distro-icon sepLR01 i3";
         modules-center = "";
-        modules-right = "sepRL21 time";
+        modules-right = "date sepRL21 time";
 
         radius = 0;
         # radius-top = "0.0";
         # radius-bottom = "0.0";
 
-        background = "#232222";
+        background = "${cBackground}";
 
         line-size = 2;
         line-color = "#FF0000";
@@ -71,12 +83,15 @@
 
 
       "module/launcher-distro-icon" = {
-        type = "custom/text";
-        content = "  Amethyst"; # uf313 (in vim, use insert mode ctrl+v)
-        content-foreground = "#FF9866";
-        content-background = "#353432";
-        content-padding = 2;
-        content-font = 4;
+        type = "custom/script";
+        exec = "name=$(${pkgs.nettools}/bin/hostname) && ${pkgs.coreutils}/bin/echo \"\${name^}\"";
+        interval = 99999;
+        label="%output%";
+        format = "  <label>"; # uf313 (in vim, use insert mode ctrl+v)
+        format-foreground = "${cPrimary}";
+        format-background = "${cWarmDark}";
+        format-padding = 2;
+        format-font = 4;
       };
 
       "module/i3" = {
@@ -84,7 +99,7 @@
         pin-workspaces = true;
         strip-wsnumbers=false;
         format = "<label-state> <label-mode>";
-        format-background = "#232222";
+        format-background = "${cBackground}";
 
         label-unfocused = "%index%";
         label-focused = "%index%";
@@ -102,7 +117,7 @@
         label-visible-padding = 1;
         label-inactive-padding = 1;
 
-        label-focused-underline = "#FF9866";
+        label-focused-underline = "${cPrimary}";
         format-font = 5;
         #label-focused-underline-color = "#FF0000";
       };
@@ -114,24 +129,42 @@
 
         format = "<label>";
         format-padding = 1;
-        format-background = "#FF9866";
-        format-foreground = "#232222";
+        format-background = "${cPrimary}";
+        format-foreground = "${cBackground}";
         format-font = 2;
         label = "%time%";
+      };
+
+      "module/date" = {
+        type = "internal/date";
+        interval = "60.0";
+        date = "%Y-%m-%d";
+
+        format = "<label>";
+        format-padding = 1;
+        format-background = "${cBackground}";
+        format-foreground = "${cPrimary}";
+        format-font = 2;
+        label = "%date%";
+        # https://github.com/vivien/i3blocks-contrib/blob/master/calendar/calendar
+        # TODO: I don't think this actually works, not every module is
+        # clickable. I will probably have to make a custom script module for
+        # this one.
+        click-left = "${pkgs.i3}/bin/i3-msg -q \"exec ${pkgs.yad}/bin/yad --calendar --undecorated --fixed --close-on-unfocus --no-buttons > /dev/null\"";
       };
 
       "module/sepLR01" = {
         type = "custom/text";
         content = " "; # ue0bc
-        content-foreground = "#353432";
-        content-background = "#232222";
+        content-foreground = "${cWarmDark}";
+        content-background = "${cBackground}";
         content-font = 3;
       };
       "module/sepRL21" = {
         type = "custom/text";
         content = " "; # ue0be
-        content-foreground = "#FF9866";
-        content-background = "#232222";
+        content-foreground = "${cPrimary}";
+        content-background = "${cBackground}";
         content-font = 3;
       };
     };

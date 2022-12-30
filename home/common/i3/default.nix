@@ -159,6 +159,9 @@ in
 
       # floating kitty terminal (see floating terminal in keybinds)
       for_window [class="kitty-floating"] floating toggle
+
+      # bug from yad that was never fixed https://sourceforge.net/p/yad-dialog/tickets/301/
+      for_window [class="Yad"] floating enable
     '';
   };
 }
