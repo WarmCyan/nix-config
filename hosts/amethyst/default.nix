@@ -190,6 +190,10 @@ in
     kbd-capslock
 
     # steam stuff
+    protonup-ng # so we can get the ge-proton version
+    # NOTE: following https://github.com/cloudishBenne/protonup-ng,
+    # I ran protonup -d "~/.steam/root/compatibilitytools.d/", and then
+    # `protonup`
     steamcmd
     steam-run
     #steam-run-native # ???
