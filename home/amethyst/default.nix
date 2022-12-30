@@ -21,6 +21,9 @@
 # https://github.com/ray-pH/polybar-cava
 # https://github.com/DaveDavenport/Rofication
 
+# Another good config set to pay attention to for audio stuff:
+# https://github.com/dnordstrom/dotfiles
+
 { pkgs, lib, ... }:
 {
   imports = [
@@ -37,10 +40,17 @@
 
   home.packages = with pkgs; [
     # flameshot
-    # easyeffects
     arandr
-    qpwgraph
-    pavucontrol
+    
+    # -- audio --
+    qpwgraph          # pipewire graphical controls (qjackctl but for pipewire)
+    pavucontrol       # detailed audio settings
+    easyeffects       # live audio effects
+    audacity          # basic audio editing
+    helvum            # another graphical tool for pipewire (seems worse than qpwgraph)
+    mic-monitor       # custom tool to turn mic monitor on and off
+    alsa-scarlett-gui # gui controls for focusrite 2i2 gen 3
+    
     # powerline-fonts
     # nerdfonts
 
@@ -69,11 +79,7 @@
     # creative
     blender
 
-    # custom tool to turn mic monitor on and off
-    mic-monitor
 
-    audacity
-    helvum
   ];
 
   home.sessionVariables = {

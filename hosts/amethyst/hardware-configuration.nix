@@ -14,6 +14,12 @@
   boot.kernelParams = [ "acpi_enforce_resources=lax" ];
   boot.extraModulePackages = [ ];
 
+  # enabling drivers for focusrite scarlett gen 3 2i2
+  # https://github.com/geoffreybennett/alsa-scarlett-gui/blob/master/USAGE.md
+  boot.extraModprobeConfig = ''
+    options snd_usb_audio vid=0x1235 pid=0x8210 device_setup=1
+  '';
+
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/70663450-7ca8-4d93-909c-d5998733010f";
       fsType = "ext4";
