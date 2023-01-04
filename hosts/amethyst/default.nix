@@ -179,7 +179,13 @@ in
     # programs.nix-ld.enable above.
   };
 
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  services.flatpak.enable = true; # enabling this solely for steam right now because of the glibc-eac bug https://github.com/ValveSoftware/Proton/issues/6051
+
   environment.systemPackages = with pkgs; [
+    #xdg-desktop-portal-gtk
+    
     openrgb
     i2c-tools
 

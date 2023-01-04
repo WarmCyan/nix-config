@@ -39,9 +39,6 @@
   ];
 
   home.packages = with pkgs; [
-    # flameshot
-    arandr
-    
     # -- audio --
     qpwgraph          # pipewire graphical controls (qjackctl but for pipewire)
     pavucontrol       # detailed audio settings
@@ -50,36 +47,28 @@
     helvum            # another graphical tool for pipewire (seems worse than qpwgraph)
     mic-monitor       # custom tool to turn mic monitor on and off
     alsa-scarlett-gui # gui controls for focusrite 2i2 gen 3
-    
-    # powerline-fonts
-    # nerdfonts
 
-    gimp
-    feh
-    
-    betterlockscreen  # super cool lock screen based on i3lock
+    # -- monitoring tools --
+    glances           # fancier htop
+    nvtop             # nvidia gpu monitoring
+    psensor           # CPU/GPU temp/activity monitoring
+    dconf             # (this is required so psensor can save changes to theme (think it's a gtk thing))
 
-    dunst             # notifications
-
-    glances
-    nvtop
-    # xsensors
-    psensor
-    dconf  # this is required so psensor can save changes to theme (think it's a gtk thing)
-    
-    obsidian
-
-    pcmanfm
-
-    python311
-
-
-    flameshot
-
-    # creative
+    # -- creative --
     blender
+    gimp
 
+    # -- utils --
+    flameshot         # screenshot tool
+    pcmanfm           # file explorer
+    feh               # image viewer/desktop wallpaper
+    dunst             # notifications
+    betterlockscreen  # super cool lock screen based on i3lock
+    arandr            # multi-monitor configuration tool
 
+    # -- other --
+    obsidian
+    python311
   ];
 
   home.sessionVariables = {
