@@ -1,12 +1,18 @@
 # arcane, home configuration for work linux workstation
 
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   imports = [
     ../common/cli-core
     ../common/dev
     ../common/vscode
   ];
+
+  # programs.neovim = {
+  #   # package = pkgs.stable.neovim;
+  #
+  #   extraPackages = lib.mkForce [ ];
+  # };
   
   home.packages = with pkgs; [
     zotero
