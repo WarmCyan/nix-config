@@ -21,6 +21,9 @@
 # https://github.com/ray-pH/polybar-cava
 # https://github.com/DaveDavenport/Rofication
 
+# Another good config set to pay attention to for audio stuff:
+# https://github.com/dnordstrom/dotfiles
+
 { pkgs, lib, ... }:
 {
   imports = [
@@ -36,34 +39,36 @@
   ];
 
   home.packages = with pkgs; [
-    # flameshot
-    # easyeffects
-    arandr
-    qpwgraph
-    pavucontrol
-    # powerline-fonts
-    # nerdfonts
+    # -- audio --
+    qpwgraph          # pipewire graphical controls (qjackctl but for pipewire)
+    pavucontrol       # detailed audio settings
+    easyeffects       # live audio effects
+    audacity          # basic audio editing
+    helvum            # another graphical tool for pipewire (seems worse than qpwgraph)
+    mic-monitor       # custom tool to turn mic monitor on and off
+    alsa-scarlett-gui # gui controls for focusrite 2i2 gen 3
 
+    # -- monitoring tools --
+    glances           # fancier htop
+    nvtop             # nvidia gpu monitoring
+    psensor           # CPU/GPU temp/activity monitoring
+    dconf             # (this is required so psensor can save changes to theme (think it's a gtk thing))
+
+    # -- creative --
+    blender
     gimp
-    feh
-    
-    betterlockscreen  # super cool lock screen based on i3lock
 
+    # -- utils --
+    flameshot         # screenshot tool
+    pcmanfm           # file explorer
+    feh               # image viewer/desktop wallpaper
     dunst             # notifications
+    betterlockscreen  # super cool lock screen based on i3lock
+    arandr            # multi-monitor configuration tool
 
-    glances
-    nvtop
-    # xsensors
-    psensor
-    
+    # -- other --
     obsidian
-
-    pcmanfm
-
     python311
-
-
-    flameshot
   ];
 
   home.sessionVariables = {
@@ -82,6 +87,9 @@
       #background = "#050505";
       confirm_os_window_close = "0";
       color0 = "#151414"; # gruvbox's black is waaay too light
+      remember_window_size = "no";
+      initial_window_width = "100c";
+      initial_window_height = "25c";
     };
   };
 
@@ -89,6 +97,7 @@
     enable = true;
   };
 
+  # https://github.com/nix-community/home-manager/issues/3113 (and psensor?)
   #programs.dconf.enable = true; # required for easyeffects to work?
   # https://github.com/NixOS/nixpkgs/issues/158476
 

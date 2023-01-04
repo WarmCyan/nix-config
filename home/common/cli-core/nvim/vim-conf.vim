@@ -197,6 +197,9 @@ nnoremap <tab>x :tabclose<cr>
 " Split line (on next space)
 nnoremap S f<space>s<cr><esc>==
 
+" Todo-cycling with my custom td-state tool
+nmap <s-t> V:'<,'>!td-state "`cat`"<cr>W
+
 
 " ==============================================================================
 " ABBREVIATIONS

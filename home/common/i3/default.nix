@@ -63,6 +63,9 @@ in
 
         "${caps}+Return" = "exec ${pkgs.kitty}/bin/kitty";
 
+        # floating terminal (see float toggle in extraconfig)
+        "${caps}+Shift+Return" = "exec --no-startup-id ${pkgs.kitty}/bin/kitty --class kitty-floating";
+
         # hjkl move focus between windows
         "${caps}+h" = "focus left";
         "${caps}+j" = "focus down";
@@ -75,9 +78,15 @@ in
         "${caps}+Shift+k" = "move up";
         "${caps}+Shift+l" = "move right";
 
+        # move entire workspace
+        "${caps}+Control+h" = "move workspace to output left";
+        "${caps}+Control+l" = "move workspace to output right";
+        
         "${caps}+q" = "kill";
 
         "${win}+l" = "exec betterlockscreen --lock --blur";
+
+        "${caps}+c" = "exec firefox";
 
         "XF86AudioMute" = "exec amixer set Master toggle";
         "XF86AudioLowerVolume" = "exec amixer set Master 4%-";
@@ -128,7 +137,7 @@ in
           notification = false;
         }
         {
-          command = "${pkgs.feh}/bin/feh --bg-scale ~/.background-image";
+          command = "${pkgs.feh}/bin/feh --bg-fill ~/.background-image";
           always = true;
           notification = false;
         }
@@ -147,6 +156,12 @@ in
       #for_window [class=".*"] title_format "█<span size='smaller'>  %title</span>"  #ue0c6
       for_window [all] title_format "█<span size='smaller'>  %title</span>"  #ue0c6
       #for_window [class=".*"] normal 0px
+
+      # floating kitty terminal (see floating terminal in keybinds)
+      for_window [class="kitty-floating"] floating toggle
+
+      # bug from yad that was never fixed https://sourceforge.net/p/yad-dialog/tickets/301/
+      for_window [class="Yad"] floating enable
     '';
   };
 }

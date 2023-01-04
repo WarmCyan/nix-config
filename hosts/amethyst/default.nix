@@ -95,15 +95,23 @@ in
     CENTER="DP-0"
     RIGHT="DP-5"
     HDMI="HDMI"
-    ${pkgs.xorg.xrandr}/bin/xrandr \
-      --output $LEFT --mode 1920x1080 --pos 0x10 --rotate normal \
-      --output $RIGHT --mode 1920x1080 --pos 4480x10 --rotate normal \
-      --output $CENTER --mode 2560x1440 --pos 1920x0 --rotate normal \
-      --output $HDMI --off
+    
+    # old 3 side by side normal orientations
+    # ${pkgs.xorg.xrandr}/bin/xrandr \
+    #   --output $LEFT --mode 1920x1080 --pos 0x10 --rotate normal \
+    #   --output $RIGHT --mode 1920x1080 --pos 4480x10 --rotate normal \
+    #   --output $CENTER --mode 2560x1440 --pos 1920x0 --rotate normal \
+    #   --output $HDMI --off
       
+    ${pkgs.xorg.xrandr}/bin/xrandr \
+      --output $LEFT --mode 1920x1080 --pos 0x420 --rotate normal \
+      --output $RIGHT --mode 1920x1080 --pos 4480x0 --rotate right \
+      --output $CENTER --mode 2560x1440 --pos 1920x240 --rotate normal \
+      --output $HDMI --off
     
     # set up my caps lock keyboard configuration
-    ${pkgs.xorg.xmodmap}/bin/xmodmap ${capsLockKBLayout}
+    #${pkgs.xorg.xmodmap}/bin/xmodmap ${capsLockKBLayout}
+    ${pkgs.kbd-capslock}/bin/kbd-capslock
 
     # allow keyring authentication, apparently fails without this
     ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
@@ -164,20 +172,34 @@ in
     #NIX_LD = builtins.readFile "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
     # the above does not work because it's accessing a restricted path (can't
     # access nix store directly) A workaround discussed in https://github.com/Mic92/nix-ld/pull/31
-    NIX_LD = "${pkgs.glibc}/lib/ld-linux-x86-64.so.2";
+    #NIX_LD = "${pkgs.glibc}/lib/ld-linux-x86-64.so.2";  # NOTE: this is what I had before update on 2022-12-26
+    
     # NIX LD is a fancy dynamic linker so that packages that require a more FHS
     # like environment (micromamba!!) will still work. Note the
     # programs.nix-ld.enable above.
   };
 
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  services.flatpak.enable = true; # enabling this solely for steam right now because of the glibc-eac bug https://github.com/ValveSoftware/Proton/issues/6051
+
   environment.systemPackages = with pkgs; [
+    #xdg-desktop-portal-gtk
+    
     openrgb
+    i2c-tools
 
     # necessary for sddm theme
     libsForQt5.qt5.qtquickcontrols
     libsForQt5.qt5.qtgraphicaleffects
 
+    kbd-capslock
+
     # steam stuff
+    protonup-ng # so we can get the ge-proton version
+    # NOTE: following https://github.com/cloudishBenne/protonup-ng,
+    # I ran protonup -d "~/.steam/root/compatibilitytools.d/", and then
+    # `protonup`
     steamcmd
     steam-run
     #steam-run-native # ???
