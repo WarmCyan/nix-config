@@ -1,5 +1,8 @@
 # TODO: at some point we could have flags to only print found tools, and to
 # check more than just my stuff, but my common ones
+# TODO: add a flag to allow running cli true/false (successful exit or not) check for specified tool
+# should both print the badge and exit 0 or 1 (latter if not found)
+# TODO: add version
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "tools";
