@@ -226,5 +226,6 @@ EOF
   export_simple_fixed_tool "sri-hash"
   write_installer
   write_readme
+  write_license
   '';
 }
