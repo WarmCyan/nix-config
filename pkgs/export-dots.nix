@@ -1,11 +1,11 @@
 # DONE: create an "install" script
 # DONE: output a README to the folder containing iris information
-# TODO: inject iris information into comment at beginning of each file
+# STRT: inject iris information into comment at beginning of each file
 
 # DONE: bin/td-state
 # DONE: bin/add-jupyter-env
 # DONE: bin/tools
-# TODO: add link to main nix config in readme
+# DONE: add link to main nix config in readme
 
 # the IDEA: for this will be to create an "export folder" that's timestamped and
 # has current git version info etc.
@@ -13,10 +13,11 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "export-dots";
-  version = "0.2.1";
+  version = "0.3.0";
   description = "Turn nix-ified configs and scripts into non-nix-ified versions, so they can be copied onto systems that are too hard to get nix onto.";
   usage = "export-dots [LOCATION]  # LOCATION by default is ~/dots";
   parameters = {};
+  runtimeInputs = [ pkgs.shellcheck pkgs.shfmt ];
   text = /* bash */ ''
 
   export_folder="''${1-$HOME/dots}"
@@ -138,6 +139,17 @@ EOF
 
     # remove any export PATH stuff if it's within the first 40 lines
     sed -i "1,40{/export PATH=\".*\"/d}" "''${target_tool}"
+
+    # add generation information
+    generation_information="# This tool was initially generated from a nix configuration:\n# https://github.com/WildfireXIII/nix-config\n#\n# Config name: ''${hm_config}\n# Commit hash: ''${hm_hash} (v''${hm_revCount})\n# Config date: ''${hm_lastMod}\n# Exported with export-dots v''${VERSION}"
+    if grep -q "# License: MIT" < "''${target_tool}"; then
+      sed -i "/# License: MIT/a #\n''${generation_information}" "''${target_tool}"
+    else
+      sed -i "2i ''${generation_information}\n" "''${target_tool}"
+    fi
+
+    shellcheck "''${target_tool}"
+    shfmt --indent 2 --case-indent --write "''${target_tool}"
   }
 
   function write_installer {
@@ -188,6 +200,20 @@ EOF
       echo './install.sh'
       echo '```'
     } > "''${readme}"
+  }
+
+  function write_license {
+    license="''${export_folder}/LICENSE.txt"
+    echo "Writing license at ''${license}..."
+    cat << EOF > "''${license}"
+Copyright (c) 2023 Nathan Martindale
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice (including the next paragraph) shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+EOF
   }
   
 
