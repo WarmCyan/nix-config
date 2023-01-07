@@ -116,6 +116,9 @@
     };
   } else {}))
   else null;
+
+  fixMultiLineBashComment = fullString:
+  builtins.replaceStrings [ "\n" ] [ "\n# " ] fullString;
   
 
   # allow a version number to be associated with a text file
@@ -187,7 +190,11 @@
       
       # ===============================================================
       # ${name}${if version != null then " (${version})" else ""}
-      # ${description}
+      # ${fixMultiLineBashComment description}
+      #
+      ${if usage != null then "# Usage: ${fixMultiLineBashComment usage}" else ""}
+      # Author: Nathan Martindale
+      # License: MIT
       # ===============================================================
       
       set -o errexit

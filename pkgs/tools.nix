@@ -6,10 +6,21 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "tools";
-  description = "Essentially a lister of my tools so I remember!";
-  usage = "tools";
+  version = "0.2.0";
+  description = "Essentially a lister of my tools so I remember! And can quickly check which ones are installed";
+  usage = "tools [-c|--check TOOL] [-q|--quiet]";
   initColors = true;
-  parameters = {};
+  parameters = {
+    check = {
+      flags = [ "-c" "--check" ];
+      description = "Check if a specified tool exists in the path. Will exit non-zero if tool not found.";
+    };
+    quiet = {
+      flags = [ "-q" "--quiet" ];
+      description = "Don't print out any badges, but exit zero or non-zero if a tool found/not found.";
+      option = true;
+    };
+  };
   text = /* bash */ ''
 
   function status_badge () {
@@ -17,9 +28,31 @@ builders.writeTemplatedShellApplication {
     local message="''${2}"
 
     if [[ ''${status} == 0 ]]; then
-        echo "''${bg_green}''${fg_black}  OK  ''${ta_none} ''${message}"
+
+      # exit based on status if quiet and don't print
+      if [[ ''${quiet-false} == true ]]; then
+        exit 0
+      fi
+    
+      echo "''${bg_green}''${fg_black}  OK  ''${ta_none} ''${message}"
+
+      # if this was one specific tool we were looking for, exit now
+      if [[ "''${check-}" != "" ]]; then
+        exit 0
+      fi
     else
-        echo "''${bg_red}''${fg_black} MISS ''${ta_none} ''${message}"
+    
+      # exit based on status if quiet and don't print
+      if [[ ''${quiet-false} == true ]]; then
+        exit 1
+      fi
+      
+      echo "''${bg_red}''${fg_black} MISS ''${ta_none} ''${message}"
+      
+      # if this was one specific tool we were looking for, exit now
+      if [[ "''${check-}" != "" ]]; then
+        exit 1
+      fi
     fi
   }
   
@@ -30,8 +63,11 @@ builders.writeTemplatedShellApplication {
   }
 
 
+  if [[ "''${check-}" != "" ]]; then
+    check_tool "''${check}"
+  fi
+  
   # my tools
-  echo "Checking installation of custom tools in path..."
   check_tool "iris"
   check_tool "export-dots"
   echo "------"
