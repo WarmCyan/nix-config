@@ -1,3 +1,5 @@
+# TODO: add a "reference" folder with other tools that I want a reference to,
+# but don't need un-nixified (e.g. this one, and iris itself)
 # DONE: create an "install" script
 # DONE: output a README to the folder containing iris information
 # STRT: inject iris information into comment at beginning of each file
