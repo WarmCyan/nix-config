@@ -1,16 +1,20 @@
 # Things I want:
 # in the middle, music controls
-# on the left, right before the workspaces, a terminal button
 # on the right, date, time, IP-addr (global and local)? battery if applicable,
 # vol
 
 # TODO: clicking on amethyst brings up "rofi start menu"
 
-{ pkgs, lib, ... }:
+{ pkgs, lib, hostname, ... }:
 let
   cPrimary = "#FF9866"; # pleasent bright peach
   cWarmDark = "#353432";
   cBackground = "#232222";
+
+  capitalizedHostname = builtins.concatStringsSep "" [
+    (lib.strings.toUpper (builtins.substring 0 1 hostname))
+    (builtins.substring 1 (builtins.stringLength hostname - 1) hostname)
+  ];
 in {
   # test by manually running `polybar -l info`
   services.polybar = {
@@ -83,16 +87,28 @@ in {
 
 
       "module/launcher-distro-icon" = {
-        type = "custom/script";
-        exec = "name=$(${pkgs.nettools}/bin/hostname) && ${pkgs.coreutils}/bin/echo \"\${name^}\"";
-        interval = 99999;
-        label="%output%";
-        format = "  <label>"; # uf313 (in vim, use insert mode ctrl+v)
-        format-foreground = "${cPrimary}";
-        format-background = "${cWarmDark}";
-        format-padding = 2;
-        format-font = 4;
+        type = "custom/text";
+        content = "  ${capitalizedHostname}"; # uf313 (in vim, use insert mode ctrl+v)
+        content-foreground = "${cPrimary}";
+        content-background = "${cWarmDark}";
+        content-padding = 2;
+        content-font = 4;
+        click-left = "${pkgs.i3}/bin/i3-msg -q \"exec ${pkgs.rofi}/bin/rofi -show drun -show-icons -sidebar-mode -drun-show-actions -fixed-num-lines 50\"";
+        # -theme-str 'window {width: 25%;}
       };
+      
+      # "module/launcher-distro-icon" = {
+      #   type = "custom/script";
+      #   exec = "name=$(${pkgs.nettools}/bin/hostname) && ${pkgs.coreutils}/bin/echo \"\${name^}\"";
+      #   interval = 99999;
+      #   label="%output%";
+      #   format = "  <label>"; # uf313 (in vim, use insert mode ctrl+v)
+      #   format-foreground = "${cPrimary}";
+      #   format-background = "${cWarmDark}";
+      #   format-padding = 2;
+      #   format-font = 4;
+      # };
+      #
 
       "module/i3" = {
         type = "internal/i3";
@@ -151,6 +167,15 @@ in {
         # clickable. I will probably have to make a custom script module for
         # this one.
         click-left = "${pkgs.i3}/bin/i3-msg -q \"exec ${pkgs.yad}/bin/yad --calendar --undecorated --fixed --close-on-unfocus --no-buttons > /dev/null\"";
+      };
+
+      # NOTE: this does work, but maybe it would be better to just make rofi
+      # appear when clicking the system name
+      "module/terminal" = {
+        type = "custom/text";
+        content = ""; # ue795
+        content-font = 3;
+        click-left = "${pkgs.i3}/bin/i3-msg -q \"exec ${pkgs.kitty}/bin/kitty\"";
       };
 
       "module/sepLR01" = {

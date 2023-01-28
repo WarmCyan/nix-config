@@ -95,6 +95,9 @@
 
   programs.rofi = {
     enable = true;
+    theme = "gruvbox-dark-hard";
+    location = "top-left";
+    yoffset = 25;
   };
 
   # https://github.com/nix-community/home-manager/issues/3113 (and psensor?)
