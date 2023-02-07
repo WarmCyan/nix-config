@@ -6,6 +6,9 @@
 # TODO: a flag to list the logs to stdout
 # TODO: it would be cool if we could have nvim open the log and set the working
 # directory to a project directory that's listed at the top of the file.
+  # NOTE: in order for this to work, you'd have to allow specifying multiple 
+  # directories, where you list them per hostname (so engilog would have to
+  # handle this based on what the current hostname was)
 # TODO: so yeah, the engineering log needs to have some metadata at the top
 # TODO: there should also be some syntax to allow exporting specifically
 # indicated sections (e.g. allow it to be a decision log as well. and allow
