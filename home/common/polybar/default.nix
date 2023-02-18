@@ -187,7 +187,7 @@ in {
       };
       "module/sepRL21" = {
         type = "custom/text";
-        content = " "; # ue0be
+        content = " "; # ue0be
         content-foreground = "${cPrimary}";
         content-background = "${cBackground}";
         content-font = 3;

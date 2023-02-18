@@ -109,7 +109,8 @@
   inputs = {
     #nixpkgs-unstable.url = "path:/home/dwl/lab/nixpkgs";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.05";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.11";
+    # nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.05";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -134,11 +135,11 @@
     # =================== NIXOS CONFIGURATIONS ==================
 
     nixosConfigurations = {
-    amethyst = mkSystem {
-	    configName = "amethyst";
-	    hostname = "amethyst";
-	    system = "x86_64-linux";
-    };  
+      amethyst = mkSystem {
+        configName = "amethyst";
+        hostname = "amethyst";
+        system = "x86_64-linux";
+      };  
       therock = mkStableSystem {
         configName = "therock";
         hostname = "therock";

@@ -52,10 +52,12 @@ in
   };
 
   # debug with `fc-list | grep 'fontname'`
+  # https://nixos.wiki/wiki/Fonts
   fonts.fontDir.enable = true;
   fonts.fonts = with pkgs; [
     powerline-fonts
-    nerdfonts
+    (nerdfonts.override { fonts = [ "Iosevka" ]; })
+    # nerdfonts
   ];
 
   # Set your time zone.
@@ -164,8 +166,10 @@ in
   
   services.openssh = {
     enable = true;
-    passwordAuthentication = true; # TODO: set this to false
-    permitRootLogin = "no";
+    settings = {
+      PasswordAuthentication = true; # TODO: set this to false
+      PermitRootLogin = "no";
+    };
   };
 
   environment.variables = {
