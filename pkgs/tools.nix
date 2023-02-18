@@ -1,12 +1,12 @@
 # TODO: at some point we could have flags to only print found tools, and to
 # check more than just my stuff, but my common ones
-# TODO: add a flag to allow running cli true/false (successful exit or not) check for specified tool
+# DONE: add a flag to allow running cli true/false (successful exit or not) check for specified tool
 # should both print the badge and exit 0 or 1 (latter if not found)
-# TODO: add version
+# DONE: add version
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "tools";
-  version = "0.2.0";
+  version = "0.2.1";
   description = "Essentially a lister of my tools so I remember! And can quickly check which ones are installed";
   usage = "tools [-c|--check TOOL] [-q|--quiet]";
   initColors = true;
@@ -67,14 +67,17 @@ builders.writeTemplatedShellApplication {
     check_tool "''${check}"
   fi
   
-  # my tools
+  # my nix-specific tools
   check_tool "iris"
   check_tool "export-dots"
   echo "------"
+  # my generalizable tools 
+  check_tool "tools"
   check_tool "add-jupyter-env"
   check_tool "sri-hash"
   check_tool "td-state"
   echo "------"
+  # my desktop system specific tools
   check_tool "mic-monitor"
   check_tool "kbd-capslock"
   '';
