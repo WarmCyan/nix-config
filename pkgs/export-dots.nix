@@ -12,10 +12,13 @@
 # the IDEA: for this will be to create an "export folder" that's timestamped and
 # has current git version info etc.
 
+# https://www.grymoire.com/Unix/Sed.html - everything you ever wanted to know
+# about sed
+
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "export-dots";
-  version = "0.3.0";
+  version = "0.4.0";
   description = "Turn nix-ified configs and scripts into non-nix-ified versions, so they can be copied onto systems that are too hard to get nix onto.";
   usage = "export-dots [LOCATION]  # LOCATION by default is ~/dots";
   parameters = {};
@@ -26,6 +29,7 @@ builders.writeTemplatedShellApplication {
   mkdir -p "''${export_folder}"
   mkdir -p "''${export_folder}/home"
   mkdir -p "''${export_folder}/bin"
+  mkdir -p "''${export_folder}/reference"
   
   hm_config=""
   hm_hash=""
@@ -127,6 +131,31 @@ let &packpath=&runtimepath
 source ~/.vimrc
 EOF
   }
+
+  function export_reference_tool {
+    target_tool="''${export_folder}/reference/''${1}"
+    echo "exporting reference tool ''${1}..."
+    
+    cp ~/.nix-profile/bin/"''${1}" "''${target_tool}"
+    chmod 777 "''${target_tool}"
+    
+    # add generation information
+    generation_information="# This tool was initially generated from a nix configuration:\n# https://github.com/WildfireXIII/nix-config\n#\n# Config name: ''${hm_config}\n# Commit hash: ''${hm_hash} (v''${hm_revCount})\n# Config date: ''${hm_lastMod}\n# Exported with export-dots v''${VERSION}"
+    if grep -q "# License: MIT" < "''${target_tool}"; then
+      # only replace a line like this if it's in the first little header area,
+      # otherwise exporting this tool will add a lot of random generation info
+      # comments!
+      sed -i -e "1,10 {/# License: MIT/a #\n''${generation_information}
+    }" "''${target_tool}"
+    else
+      sed -i "2i ''${generation_information}\n" "''${target_tool}"
+    fi
+
+    # NOTE: not running shellcheck because these aren't runnable, so I don't
+    # care if they don't work because something broke from adding my generation
+    # information.
+    shfmt --indent 2 --case-indent --write "''${target_tool}"
+  }
   
   function export_simple_fixed_tool {
     target_tool="''${export_folder}/bin/''${1}"
@@ -202,6 +231,15 @@ EOF
       echo './install.sh'
       echo '```'
     } > "''${readme}"
+
+    # throwing in another readme to explain the reference folder
+    ref_readme="''${export_folder}/reference/README.md"
+    echo "Writing reference scripts folder readme at ''${ref_readme}..."
+    {
+      echo "This folder is only to reference some of the other built scripts from my nix configuration,"
+      echo "but don't really make sense outside of my nix systems. I'm including them anyway for quick"
+      echo "reference, and also in case it's ever helpful to any other nix users :)" 
+    } > "''${ref_readme}"
   }
 
   function write_license {
@@ -226,6 +264,8 @@ EOF
   export_simple_fixed_tool "td-state"
   export_simple_fixed_tool "add-jupyter-env"
   export_simple_fixed_tool "sri-hash"
+  export_reference_tool "export-dots"
+  export_reference_tool "iris"
   write_installer
   write_readme
   write_license

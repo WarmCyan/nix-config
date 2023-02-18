@@ -187,7 +187,7 @@ in {
       };
       "module/sepRL21" = {
         type = "custom/text";
-        content = " "; # ue0be
+        content = " "; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
         content-foreground = "${cPrimary}";
         content-background = "${cBackground}";
         content-font = 3;
