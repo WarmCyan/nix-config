@@ -50,7 +50,7 @@
     xkbVariant = "";
     #synaptics.enable = true; # can't use both synaptics and libinput
     libinput.enable = true;
-    libinput.touchpad.naturalScrolling = true;
+    #libinput.touchpad.naturalScrolling = true;
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
