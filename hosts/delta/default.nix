@@ -12,6 +12,7 @@
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
+  boot.loader.timeout = 2;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
@@ -49,7 +50,17 @@
     layout = "us";
     xkbVariant = "";
     #synaptics.enable = true; # can't use both synaptics and libinput
-    libinput.enable = true;
+    libinput = {
+      enable = true;
+
+      touchpad = {
+        disableWhileTyping = true;
+        additionalOptions = ''
+          Option "PalmDetection" "on"
+        '';
+      };
+
+    };
     #libinput.touchpad.naturalScrolling = true;
   };
 
