@@ -60,6 +60,8 @@
   #programs.dconf.enable = true; # required for easyeffects to work?
   # https://github.com/NixOS/nixpkgs/issues/158476
 
+  # NOTE: to generate the lockscreen image you need to separately run
+  # betterlockscreen -u .background-image -l blur
 
   home.file.".config/betterlockscreenrc".text = ''
     fx_list=(blur)

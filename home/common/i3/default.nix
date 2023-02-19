@@ -84,7 +84,7 @@ in
         
         "${caps}+q" = "kill";
 
-        "${win}+l" = "exec betterlockscreen --lock --blur";
+        "${win}+l" = "exec betterlockscreen --lock blur";
 
         "${caps}+c" = "exec firefox";
 
