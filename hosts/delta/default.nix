@@ -48,7 +48,7 @@
   services.xserver = {
     layout = "us";
     xkbVariant = "";
-    synaptics.enable = true;
+    #synaptics.enable = true; # can't use both synaptics and libinput
     libinput.enable = true;
     libinput.naturalScrolling = true;
   };
