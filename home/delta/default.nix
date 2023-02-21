@@ -1,6 +1,6 @@
 # delta, home configuration for primary laptop
 
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 {
   imports = [
     ../common/cli-core
@@ -25,12 +25,38 @@
     # -- other --
     obsidian
     python311
+    dconf
+    
+    vlc
+    ario
+    # ymuse
+    cantata  # NOTE: doesn't work well with my chosen qt theme
+    mpdevil
+    
+    lxappearance  # don't actually use...
   ];
   
   home.sessionVariables = {
     TERMINAL = "kitty";
     EDITOR = "nvim";
     #NIX_LD = "${pkgs.glibc}/lib/ld-linux-x86-64.so.2";
+  };
+
+  gtk = {
+    enable = true;
+    theme = {
+      package = pkgs.gnome.gnome-themes-extra;
+      name = "Adwaita-dark";
+    };
+  };
+
+  qt = {
+    enable = true;
+    platformTheme = "gtk";
+    style = {
+      package = pkgs.libsForQt5.qtstyleplugins;
+      name = "bb10dark";
+    };
   };
 
   programs.kitty = {
@@ -54,6 +80,18 @@
     theme = "gruvbox-dark-hard";
     location = "top-left";
     yoffset = 25;
+  };
+
+  programs.beets = {
+    enable = true;
+    settings = {
+      directory = "~/music";
+    };
+  };
+  programs.ncmpcpp.enable = true;
+  services.mpd = {
+    enable = true;
+    musicDirectory = "${config.home.homeDirectory}/music";
   };
 
   # https://github.com/nix-community/home-manager/issues/3113 (and psensor?)

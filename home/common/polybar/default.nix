@@ -195,14 +195,14 @@ in {
         content-font = 3;
       };
       
-      "module/sepLR10" = {
+      "module/sepRL10" = {
         type = "custom/text";
         content = " "; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
         content-background = "${cWarmDark}";
         content-foreground = "${cBackground}";
         content-font = 3;
       };
-      "module/sepLR01" = {
+      "module/sepRL01" = {
         type = "custom/text";
         content = " "; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
         content-foreground = "${cWarmDark}";
