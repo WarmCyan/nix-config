@@ -4,6 +4,8 @@
 # vol
 
 # TODO: clicking on amethyst brings up "rofi start menu"
+# TODO: music controls should include a rofi button for quickly pulling up
+# playlists
 
 { pkgs, lib, hostname, ... }:
 let
@@ -189,6 +191,21 @@ in {
         type = "custom/text";
         content = " "; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
         content-foreground = "${cPrimary}";
+        content-background = "${cBackground}";
+        content-font = 3;
+      };
+      
+      "module/sepLR10" = {
+        type = "custom/text";
+        content = " "; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
+        content-background = "${cWarmDark}";
+        content-foreground = "${cBackground}";
+        content-font = 3;
+      };
+      "module/sepLR01" = {
+        type = "custom/text";
+        content = " "; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
+        content-foreground = "${cWarmDark}";
         content-background = "${cBackground}";
         content-font = 3;
       };
