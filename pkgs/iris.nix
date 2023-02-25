@@ -307,48 +307,94 @@ builders.writeTemplatedShellApplication {
       echo -e "\nPrevious clean home generations:"
       printf "%-5s   %-12s   %-12s\n" "GEN" "GEN DATE" "GIT VERSION"
       echo "------------------------------------"
+      printf "Collecting...\r"
       if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
         pushd "/nix/var/nix/profiles/per-user/''${USER}/" &> /dev/null
-        for filepath in home-manager-*-link; do
-          #echo "''${filepath}"
-          # shellcheck disable=SC2001
-          gen_num=$(echo "''${filepath}" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
-          
-          hm_config=""
-          hm_hash=""
-          hm_revCount=""
-          hm_lastMod=""
-          
-          full_path="/nix/var/nix/profiles/per-user/''${USER}/''${filepath}"
-          if [[ -e "''${full_path}/home-files/.local/share/iris/configname" ]]; then
-            hm_config=$(cat "''${full_path}/home-files/.local/share/iris/configname")
-          fi
-          if [[ -e "''${full_path}/home-files/.local/share/iris/configlocation" ]]; then
-            config_location=$(cat "''${full_path}/home-files/.local/share/iris/configlocation")
-          fi
-          if [[ -e "''${full_path}/home-files/.local/share/iris/configShortRev" ]]; then
-            hm_hash=$(cat "''${full_path}/home-files/.local/share/iris/configShortRev")
-          fi
-          if [[ -e "''${full_path}/home-files/.local/share/iris/configRevCount" ]]; then
-            hm_revCount=$(cat "''${full_path}/home-files/.local/share/iris/configRevCount")
-            if [[ "''${hm_revCount}" == "dirty" ]]; then
-              hm_revCount=""
-            fi
-          fi
-          if [[ -e "''${full_path}/home-files/.local/share/iris/configLastModified" ]]; then
-            hm_lastMod=$(cat "''${full_path}/home-files/.local/share/iris/configLastModified")
-            if [[ "''${hm_lastMod}" != "dirty" ]]; then
-              hm_lastMod=$(date -d "@''${hm_lastMod}" +"%Y-%m-%d")
-            fi
-          fi
-          hm_generation_date=$(stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${filepath}")
-          hm_generation_date_time=''${hm_generation_date:0:10}
-          if [[ "''${hm_revCount}" == "" ]]; then
-            continue
-          fi
 
-          printf "%-5s - %-12s - v%-12s\n" "''${gen_num}" "(''${hm_generation_date_time})" "''${hm_revCount}-''${hm_hash}"
-        done
+        {
+          for filepath in home-manager-*-link; do
+            #echo "''${filepath}"
+            # shellcheck disable=SC2001
+            gen_num=$(echo "''${filepath}" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
+            
+            hm_conf_hash=""
+            hm_conf_revCount=""
+            hm_conf_lastMod=""
+            
+            full_path="/nix/var/nix/profiles/per-user/''${USER}/''${filepath}"
+            if [[ -e "''${full_path}/home-files/.local/share/iris/configShortRev" ]]; then
+              hm_conf_hash=$(cat "''${full_path}/home-files/.local/share/iris/configShortRev")
+            fi
+            if [[ -e "''${full_path}/home-files/.local/share/iris/configRevCount" ]]; then
+              hm_conf_revCount=$(cat "''${full_path}/home-files/.local/share/iris/configRevCount")
+              if [[ "''${hm_conf_revCount}" == "dirty" ]]; then
+                hm_conf_revCount=""
+              fi
+            fi
+            if [[ -e "''${full_path}/home-files/.local/share/iris/configLastModified" ]]; then
+              hm_conf_lastMod=$(cat "''${full_path}/home-files/.local/share/iris/configLastModified")
+              if [[ "''${hm_conf_lastMod}" != "dirty" ]]; then
+                hm_conf_lastMod=$(date -d "@''${hm_conf_lastMod}" +"%Y-%m-%d")
+              fi
+            fi
+            hm_conf_generation_date=$(stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${filepath}")
+            hm_conf_generation_date_time=''${hm_conf_generation_date:0:10}
+            if [[ "''${hm_conf_revCount}" == "" ]]; then
+              continue
+            fi
+
+            printf "%-5s - %-12s - v%-12s\n" "''${gen_num}" "(''${hm_conf_generation_date_time})" "''${hm_conf_revCount}-''${hm_conf_hash}"
+          done
+        } 2>&1 | sort -n | cat
+
+        popd &> /dev/null
+      fi
+    }
+    
+    function list_sys_gens () {
+      ensure_config
+      echo -e "\nPrevious clean system generations:"
+      printf "%-5s   %-12s   %-12s\n" "GEN" "GEN DATE" "GIT VERSION"
+      echo "------------------------------------"
+      printf "Collecting...\r"
+      if [[ -e "/nix/var/nix/profiles/system" ]]; then
+        pushd "/nix/var/nix/profiles/" &> /dev/null
+
+        {
+          for filepath in system-*-link; do
+            #echo "''${filepath}"
+            # shellcheck disable=SC2001
+            gen_num=$(echo "''${filepath}" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
+            
+            system_hash=""
+            system_revCount=""
+            system_lastMod=""
+            
+            full_path="/nix/var/nix/profiles/''${filepath}"
+            if [[ -e "''${full_path}/etc/iris/configShortRev" ]]; then
+              system_hash=$(cat "''${full_path}/etc/iris/configShortRev")
+            fi
+            if [[ -e "''${full_path}/etc/iris/configRevCount" ]]; then
+              system_revCount=$(cat "''${full_path}/etc/iris/configRevCount")
+              if [[ "''${system_revCount}" == "dirty" ]]; then
+                system_revCount=""
+              fi
+            fi
+            if [[ -e "''${full_path}/etc/iris/configLastModified" ]]; then
+              system_lastMod=$(cat "''${full_path}/etc/iris/configLastModified")
+              if [[ "''${system_lastMod}" != "dirty" ]]; then
+                system_lastMod=$(date -d "@''${system_lastMod}" +"%Y-%m-%d")
+              fi
+            fi
+            system_generation_date=$(stat -c %y "/nix/var/nix/profiles/''${filepath}")
+            system_generation_date_time=''${system_generation_date:0:10}
+            if [[ "''${system_revCount}" == "" ]]; then
+              continue
+            fi
+
+            printf "%-5s - %-12s - v%-12s\n" "''${gen_num}" "(''${system_generation_date_time})" "''${system_revCount}-''${system_hash}"
+          done
+        } 2>&1 | sort -n | cat
 
         popd &> /dev/null
       fi
@@ -504,7 +550,22 @@ builders.writeTemplatedShellApplication {
           esac
           ;;
         lsgen)
-          list_home_gens
+          case "''${config_types}" in
+            hs|sh|"")
+              list_home_gens
+              list_sys_gens
+              ;;
+            h)
+              list_home_gens
+              ;;
+            s)
+              list_sys_gens
+              ;;
+            *)
+              echo "Invalid config types, please specify 'h' and/or 's'"
+              exit 1
+              ;;
+          esac
           ;;
         *)
           echo "Invalid command, please specify [b|build]|[e|edit]|[n|new]|ls"
