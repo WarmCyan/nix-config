@@ -1,21 +1,12 @@
 # amethyst, system configuration for BEAST HOME PC!
 
 { config, pkgs, hostname, lib, ... }:
-let
-  capsLockKBLayout = pkgs.writeText "xkb-layout" ''
-    clear lock
-    clear mod4
-    clear mod5
-    keycode 66 = Hyper_L
-    !add lock = Hyper_L
-    add mod4 = Super_L Super_R
-    add mod5 = Hyper_L
-  '';
-in
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../common/fonts
+      ../common/pipewire
     ];
 
   # Bootloader.
@@ -50,15 +41,6 @@ in
       allowedTCPPorts = [ 22 ];
     };
   };
-
-  # debug with `fc-list | grep 'fontname'`
-  # https://nixos.wiki/wiki/Fonts
-  fonts.fontDir.enable = true;
-  fonts.fonts = with pkgs; [
-    powerline-fonts
-    (nerdfonts.override { fonts = [ "Iosevka" ]; })
-    # nerdfonts
-  ];
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -112,7 +94,6 @@ in
       --output $HDMI --off
     
     # set up my caps lock keyboard configuration
-    #${pkgs.xorg.xmodmap}/bin/xmodmap ${capsLockKBLayout}
     ${pkgs.kbd-capslock}/bin/kbd-capslock
 
     # allow keyring authentication, apparently fails without this
@@ -130,18 +111,6 @@ in
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
-
-  # Enable sound with pipewire.
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    jack.enable = true;
-  };
 
   users.users.dwl = {
     isNormalUser = true;

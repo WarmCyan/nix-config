@@ -1,8 +1,12 @@
+# NOTE: explore https://github.com/adi1090x/rofi for good rofi stuff!
+
 { pkgs, lib, ... }:
 let 
   caps = "Mod5";
   win = "Mod4";
   alt = "Mod1";
+
+  inherit (builtins) readFile;
 in
 {
   xsession.enable = true;
@@ -84,7 +88,7 @@ in
         
         "${caps}+q" = "kill";
 
-        "${win}+l" = "exec betterlockscreen --lock --blur";
+        "${win}+l" = "exec betterlockscreen --lock blur";
 
         "${caps}+c" = "exec firefox";
 
@@ -98,8 +102,11 @@ in
         # containers, so the title format doesn't get applied.
         "${caps}+v" = "split v, focus parent, title_format \"█<span size='smaller'>  %title</span>\", focus child";
 
+        "${caps}+d" = "exec ${pkgs.rofi}/bin/rofi -show run -config ~/.local/share/rofi/themes/squared-everforest.rasi";
         
-        #"${alt}+Tab" = "exec rofi -show window -kb-accept-entry '!Alt+Tab' -kb-element-next 'Alt+Tab'"; #-kb-element-previous 'Alt+Shift+Tab'";
+        # TODO: there's still a white/blue styled selected option
+        # TODO: this doesn't allow enter to accept entry
+        "${alt}+Tab" = "exec ${pkgs.rofi}/bin/rofi -show window -kb-accept-entry '!Alt+Tab' -kb-element-next 'Alt+Tab' -config ~/.local/share/rofi/themes/squared-everforest.rasi"; #-kb-element-previous 'Alt+Shift+Tab'";
       };
       
       startup = [
@@ -166,5 +173,7 @@ in
       for_window [class="Yad"] floating enable
     '';
   };
+
+  home.file.".local/share/rofi/themes/squared-everforest.rasi".text = readFile ./squared-everforest.rasi;
 }
 

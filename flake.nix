@@ -135,6 +135,11 @@
     # =================== NIXOS CONFIGURATIONS ==================
 
     nixosConfigurations = {
+      delta = mkSystem {
+        configName = "delta";
+        hostname = "delta";
+        system = "x86_64-linux";
+      };  
       amethyst = mkSystem {
         configName = "amethyst";
         hostname = "amethyst";
@@ -172,7 +177,6 @@
         configName = "delta";
         username = "dwl";
         hostname = "delta";
-        noNixos = true;
       };
 
       # homeserver

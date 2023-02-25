@@ -51,6 +51,14 @@ in
     fi
     unset __mamba_setup
     # <<< mamba initialize <<<
+
+    # NOTE: Needed because of the change in 1.2.0: https://github.com/mamba-org/mamba/pull/2137/files
+    # for whatever reason though __mamba_exe doesn't seem to exist? I determined
+    # that manually making a function for it that just calls $MAMBA_EXE (like
+    # what the completion used to do) seems to work fine though:
+    __mamba_exe () {
+      $MAMBA_EXE "$@"
+    }
   '';
   
   programs.bash.initExtra = /* sh */ ''
@@ -69,5 +77,13 @@ in
     fi
     unset __mamba_setup
     # <<< mamba initialize <<<
+    
+    # NOTE: Needed because of the change in 1.2.0: https://github.com/mamba-org/mamba/pull/2137/files
+    # for whatever reason though __mamba_exe doesn't seem to exist? I determined
+    # that manually making a function for it that just calls $MAMBA_EXE (like
+    # what the completion used to do) seems to work fine though:
+    __mamba_exe () {
+      $MAMBA_EXE "$@"
+    }
   '';
 }
