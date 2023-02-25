@@ -118,6 +118,8 @@ in
     # allow keyring authentication, apparently fails without this
     ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
   '';
+
+  services.udisks2.enable = true; # necessary for udiskie to work in home-manager (usb automounting)
   
 
   # Configure keymap in X11

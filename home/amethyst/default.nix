@@ -77,6 +77,15 @@
     #NIX_LD = "${pkgs.glibc}/lib/ld-linux-x86-64.so.2";
   };
 
+  # NOTE: that via the options listed in
+  # https://rycee.gitlab.io/home-manager/options.html, we also have to enable
+  # "services.udisks2.enable = true" in the system config for this to work on
+  # NixOS
+  # (usb automounting)
+  services.udiskie = {
+    enable=true;
+  };
+
   programs.kitty = {
     enable = true;
     theme = "Gruvbox Material Dark Hard";
