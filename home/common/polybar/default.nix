@@ -3,9 +3,9 @@
 # on the right, date, time, IP-addr (global and local)? battery if applicable,
 # vol
 
-# TODO: clicking on amethyst brings up "rofi start menu"
 # TODO: music controls should include a rofi button for quickly pulling up
 # playlists
+# TODO: I should prob just make a function to create the sep modules below
 
 { pkgs, lib, hostname, ... }:
 let

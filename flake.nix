@@ -39,22 +39,13 @@
 # TODO's
 # ===============================
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
-# STRT: Start adding personal pkgs tools.
 # TODO: way to automate firefox speedups? https://www.drivereasy.com/knowledge/speed-up-firefox/ (will need to add nur which has firefox and extensions)
 # TODO: script to keep backup ref to home-manager gen and make it easy to switch to that one
 # TODO: add pre-commit stuff to this
-# TODO: make a exportshellcolors script that exports vars for colors, since it's easy to include that as a runtime dependency with  the writeshellapplication
 # TODO: snippet for nix header block
-# TODO: make a modified writeshellapplication that takes a version and a description and adds it to a special list that I can view with a separate package
 # TODO: fix vim auto line break to be how I used to have it
-# STRT: fix non writable settings.json for vscode
-# TODO: the nix lock file should be per machine, that way if I update on one I don't break it in the others 
-# TODO: tool to build flake and grab configs and publish to separate repo for when nix unavailable
-# TODO: it would be cool if features could be specified without ".nix" if it's
-# just a file and not a folder
 # TODO: investigate allowing serving a nix store via ssh https://nixos.org/manual/nix/stable/package-management/ssh-substituter.html
 # TODO: make some nice plymouth boot stuff! 
-# TODO: my lib should prob be called iris-lib to avoid ambiguity and confusion. (call it utils like in https://jdisaacs.com/blog/nixos-config/
 
 # MODULES NEEDED
 #================================
@@ -129,7 +120,7 @@
     inherit (builtins) attrValues;
   in
   rec {
-    inherit mylib; # TODO: ....why is this here? does this let you do outputs.lib? or self.lib?
+    inherit mylib;
 
 
     # =================== NIXOS CONFIGURATIONS ==================
