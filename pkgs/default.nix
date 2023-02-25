@@ -17,7 +17,8 @@
 
   tools = pkgs.callPackage ./tools.nix { inherit pkgs builders; };
 
-  volume = pkgs.callPackage ./volume.nix { };
+  volume = pkgs.callPackage ./barscripts/volume.nix { };
+  batt = pkgs.callPackage ./barscripts/batt.nix { };
   
   testing = pkgs.callPackage ./testing.nix { };
   testing2 = pkgs.callPackage ./testing2.nix { inherit builders; };

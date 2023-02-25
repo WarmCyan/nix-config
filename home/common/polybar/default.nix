@@ -69,7 +69,7 @@ in {
         
         modules-left = "launcher-distro-icon sepLR01 i3";
         modules-center = "sepLR_background_primary mpd-controls sepLR_primary_warmdark mpd-song sepRL_primary_warmdark pipewire sepRL_background_primary";
-        modules-right = "date sepRL21 time";
+        modules-right = "sepRL_warmdark_background power sepRL_background_warmdark date sepRL21 time";
 
         radius = 0;
         # radius-top = "0.0";
@@ -158,7 +158,7 @@ in {
         interval = "60.0";
         date = "%Y-%m-%d";
 
-        format = "<label>";
+        format = " <label>";
         format-padding = 1;
         format-background = "${cBackground}";
         format-foreground = "${cPrimary}";
@@ -171,10 +171,13 @@ in {
         click-left = "${pkgs.i3}/bin/i3-msg -q \"exec ${pkgs.yad}/bin/yad --calendar --undecorated --fixed --close-on-unfocus --no-buttons > /dev/null\"";
       };
 
+      
+      # TODO: NOTE: that if you want it to scroll the song label if it's above a
+      # certain amount, you can use the `zscroll` package.
       "module/mpd-song" = {
         type = "internal/mpd";
         format-online = "󰝚  <label-song>";
-        #format-paused = "󰝚";
+        format-stopped = "󰝚 ";
         format-offline = "";
 
         format-online-background = "${cWarmDark}";
@@ -228,6 +231,7 @@ in {
 
         # format-background: 
         # format-foreground: 
+        format-online-font = 2;
       };
 
       "module/pipewire" = {
@@ -242,6 +246,17 @@ in {
         click-left = "${pkgs.volume}/bin/volume mute";
         scroll-up = "${pkgs.volume}/bin/volume up";
         scroll-down = "${pkgs.volume}/bin/volume down";
+        format-font = 2;
+      };
+
+      "module/power" = {
+        type = "custom/script";
+        label = " %output% ";
+        exec = "${pkgs.batt}/bin/batt";
+        interval = 30;
+        format-foreground = "#FFFFFF";
+        format-background = "${cWarmDark}";
+        label-font = 2;
       };
 
       # NOTE: this does work, but maybe it would be better to just make rofi
@@ -286,6 +301,20 @@ in {
         content = " "; # ue0be 
         content-foreground = "${cBackground}";
         content-background = "${cPrimary}";
+        content-font = 3;
+      };
+      "module/sepRL_background_warmdark" = {
+        type = "custom/text";
+        content = " "; # ue0be 
+        content-foreground = "${cBackground}";
+        content-background = "${cWarmDark}";
+        content-font = 3;
+      };
+      "module/sepRL_warmdark_background" = {
+        type = "custom/text";
+        content = " "; # ue0be 
+        content-foreground = "${cWarmDark}";
+        content-background = "${cBackground}";
         content-font = 3;
       };
 
