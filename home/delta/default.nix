@@ -32,6 +32,8 @@
     # ymuse
     cantata  # NOTE: doesn't work well with my chosen qt theme
     mpdevil
+
+    volume
     
     lxappearance  # don't actually use...
   ];

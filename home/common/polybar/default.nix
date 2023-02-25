@@ -68,7 +68,7 @@ in {
         # font-1 = "Droid Sans Mono Slashed for Powerline:style=Bold:size=12;3";
         
         modules-left = "launcher-distro-icon sepLR01 i3";
-        modules-center = "";
+        modules-center = "sepLR_background_primary mpd-controls sepLR_primary_warmdark mpd-song sepRL_primary_warmdark pipewire sepRL_background_primary";
         modules-right = "date sepRL21 time";
 
         radius = 0;
@@ -171,6 +171,79 @@ in {
         click-left = "${pkgs.i3}/bin/i3-msg -q \"exec ${pkgs.yad}/bin/yad --calendar --undecorated --fixed --close-on-unfocus --no-buttons > /dev/null\"";
       };
 
+      "module/mpd-song" = {
+        type = "internal/mpd";
+        format-online = "󰝚  <label-song>";
+        #format-paused = "󰝚";
+        format-offline = "";
+
+        format-online-background = "${cWarmDark}";
+        format-online-foreground = "${cPrimary}";
+      };
+
+      "module/mpd-controls" = {
+        type = "internal/mpd";
+
+        format-online = "<icon-prev> <toggle> <icon-next>";
+        format-offline = "";
+        
+        format-online-background = "${cPrimary}";
+        format-online-foreground = "${cBackground}";
+
+        #format-online-forground
+        #format-online-background
+        # TODO: two separate modules for this one with player controls, orange
+        # and black, one with song name and music notes emoji, grey and orange,
+        # then finally orange and black with playlist rofi button and volume
+
+        label-song-maxlen = 50;
+        label-song-ellipsis = true;
+
+        # Only applies if <icon-X> is used
+        icon-play = "⏵";
+        icon-pause = "⏸";
+        icon-stop = "⏹";
+        icon-prev = "⏮";
+        icon-next = "⏭";
+        icon-seekb = "⏪";
+        icon-seekf = "⏩";
+        icon-random = "🔀";
+        icon-repeat = "🔁";
+        icon-repeatone = "🔂";
+        icon-single = "🔂";
+        icon-consume = "✀";
+
+        # Used to display the state of random/repeat/repeatone/single
+        # Only applies if <icon-[random|repeat|repeatone|single]> is used
+        toggle-on-foreground = "#fff";
+        toggle-off-foreground = "#555";
+
+        # Only applies if <bar-progress> is used
+        bar-progress-width = 10;
+        bar-progress-indicator = "|";
+        bar-progress-fill = "─";
+        bar-progress-empty = "─";
+        #bar-progress-fill-foreground
+        #bar-progress-fill-background
+
+        # format-background: 
+        # format-foreground: 
+      };
+
+      "module/pipewire" = {
+        type = "custom/script";
+        label = " %output% ";
+        #label-font = 3;
+        format-foreground = "${cBackground}";
+        format-background = "${cPrimary}";
+        interval = 1;
+        exec = "${pkgs.volume}/bin/volume";
+        click-right = "${pkgs.i3}/bin/i3-msg -q \"exec ${pkgs.pavucontrol}/bin/pavucontrol\"";
+        click-left = "${pkgs.volume}/bin/volume mute";
+        scroll-up = "${pkgs.volume}/bin/volume up";
+        scroll-down = "${pkgs.volume}/bin/volume down";
+      };
+
       # NOTE: this does work, but maybe it would be better to just make rofi
       # appear when clicking the system name
       "module/terminal" = {
@@ -178,6 +251,42 @@ in {
         content = ""; # ue795
         content-font = 3;
         click-left = "${pkgs.i3}/bin/i3-msg -q \"exec ${pkgs.kitty}/bin/kitty\"";
+      };
+      
+      "module/sepLR_background_primary" = {
+        type = "custom/text";
+        content = " "; # ue0bc
+        content-foreground = "${cBackground}";
+        content-background = "${cPrimary}";
+        content-font = 3;
+      };
+      "module/sepLR_primary_background" = {
+        type = "custom/text";
+        content = " "; # ue0bc
+        content-foreground = "${cPrimary}";
+        content-background = "${cPrimary}";
+        content-font = 3;
+      };
+      "module/sepLR_primary_warmdark" = {
+        type = "custom/text";
+        content = " "; # ue0bc
+        content-foreground = "${cPrimary}";
+        content-background = "${cWarmDark}";
+        content-font = 3;
+      };
+      "module/sepRL_primary_warmdark" = {
+        type = "custom/text";
+        content = " "; # ue0be 
+        content-foreground = "${cPrimary}";
+        content-background = "${cWarmDark}";
+        content-font = 3;
+      };
+      "module/sepRL_background_primary" = {
+        type = "custom/text";
+        content = " "; # ue0be 
+        content-foreground = "${cBackground}";
+        content-background = "${cPrimary}";
+        content-font = 3;
       };
 
       "module/sepLR01" = {

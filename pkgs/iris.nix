@@ -5,6 +5,8 @@
 # TODO: command to regenerate hardware config and copy in?
 # TODO: it would be cool if we could "star" generations or something
 # TODO: once we store git hash, allow grabbing the git log up to that hash for given generation.
+# TODO: it might be a good IDEA: to stash the flake lock in the config info too,
+# that way you can directly see what nixpkgs version was used in a given gen?
 
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
