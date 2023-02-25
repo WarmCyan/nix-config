@@ -36,6 +36,8 @@
     ../common/polybar
 
     ../common/discord
+
+    ../common/music
   ];
 
   home.packages = with pkgs; [
@@ -75,6 +77,23 @@
     TERMINAL = "kitty";
     EDITOR = "nvim";
     #NIX_LD = "${pkgs.glibc}/lib/ld-linux-x86-64.so.2";
+  };
+  
+  gtk = {
+    enable = true;
+    theme = {
+      package = pkgs.gnome.gnome-themes-extra;
+      name = "Adwaita-dark";
+    };
+  };
+
+  qt = {
+    enable = true;
+    platformTheme = "gtk";
+    style = {
+      #package = pkgs.libsForQt5.qtstyleplugins;
+      name = "adwaita-dark";
+    };
   };
 
   # NOTE: that via the options listed in

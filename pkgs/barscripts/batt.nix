@@ -3,7 +3,7 @@ writeShellApplication {
   name = "batt";
   runtimeInputs = [ pkgs.acpi pkgs.gnused ];
   text = /* bash */ ''
-    batt=$(acpi | sed -n "s/^.*, \([0-9]*\)%.*/\1/p")
+    batt=$(acpi 2> /dev/null | sed -n "s/^.*, \([0-9]*\)%.*/\1/p")
 
     count=0
     avg=0
@@ -12,14 +12,12 @@ writeShellApplication {
       ((count+=1))
     done
 
-    avg=$((avg / count))
-    battavg=$avg
-
     if [[ ''${count} -eq 0 ]]; then
-      echo " "
+      echo ""
     else
+      avg=$((avg / count))
+      battavg=$avg
       echo "  ''${battavg}%"
-      
     fi
   '';
 }

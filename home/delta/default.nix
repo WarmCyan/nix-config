@@ -10,6 +10,8 @@
     
     ../common/i3
     ../common/polybar
+
+    ../common/music
   ];
   
   home.packages = with pkgs; [
@@ -28,12 +30,8 @@
     dconf
     
     vlc
-    ario
     # ymuse
-    cantata  # NOTE: doesn't work well with my chosen qt theme
-    mpdevil
-
-    volume
+    # mpdevil
     
     lxappearance  # don't actually use...
   ];
@@ -56,8 +54,7 @@
     enable = true;
     platformTheme = "gtk";
     style = {
-      package = pkgs.libsForQt5.qtstyleplugins;
-      name = "bb10dark";
+      name = "adwaita-dark";
     };
   };
 
@@ -84,17 +81,6 @@
     yoffset = 25;
   };
 
-  programs.beets = {
-    enable = true;
-    settings = {
-      directory = "~/music";
-    };
-  };
-  programs.ncmpcpp.enable = true;
-  services.mpd = {
-    enable = true;
-    musicDirectory = "${config.home.homeDirectory}/music";
-  };
 
   # https://github.com/nix-community/home-manager/issues/3113 (and psensor?)
   #programs.dconf.enable = true; # required for easyeffects to work?

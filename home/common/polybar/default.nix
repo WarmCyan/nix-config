@@ -188,10 +188,12 @@ in {
         type = "internal/mpd";
 
         format-online = "<icon-prev> <toggle> <icon-next>";
-        format-offline = "";
+        format-offline = "<icon-prev> <toggle> <icon-next>";
         
         format-online-background = "${cPrimary}";
         format-online-foreground = "${cBackground}";
+        format-offline-background = "${cPrimary}";
+        format-offline-foreground = "${cBackground}";
 
         #format-online-forground
         #format-online-background
