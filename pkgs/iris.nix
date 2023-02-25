@@ -8,6 +8,20 @@
 # TODO: it might be a good IDEA: to stash the flake lock in the config info too,
 # that way you can directly see what nixpkgs version was used in a given gen?
 
+
+# Tools for stability:
+# * iris lsgen h|s - list generations (iterate /nix/var/nix/profiles, find
+# home-files/.local/share/iris 
+# * iris "last" channel - whenever we update flake lock, change an input
+# nixpkgs-last to nixpkgs with a rev of what the pvrious unstable was, then add
+# as additional pkgs overlay. (so can always do e.g. `pkgs.last.blender` if a
+# package breaks and I quickly need the previous version
+# * iris rebuild [gennum] - checks out config repo at that generations rev, and
+# rebuilds
+# * iris r h|s [gennum] [gennum] - simply-reactivate the requested gen (do the same
+# nvd/confirm nix diff thing)
+
+
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
