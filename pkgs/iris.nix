@@ -12,6 +12,7 @@
 # Tools for stability:
 # * iris lsgen h|s - list generations (iterate /nix/var/nix/profiles, find
 # home-files/.local/share/iris 
+# TODO: lsgen should also optionally take an -a flag to not hide dirty gens?
 # * iris "last" channel - whenever we update flake lock, change an input
 # nixpkgs-last to nixpkgs with a rev of what the pvrious unstable was, then add
 # as additional pkgs overlay. (so can always do e.g. `pkgs.last.blender` if a
@@ -25,7 +26,7 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
-  version = "0.4.1";
+  version = "0.5.0";
   description = "Management tool for my systems/nix-config flake.";
   usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom";
   parameters = {
@@ -301,6 +302,58 @@ builders.writeTemplatedShellApplication {
       grep -P ".*\ =\ mk(StableSystem|System)" "''${config_location}/flake.nix" | sed -e "s/\s*\([A-Za-z0-9\-\_\@]*\)\ =.*/\1/g"
     }
 
+    function list_home_gens () {
+      ensure_config
+      echo -e "\nPrevious clean home generations:"
+      printf "%-5s   %-12s   %-12s\n" "GEN" "GEN DATE" "GIT VERSION"
+      echo "------------------------------------"
+      if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
+        pushd "/nix/var/nix/profiles/per-user/''${USER}/" &> /dev/null
+        for filepath in home-manager-*-link; do
+          #echo "''${filepath}"
+          # shellcheck disable=SC2001
+          gen_num=$(echo "''${filepath}" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
+          
+          hm_config=""
+          hm_hash=""
+          hm_revCount=""
+          hm_lastMod=""
+          
+          full_path="/nix/var/nix/profiles/per-user/''${USER}/''${filepath}"
+          if [[ -e "''${full_path}/home-files/.local/share/iris/configname" ]]; then
+            hm_config=$(cat "''${full_path}/home-files/.local/share/iris/configname")
+          fi
+          if [[ -e "''${full_path}/home-files/.local/share/iris/configlocation" ]]; then
+            config_location=$(cat "''${full_path}/home-files/.local/share/iris/configlocation")
+          fi
+          if [[ -e "''${full_path}/home-files/.local/share/iris/configShortRev" ]]; then
+            hm_hash=$(cat "''${full_path}/home-files/.local/share/iris/configShortRev")
+          fi
+          if [[ -e "''${full_path}/home-files/.local/share/iris/configRevCount" ]]; then
+            hm_revCount=$(cat "''${full_path}/home-files/.local/share/iris/configRevCount")
+            if [[ "''${hm_revCount}" == "dirty" ]]; then
+              hm_revCount=""
+            fi
+          fi
+          if [[ -e "''${full_path}/home-files/.local/share/iris/configLastModified" ]]; then
+            hm_lastMod=$(cat "''${full_path}/home-files/.local/share/iris/configLastModified")
+            if [[ "''${hm_lastMod}" != "dirty" ]]; then
+              hm_lastMod=$(date -d "@''${hm_lastMod}" +"%Y-%m-%d")
+            fi
+          fi
+          hm_generation_date=$(stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${filepath}")
+          hm_generation_date_time=''${hm_generation_date:0:10}
+          if [[ "''${hm_revCount}" == "" ]]; then
+            continue
+          fi
+
+          printf "%-5s - %-12s - v%-12s\n" "''${gen_num}" "(''${hm_generation_date_time})" "''${hm_revCount}-''${hm_hash}"
+        done
+
+        popd &> /dev/null
+      fi
+    }
+
     function open_for_edit () {
       ensure_config
       pushd "''${config_location}" &> /dev/null
@@ -449,6 +502,9 @@ builders.writeTemplatedShellApplication {
               exit 1
               ;;
           esac
+          ;;
+        lsgen)
+          list_home_gens
           ;;
         *)
           echo "Invalid command, please specify [b|build]|[e|edit]|[n|new]|ls"
