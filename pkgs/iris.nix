@@ -9,6 +9,7 @@
 # that way you can directly see what nixpkgs version was used in a given gen?
 
 
+
 # Tools for stability:
 # * iris lsgen h|s - list generations (iterate /nix/var/nix/profiles, find
 # home-files/.local/share/iris 
@@ -400,6 +401,20 @@ builders.writeTemplatedShellApplication {
       fi
     }
 
+    function activate_previous_home_gen () {
+      # NOTE: expects to be passed a string number
+      ensure_config
+      echo -e "\nRe-activiating previous home generation ''${1}"
+      
+      if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager-''${1}-link" ]]; then
+        # shellcheck disable=SC1090
+        . "/nix/var/nix/profiles/per-user/''${USER}/home-manager-''${1}-link/activate"
+      else
+        echo "Could not find generation, use the 'iris lsgen' command to list valid generation numbers."
+        exit 1
+      fi
+    }
+
     function open_for_edit () {
       ensure_config
       pushd "''${config_location}" &> /dev/null
@@ -560,6 +575,27 @@ builders.writeTemplatedShellApplication {
               ;;
             s)
               list_sys_gens
+              ;;
+            *)
+              echo "Invalid config types, please specify 'h' and/or 's'"
+              exit 1
+              ;;
+          esac
+          ;;
+        r|revert)
+          if [[ "''${config1}" == "" ]]; then
+            echo "Please specify a generation number to revert to."
+            exit 1
+          fi
+          case "''${config_types}" in
+            sh)
+              ;;
+            hs)
+              ;;
+            h)
+              activate_previous_home_gen "''${config1}"
+              ;;
+            s)
               ;;
             *)
               echo "Invalid config types, please specify 'h' and/or 's'"
