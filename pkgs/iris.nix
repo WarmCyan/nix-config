@@ -285,7 +285,7 @@ builders.writeTemplatedShellApplication {
 
         # if we've hit this point, we're good to do the build! 
         echo "Applying home result..."
-        nix-env --profile "/nix/var/nix/profiles/per-user/''${USER}/home-manager" --set ./result-home
+        nix-env --profile "/nix/var/nix/profiles/per-user/''${USER}/home-manager" --set ./result-home  # TODO: what does this do?
         result-home/activate
       popd &> /dev/null
     }
@@ -404,11 +404,83 @@ builders.writeTemplatedShellApplication {
     function activate_previous_home_gen () {
       # NOTE: expects to be passed a string number
       ensure_config
-      echo -e "\nRe-activiating previous home generation ''${1}"
+      echo -e "\nRe-activiating previous home generation ''${1}..."
       
       if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager-''${1}-link" ]]; then
+
+        nvd diff "/nix/var/nix/profiles/per-user/''${USER}/home-manager" "/nix/var/nix/profiles/per-user/''${USER}/home-manager-''${1}-link"
+        
+        if [[ ''${yes-false} == false ]]; then
+          # prompt loop
+          valid_response=false
+          while [[ ''${valid_response} == false ]]; do
+            read -r -p "Apply previous home generation result? [Y/n]" response 
+            case "''${response}" in
+              [nN][oO]|[nN])
+                echo "Previous home generation not applied."
+                return
+                ;;
+              [yY][eE][sS]|[yY])
+                valid_response=true
+                break
+                ;;
+              "")
+                valid_response=true
+                break
+                ;;
+              *)
+                echo "Invalid response, please enter [y]es or [n]o." 
+                ;;
+            esac
+          done
+        fi
+      
+        echo "Applying home generation ''${1}..."
         # shellcheck disable=SC1090
         . "/nix/var/nix/profiles/per-user/''${USER}/home-manager-''${1}-link/activate"
+      else
+        echo "Could not find generation, use the 'iris lsgen' command to list valid generation numbers."
+        exit 1
+      fi
+    }
+    
+    function activate_previous_sys_gen () {
+      # NOTE: expects to be passed a string number
+      ensure_config
+      echo -e "\nRe-activiating previous system generation ''${1}..."
+      
+      if [[ -e "/nix/var/nix/profiles/system-''${1}-link" ]]; then
+
+        nvd diff "/nix/var/nix/profiles/system" "/nix/var/nix/profiles/system-''${1}-link"
+        
+        if [[ ''${yes-false} == false ]]; then
+          # prompt loop
+          valid_response=false
+          while [[ ''${valid_response} == false ]]; do
+            read -r -p "Apply previous system result? [Y/n]" response 
+            case "''${response}" in
+              [nN][oO]|[nN])
+                echo "Previous system generation not applied."
+                return
+                ;;
+              [yY][eE][sS]|[yY])
+                valid_response=true
+                break
+                ;;
+              "")
+                valid_response=true
+                break
+                ;;
+              *)
+                echo "Invalid response, please enter [y]es or [n]o." 
+                ;;
+            esac
+          done
+        fi
+      
+        echo "Applying system generation ''${1}..."
+        # shellcheck disable=SC1090
+        . "/nix/var/nix/profiles/system-''${1}-link/activate"
       else
         echo "Could not find generation, use the 'iris lsgen' command to list valid generation numbers."
         exit 1
@@ -589,13 +661,26 @@ builders.writeTemplatedShellApplication {
           fi
           case "''${config_types}" in
             sh)
+              if [[ "''${config2}" == "" ]]; then
+                echo "Please specify both generation numbers to revert to."
+                exit 1
+              fi
+              activate_previous_home_gen "''${config2}"
+              activate_previous_sys_gen "''${config1}"
               ;;
             hs)
+              if [[ "''${config2}" == "" ]]; then
+                echo "Please specify both generation numbers to revert to."
+                exit 1
+              fi
+              activate_previous_home_gen "''${config1}"
+              activate_previous_sys_gen "''${config2}"
               ;;
             h)
               activate_previous_home_gen "''${config1}"
               ;;
             s)
+              activate_previous_sys_gen "''${config1}"
               ;;
             *)
               echo "Invalid config types, please specify 'h' and/or 's'"
