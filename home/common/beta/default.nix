@@ -5,6 +5,8 @@
     testing2
 
     export-dots
+
+    engilog
   ];
 
   # (move to dev when tested)
