@@ -41,24 +41,51 @@ builders.writeTemplatedShellApplication {
 
     declare -A references=()
 
-    # TODO: what is?
+    # used to store what the next series of letters to refer to a name
+    # (vimium-like functionality from chrome/firefox plugin)
     nextref=""
     
     notes_dir="''${XDG_DATA_HOME-$HOME/.local/share}/engilog"
 
-    # sync git
-    # TODO: don't we need to check if it's even a git repo first?
-    # TODO: don't we need to ask if we want to clone existing notes if not? (see
-    # the install script.)
-    echo "Syncing notes..."
-    pushd "''${notes_dir}" &>/dev/null
-    git pull
-    popd
+    # make sure the directory exists, and if not, ask if want to clone a repo
+    if [[ ! -e "''${notes_dir}" ]]; then
+      echo "Engilog directory does not exist, creating..."
+      valid_response=false
+      while [[ ''${valid_response} == false ]]; do
+        read -r -p "Do you want to clone an existing notes repository? (y/n)" response
+          case "''${response}" in
+            [nN][oO]|[nN])
+              echo "Continuing with local-only notes repository"
+              mkdir -p "''${notes_dir}"
+              valid_response=true
+              break
+              ;;
+            [yY][eE][sS]|[yY])
+              read -r -p "Please enter a git repo URL:" git_url
+              echo "Cloning notes repo into ''${notes_dir}.."
+              git clone "''${git_url}" "''${notes_dir}"
+              valid_response=true
+              break
+              ;;
+            *)
+              echo "Invalid response, please enter [y]es or [n]o." 
+              ;;
+          esac
+      done
+    fi
+
+    # sync git if this is not a solely local-only repo
+    if [[ -e "''${notes_dir}/.git" ]]; then
+      echo "Syncing notes..."
+      pushd "''${notes_dir}" &>/dev/null
+      git pull
+      popd
+    fi
     
     
     function insert_time
     {
-      date_time_string=`date +'%Y.%m.%d %H:%M:%S'`
+      date_time_string=$(date +'%Y.%m.%d %H:%M:%S')
       echo -e "\n----- ''${date_time_string} -----\n" >> "''$1"
     }
 
@@ -70,9 +97,10 @@ builders.writeTemplatedShellApplication {
     echo -e "Press 'n' to create a new notes session, or the key combo in yellow below to open a previous session"
     
     double_needed=false
-    count=`ls ''${notes_dir} -1q | wc -l`
+    # shellcheck disable=SC2012
+    count=$(ls "''${notes_dir}" -1q | wc -l)
 
-    if [ ''$count -gt ''${#references_single[@]} ]; then
+    if [[ "''${count}" -gt ''${#references_single[@]} ]]; then
       double_needed=true
     fi
     
@@ -80,8 +108,10 @@ builders.writeTemplatedShellApplication {
     pushd "''${notes_dir}" &>/dev/null
     index=0
     subindex=0
-    for filename in `ls -t1q`; do
-      coloredname=`sed -E "s/(.*)_(.*)_(.*)/$(printf "''${fg_blue}''${ta_bold}")\1$(printf "''${ta_none}")\_\2\_\3/g" <<< "''${filename}"`
+    # shellcheck disable=SC2045
+    for filename in $(ls -t1q); do
+      # shellcheck disable=SC2059
+      coloredname=$(sed -E "s/(.*)_(.*)_(.*)/$(printf "''${fg_blue}''${ta_bold}")\1$(printf "''${ta_none}")\_\2\_\3/g" <<< "''${filename}")
 
       nextref=""
       
@@ -108,26 +138,28 @@ builders.writeTemplatedShellApplication {
     if [[ "''${char1}" == "n" ]]; then
       echo -e "\nCreating a new notes session"
       
-      read -p "Session name: " name
+      read -r -p "Session name: " name
       echo "''${name}"
 
-      datestring=`date +"%Y.%m.%d"`
+      datestring=$(date +"%Y.%m.%d")
 
       filename="''${name}_''${HOSTNAME}_''${datestring}"
       echo "''${filename}"
       touch "''${notes_dir}/''${filename}"
       
-      inserttime "''${notesfolder}/''${filename}"
+      insert_time "''${notes_dir}/''${filename}"
       
-      editfile "''${notesfolder}/''${filename}"
+      edit_file "''${notes_dir}/''${filename}"
       
       # sync git stuff
-      echo "Syncing notes..."
-      pushd ''${notes_dir} &>/dev/null
-      git add -A 
-      git commit -am "Added ''${filename}"
-      git push
-      popd
+      if [[ -e "''${notes_dir}/.git" ]]; then
+        echo "Syncing notes..."
+        pushd "''${notes_dir}" &>/dev/null
+        git add -A 
+        git commit -am "Added ''${filename}"
+        git push
+        popd
+      fi
     else 
       reference_string="''${char1}"
       
@@ -138,15 +170,17 @@ builders.writeTemplatedShellApplication {
         
       filename=''${references[''$reference_string]}
       echo -e "\nOpening ''${filename}..."
-      inserttime "''${notes_dir}/''${filename}"
-      editfile "''${notes_dir}/''${filename}"
+      insert_time "''${notes_dir}/''${filename}"
+      edit_file "''${notes_dir}/''${filename}"
       
       # sync git stuff
-      echo "Syncing notes..."
-      pushd ''${notes_dir} &>/dev/null
-      git commit -am "Edited ''${filename}"
-      git push
-      popd
+      if [[ -e "''${notes_dir}/.git" ]]; then
+        echo "Syncing notes..."
+        pushd "''${notes_dir}" &>/dev/null
+        git commit -am "Edited ''${filename}"
+        git push
+        popd
+      fi
     fi
   '';
 }
