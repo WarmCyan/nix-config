@@ -98,10 +98,11 @@
   description = "My awesome-sauce and cool-beans nix configuration-y things.";
 
   inputs = {
-    #nixpkgs-unstable.url = "path:/home/dwl/lab/nixpkgs";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.11";
-    # nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.05";
+    
+    # pinned is auto-generated with `iris --update-pinned`
+    nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -214,6 +215,10 @@
           config.allowUnfree = true;
         };
         stable = import inputs.nixpkgs-stable {
+          system = prev.system;
+          config.allowUnfree = true;
+        };
+        pinned = import inputs.nixpkgs-pinned {
           system = prev.system;
           config.allowUnfree = true;
         };

@@ -57,7 +57,7 @@
     dconf             # (this is required so psensor can save changes to theme (think it's a gtk thing))
 
     # -- creative --
-    stable.blender
+    blender
     gimp
 
     # -- utils --

@@ -3,33 +3,14 @@
 # commands
 
 # TODO: command to regenerate hardware config and copy in?
-# TODO: it would be cool if we could "star" generations or something
 # TODO: once we store git hash, allow grabbing the git log up to that hash for given generation.
-# TODO: it might be a good IDEA: to stash the flake lock in the config info too,
-# that way you can directly see what nixpkgs version was used in a given gen?
-
-
-
-# Tools for stability:
-# * iris lsgen h|s - list generations (iterate /nix/var/nix/profiles, find
-# home-files/.local/share/iris 
-# TODO: lsgen should also optionally take an -a flag to not hide dirty gens?
-# * iris "last" channel - whenever we update flake lock, change an input
-# nixpkgs-last to nixpkgs with a rev of what the pvrious unstable was, then add
-# as additional pkgs overlay. (so can always do e.g. `pkgs.last.blender` if a
-# package breaks and I quickly need the previous version
-# * iris rebuild [gennum] - checks out config repo at that generations rev, and
-# rebuilds
-# * iris r h|s [gennum] [gennum] - simply-reactivate the requested gen (do the same
-# nvd/confirm nix diff thing)
-
 
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
-  version = "0.5.0";
+  version = "1.0.0";
   description = "Management tool for my systems/nix-config flake.";
-  usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom";
+  usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)(lsgen)(r|revert)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom\n\tiris lsgen s h\n\tiris r s h 10 30\t# reverts system to system generation 10 and home to home generation 30";
   parameters = {
     sync = {
       flags = [ "-S" "--sync" ];
@@ -41,6 +22,11 @@ builders.writeTemplatedShellApplication {
       description = "Update the flake lock file. (This runs before a build step if specified)";
       option = true;
     };
+    updatePinned = {
+      flags = [ "--update-pinned" ];
+      description = "Update the pinned nixpkgs version to the currently locked nixpkgs-unstable. (This runs before a build step if specified)";
+      option = true;
+    };
     yes = {
       flags = [ "-y" "--yes" ];
       description = "Automatically apply the (h)ome and/or (s)ystem configuration without prompting.";
@@ -48,11 +34,11 @@ builders.writeTemplatedShellApplication {
     };
   };
   runtimeInputs = [ 
-    #pkgs.expect 
-    #pkgs.unstable.nix-output-monitor 
     pkgs.unstable.figlet # unstable to get new contributed fonts
     pkgs.unstable.nvd
     pkgs.lolcat
+    pkgs.ripgrep
+    pkgs.jq
     # pkgs.testing2 # this just demonstrates that I can indeed require my own scripts
   ];
   text = /* bash */ ''
@@ -487,6 +473,63 @@ builders.writeTemplatedShellApplication {
       fi
     }
 
+    function update_pinned_nixpkgs () {
+      # finds out the current rev of nixpkgs-unstable in local flake lock, 
+      # then modifies flake nixpkgs-pinned to that rev, after ensuring pinned
+      # isn't already in use anywhere
+      ensure_config
+
+      # make sure we're not using pinned somewhere
+      echo -e "\nChecking for existing pinned package usage..."
+      pushd "''${config_location}" &> /dev/null
+        found=false
+        
+        # check in the home configs
+        pushd home &> /dev/null
+          if rg "pinned\."; then
+            found=true
+          fi
+        popd &> /dev/null
+        
+        # check in the nixos system configs
+        pushd hosts &> /dev/null
+          if rg "pinned\."; then
+            found=true
+          fi
+        popd &> /dev/null
+
+
+        if [[ ''${found} == true ]]; then
+          echo "WARNING: existing uses of pinned packages found, updating pinned channel before changing these could lead to unintended breakages!"
+          # prompt loop
+          valid_response=false
+          while [[ ''${valid_response} == false ]]; do
+            read -r -p "Update nixpkgs-pinned anyway? [y/n]" response 
+            case "''${response}" in
+              [nN][oO]|[nN])
+                echo "Not updating pinned nixpkgs."
+                exit 1
+                ;;
+              [yY][eE][sS]|[yY])
+                valid_response=true
+                break
+                ;;
+              *)
+                echo "Invalid response, please enter [y]es or [n]o." 
+                ;;
+            esac
+          done
+        fi
+        
+        # get current nixpkgs-unstable revision
+        unstableRevision=$(jq -r '.nodes."nixpkgs-unstable"'.locked.rev flake.lock)
+
+        echo "Updating flake pinned nixpkgs to revision ''${unstableRevision}"
+        # change the flake.nix (danger!)
+        sed -i -E "s/nixpkgs\-pinned.url\ =\ .*\;\$/nixpkgs\-pinned.url\ =\ \"github:nixos\/nixpkgs?rev=''${unstableRevision}\";/" flake.nix
+      popd &> /dev/null
+    }
+
     function open_for_edit () {
       ensure_config
       pushd "''${config_location}" &> /dev/null
@@ -511,6 +554,13 @@ builders.writeTemplatedShellApplication {
 
     if [[ ''${sync-false} == true ]]; then
       sync_repo
+    fi
+
+    # NOTE: we have to run update-pinned before a regular update! 
+    # this allows us to both update pinned and the regular nixpkgs-unstable
+    # without changing them both to the same latest nixpkgs-unstable
+    if [[ ''${updatePinned--false} == true ]]; then
+      update_pinned_nixpkgs
     fi
 
     if [[ ''${update-false} == true ]]; then
@@ -689,7 +739,7 @@ builders.writeTemplatedShellApplication {
           esac
           ;;
         *)
-          echo "Invalid command, please specify [b|build]|[e|edit]|[n|new]|ls"
+          echo "Invalid command, please specify [b|build]|[e|edit]|[n|new]|[r|revert]|ls|lsgen"
           exit 1
           ;;
       esac
