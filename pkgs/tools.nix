@@ -6,7 +6,7 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "tools";
-  version = "0.2.1";
+  version = "0.2.2";
   description = "Essentially a lister of my tools so I remember! And can quickly check which ones are installed";
   usage = "tools [-c|--check TOOL] [-q|--quiet]";
   initColors = true;
@@ -76,6 +76,7 @@ builders.writeTemplatedShellApplication {
   check_tool "add-jupyter-env"
   check_tool "sri-hash"
   check_tool "td-state"
+  check_tool "engilog"
   echo "------"
   # my desktop system specific tools
   check_tool "mic-monitor"
