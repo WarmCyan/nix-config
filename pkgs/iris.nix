@@ -8,7 +8,7 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
-  version = "1.0.0";
+  version = "1.0.1";
   description = "Management tool for my systems/nix-config flake.";
   usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)(lsgen)(r|revert)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom\n\tiris lsgen sh\n\tiris r sh 10 30\t# reverts system to system generation 10 and home to home generation 30";
   parameters = {
@@ -78,14 +78,14 @@ builders.writeTemplatedShellApplication {
         if [[ -e "/etc/iris/configLastModified" ]]; then
           sys_lastMod=$(cat "/etc/iris/configLastModified")
           if [[ "''${sys_lastMod}" != "dirty" ]]; then
-            sys_lastMod=$(date -d "@''${sys_lastMod}" +"%Y-%m-%d")
+            sys_lastMod=$(${pkgs.coreutils}/bin/date -d "@''${sys_lastMod}" +"%Y-%m-%d")
           fi
         fi
       
         system_generation_pointer=$(readlink "/nix/var/nix/profiles/system")
         system_generation_number=$(readlink "/nix/var/nix/profiles/system" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
         #system_nix_store_pointer=$(readlink "/nix/var/nix/profiles/''${system_generation_pointer}")
-        system_generation_date=$(stat -c %y "/nix/var/nix/profiles/''${system_generation_pointer}")
+        system_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "/nix/var/nix/profiles/''${system_generation_pointer}")
         system_generation_date_time=''${system_generation_date:0:10}
         #echo -e "System gen: \t''${system_generation_number} (''${system_generation_date_time}) ''${sys_config} \tv''${sys_revCount}-''${sys_hash} (''${sys_lastMod})"
         printf "%-13s%-3s %-13s %-10s v%-12s (%s)\n" \
@@ -117,14 +117,14 @@ builders.writeTemplatedShellApplication {
         if [[ -e "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configLastModified" ]]; then
           hm_lastMod=$(cat "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configLastModified")
           if [[ "''${hm_lastMod}" != "dirty" ]]; then
-            hm_lastMod=$(date -d "@''${hm_lastMod}" +"%Y-%m-%d")
+            hm_lastMod=$(${pkgs.coreutils}/bin/date -d "@''${hm_lastMod}" +"%Y-%m-%d")
           fi
         fi
       
         hm_generation_pointer=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager")
         hm_generation_number=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
         #hm_nix_store_pointer=$(readlink "/nix/var/nix/profiles/''${hm_generation_pointer}")
-        hm_generation_date=$(stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${hm_generation_pointer}")
+        hm_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${hm_generation_pointer}")
         hm_generation_date_time=''${hm_generation_date:0:10}
         #echo -e "Home gen: \t''${hm_generation_number} (''${hm_generation_date_time}) ''${hm_config} \tv''${hm_revCount}-''${hm_hash} (''${hm_lastMod})"
         printf "%-13s%-3s %-13s %-10s v%-12s (%s)\n" \
@@ -321,10 +321,10 @@ builders.writeTemplatedShellApplication {
             if [[ -e "''${full_path}/home-files/.local/share/iris/configLastModified" ]]; then
               hm_conf_lastMod=$(cat "''${full_path}/home-files/.local/share/iris/configLastModified")
               if [[ "''${hm_conf_lastMod}" != "dirty" ]]; then
-                hm_conf_lastMod=$(date -d "@''${hm_conf_lastMod}" +"%Y-%m-%d")
+                hm_conf_lastMod=$(${pkgs.coreutils}/bin/date -d "@''${hm_conf_lastMod}" +"%Y-%m-%d")
               fi
             fi
-            hm_conf_generation_date=$(stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${filepath}")
+            hm_conf_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${filepath}")
             hm_conf_generation_date_time=''${hm_conf_generation_date:0:10}
             if [[ "''${hm_conf_revCount}" == "" ]]; then
               continue
@@ -370,10 +370,10 @@ builders.writeTemplatedShellApplication {
             if [[ -e "''${full_path}/etc/iris/configLastModified" ]]; then
               system_lastMod=$(cat "''${full_path}/etc/iris/configLastModified")
               if [[ "''${system_lastMod}" != "dirty" ]]; then
-                system_lastMod=$(date -d "@''${system_lastMod}" +"%Y-%m-%d")
+                system_lastMod=$(${pkgs.coreutils}/bin/date -d "@''${system_lastMod}" +"%Y-%m-%d")
               fi
             fi
-            system_generation_date=$(stat -c %y "/nix/var/nix/profiles/''${filepath}")
+            system_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "/nix/var/nix/profiles/''${filepath}")
             system_generation_date_time=''${system_generation_date:0:10}
             if [[ "''${system_revCount}" == "" ]]; then
               continue

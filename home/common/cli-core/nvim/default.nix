@@ -78,7 +78,7 @@ in
 
       # -- Python language server stuff --
       python310Packages.python-lsp-server
-      python310Packages.pylsp-mypy # TODO: unclear if working
+      #python310Packages.pylsp-mypy # TODO: unclear if working
       python310Packages.pyls-isort
       python310Packages.python-lsp-black
       python310Packages.flake8

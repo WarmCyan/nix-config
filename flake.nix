@@ -198,6 +198,17 @@
         noNixos = true;
         gitEmail = "martindalena@ornl.gov";
       };
+
+      # work laptop (mac)
+      wmac = mkHome {
+        configName = "wmac";
+        username = "81n";
+        hostname = "MAC135974";
+	system = "aarch64-darwin";
+        #noNixos = true;
+        gitEmail = "martindalena@ornl.gov";
+        configLocation = "/Users/81n/lab/nix-config";
+      };
     };
     
     # ===========================================================

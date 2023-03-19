@@ -8,88 +8,10 @@
 # bombadillo - https://bombadillo.colorfield.space/ (gemini and gopher and other client)
 
 { pkgs, self, gitUsername, gitEmail, ... }: 
-
-let
-  inherit (builtins) readFile;
-  inherit (self.mylib) concatFiles;
-in
 {
-  imports = [ ./nvim ];
-  
-  home.packages = with pkgs; [
-    # -- Basic utils --
-    tree      # list a directory tree recursively, looks nicer than ls in select situations
-    ripgrep   # speedy grep written in rust
-    fzf       # very effective fuzzy finder
-    bat       # fancier cat
-    rsync     # better file transfer than scp and cp
-
-    # -- TUI tools --
-    htop      # standard system cpu viewer
-    bottom    # a cool-looking system viewer in rust
-    ncdu      # disk usage, useful for discovering where all your diskspace went
-    w3m       # terminal web browser
-
-    # -- Fun, the spice of life :) --
-    figlet    # output cool big terminal text
-    cowsay    # what does the cow say?
-    sl        # no environment is complete without it
-    lolcat    # tool to vomit rainbow colors for input text
-    tty-clock # best terminal clock around
-    neofetch  # gotta show off my distro
-
-    # -- My stuff! --
-    td-state  # todo-status cycler, used in my nvim config with shift-t
-    tools     # check which of my tools are installed (and also reminders of what my tools are!)
+  imports = [ 
+    ./nvim 
+    ./packages.nix
+    ./configs.nix
   ];
-  
-  programs.git = {
-    enable = true;
-    userName = gitUsername;
-    userEmail = gitEmail;
-    extraConfig = {
-      init = { defaultBranch = "main"; }; # seems to be the new standard
-      core = { pager = "cat"; }; # less pager is annoying since output won't persist in console
-      diff = { colorMoved = "zebra"; }; # differentiates edited code from code that was simply moved
-      pull = { rebase = false; }; # default is to merge when pulling rather than rebase (potentially lose history and other's local branches will be out of whack)
-      commit = { verbose = false; }; # show diff in commit editor (changed to
-      # false, because for very large commits this is ridiculous. Note that you
-      # can still get this in a commit with the `-v` flag) 
-    };
-  };
-
-  programs.tmux = {
-    enable = true;
-    shell = "${pkgs.zsh}/bin/zsh";
-    aggressiveResize = true; # when multiple sessions on same pane, force smallest size
-    shortcut = "a"; # ctrl-a much less finger twisty than ctrl-b
-    terminal = "xterm-256color";
-    keyMode = "vi";
-    sensibleOnTop = false; # wasn't a huge fan of those settings
-    extraConfig = readFile ./tmux.conf;
-  };
-
-  # -- Shells --
-  # NOTE: remember shell-bash-conf.sh sources ~/.bashrc_local
-  programs.bash = {
-    enable = true;
-    shellAliases = import ./shell-aliases.nix;
-    initExtra = concatFiles [ ./shell-common.sh ./shell-bash-conf.sh ];
-  };
-  # NOTE: remember shell-zsh-conf.sh sources ~/.zshrc_local
-  programs.zsh = {
-    enable = true;
-    shellAliases = import ./shell-aliases.nix;
-    initExtra = concatFiles [ ./shell-common.sh ./shell-zsh-conf.sh ];
-    envExtra = ''
-      # trying to get down ohmyzsh start times 
-      # https://blog.patshead.com/2011/04/improve-your-oh-my-zsh-startup-time-maybe.html
-      skip_global_compinit=1
-    '';
-    oh-my-zsh = {
-      enable = true;
-      theme = "agnoster";
-      plugins = [ "git" "pip" ];
-    };
-  };
 }
