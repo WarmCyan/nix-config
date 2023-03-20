@@ -2,3 +2,5 @@
 #hyper - return : kitty -d ~
 hyper - return : "/Users/81n/Applications/Home Manager Apps/kitty.app/Contents/MacOS/kitty" -d ~
 #hyper - return : kitty -d ~
+#
+hyper - c : "/Applications/Firefox.app/Contents/MacOS/firefox"

@@ -10,8 +10,8 @@ in
     ../common/cli-core/configs.nix
     ../common/cli-core/nvim
     ../common/dev
-    #../common/beta
-    #../common/vscode
+    ../common/beta
+    ../common/vscode
   ];
   
   home.sessionVariables = {
@@ -74,5 +74,12 @@ in
       initial_window_width = "100c";
       initial_window_height = "25c";
     };
+  };
+
+  programs.vscode = {
+    enable = true;
+    extensions = with pkgs.vscode-extensions; lib.mkForce [
+      vscodevim.vim
+    ];
   };
 }
