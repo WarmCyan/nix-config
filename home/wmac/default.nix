@@ -9,7 +9,7 @@ in
   imports = [
     ../common/cli-core/configs.nix
     ../common/cli-core/nvim
-    #../common/dev
+    ../common/dev
     #../common/beta
     #../common/vscode
   ];
@@ -45,6 +45,7 @@ in
     # -- My stuff! --
     td-state  # todo-status cycler, used in my nvim config with shift-t
     tools     # check which of my tools are installed (and also reminders of what my tools are!)
+    engilog   # my on-the-go brainstorming and thoughts engineering log tool
 
     # -- Making mac suck less --
     # karabiner-elements  # NOTE: I couldn't get this to work, had to install with brew. I still set the config down below
