@@ -1,10 +1,11 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "td-state";
-  version = "0.1.0";
+  version = "0.1.1";
   description = "Takes a given todo-style text line and changes or cycles the todo state";
   usage = "td-state ITEM [todo|strt|wait|done|canc|bug|fixd]\nLeave state out in order to cycle.";
   parameters = {};
+  runtimeInputs = [ pkgs.coreutils ];
   text = /* bash */ ''
   # ignore 2001 because I'm doing complicated substitutions, see https://www.shellcheck.net/wiki/SC2001
   # shellcheck disable=SC2001
@@ -19,9 +20,9 @@ builders.writeTemplatedShellApplication {
       echo "$1" | grep -q "FIXD:"; then
       # item=$(echo $1 | sed "s/^.\{6\}//") # TODO: if we want to also support w comments, use groups to get only everything after 4 cp letters and colon etc.
       current_state=$(echo "$1" | grep -o "\(TODO\|STRT\|WAIT\|DONE\|CANC\|BUG\|FIXD\)") 
-      item=$(echo "$1" | sed "s/^\(.*\)\(TODO\|STRT\|WAIT\|DONE\|CANC\|BUG\|FIXD\):\ \(.*\)$/\3/")
-      pre=$(echo "$1" | sed "s/^\(.*\)\(TODO\|STRT\|WAIT\|DONE\|CANC\|BUG\|FIXD\):\ \(.*\)$/\1/")
-      
+      item=$(echo "$1" | sed -E "s/^(.*)(TODO|STRT|WAIT|DONE|CANC|BUG|FIXD):\ (.*)$/\3/")
+      pre=$(echo "$1" | sed -E "s/^(.*)(TODO|STRT|WAIT|DONE|CANC|BUG|FIXD):\ (.*)$/\1/")
+
       shift
       new_state="''${1:-cycle}"
 
