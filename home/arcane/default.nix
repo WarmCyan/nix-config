@@ -17,4 +17,11 @@
   home.packages = with pkgs; [
     zotero
   ];
+
+  programs.vscode = {
+    enable = true;
+    extensions = with pkgs.vscode-extensions; lib.mkForce [
+      vscodevim.vim
+    ];
+  };
 }
