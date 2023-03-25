@@ -71,6 +71,11 @@
     # -- other --
     obsidian
     python311
+
+    pulseaudio
+
+    #libsForQt5.bluedevil
+    
   ];
 
   home.sessionVariables = {
@@ -161,4 +166,11 @@
     modifcolor=d28c3dee
     bgcolor=000000ff
   '';
+  
+  programs.vscode = {
+    enable = true;
+    extensions = with pkgs.vscode-extensions; lib.mkForce [
+      vscodevim.vim
+    ];
+  };
 }
