@@ -16,6 +16,11 @@
   
   home.packages = with pkgs; [
     zotero
+    python311
+    python311Packages.pip
+    python311Packages.argcomplete
+
+    ffmpeg
   ];
 
   programs.vscode = {
