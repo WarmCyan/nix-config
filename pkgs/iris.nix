@@ -8,7 +8,7 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
-  version = "1.0.1";
+  version = "1.0.2";
   description = "Management tool for my systems/nix-config flake.";
   usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)(lsgen)(r|revert)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom\n\tiris lsgen sh\n\tiris r sh 10 30\t# reverts system to system generation 10 and home to home generation 30";
   parameters = {
@@ -97,8 +97,15 @@ builders.writeTemplatedShellApplication {
           "''${sys_lastMod}"
         #echo -e "\t-> ''${system_nix_store_pointer}"
       fi
-      
+
+      hm_profile_base=""
       if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
+        hm_profile_base="/nix/var/nix/profiles/per-user/''${USER}" 
+      elif [[ -e "''${HOME}/.local/state/nix/profiles/home-manager" ]]; then
+        hm_profile_base="''${HOME}/.local/state/nix/profiles"
+      fi
+      
+      if [[ "$hm_profile_base" != "" ]]; then
         if [[ -e "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configname" ]]; then
           hm_config=$(cat "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configname")
         fi
@@ -121,10 +128,10 @@ builders.writeTemplatedShellApplication {
           fi
         fi
       
-        hm_generation_pointer=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager")
-        hm_generation_number=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
+        hm_generation_pointer=$(readlink "''${hm_profile_base}/home-manager")
+        hm_generation_number=$(readlink "''${hm_profile_base}/home-manager" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
         #hm_nix_store_pointer=$(readlink "/nix/var/nix/profiles/''${hm_generation_pointer}")
-        hm_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${hm_generation_pointer}")
+        hm_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "''${hm_profile_base}/''${hm_generation_pointer}")
         hm_generation_date_time=''${hm_generation_date:0:10}
         #echo -e "Home gen: \t''${hm_generation_number} (''${hm_generation_date_time}) ''${hm_config} \tv''${hm_revCount}-''${hm_hash} (''${hm_lastMod})"
         printf "%-13s%-3s %-13s %-10s v%-12s (%s)\n" \
@@ -238,10 +245,17 @@ builders.writeTemplatedShellApplication {
           exit 1
         fi
         
+        hm_profile_base=""
+        if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
+          hm_profile_base="/nix/var/nix/profiles/per-user/''${USER}" 
+        elif [[ -e "''${HOME}/.local/state/nix/profiles/home-manager" ]]; then
+          hm_profile_base="''${HOME}/.local/state/nix/profiles"
+        fi
+        
         home-manager build --flake .\#"''${hm_config}"
         rm -f result-home
         mv result result-home
-        nvd diff "/nix/var/nix/profiles/per-user/''${USER}/home-manager" result-home
+        nvd diff "''${hm_profile_base}/home-manager" result-home
         
         if [[ ''${yes-false} == false ]]; then
           # prompt loop
@@ -271,7 +285,7 @@ builders.writeTemplatedShellApplication {
 
         # if we've hit this point, we're good to do the build! 
         echo "Applying home result..."
-        nix-env --profile "/nix/var/nix/profiles/per-user/''${USER}/home-manager" --set ./result-home  # TODO: what does this do?
+        nix-env --profile "''${hm_profile_base}/home-manager" --set ./result-home  # TODO: what does this do?
         result-home/activate
       popd &> /dev/null
     }
@@ -291,12 +305,20 @@ builders.writeTemplatedShellApplication {
 
     function list_home_gens () {
       ensure_config
+      
+      hm_profile_base=""
+      if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
+        hm_profile_base="/nix/var/nix/profiles/per-user/''${USER}" 
+      elif [[ -e "''${HOME}/.local/state/nix/profiles/home-manager" ]]; then
+        hm_profile_base="''${HOME}/.local/state/nix/profiles"
+      fi
+        
       echo -e "\nPrevious clean home generations:"
       printf "%-5s   %-12s   %-12s\n" "GEN" "GEN DATE" "GIT VERSION"
       echo "------------------------------------"
       printf "Collecting...\r"
-      if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
-        pushd "/nix/var/nix/profiles/per-user/''${USER}/" &> /dev/null
+      if [[ -e "''${hm_profile_base}/home-manager" ]]; then
+        pushd "''${hm_profile_base}" &> /dev/null
 
         {
           for filepath in home-manager-*-link; do
@@ -308,7 +330,7 @@ builders.writeTemplatedShellApplication {
             hm_conf_revCount=""
             hm_conf_lastMod=""
             
-            full_path="/nix/var/nix/profiles/per-user/''${USER}/''${filepath}"
+            full_path="''${hm_profile_base}/''${filepath}"
             if [[ -e "''${full_path}/home-files/.local/share/iris/configShortRev" ]]; then
               hm_conf_hash=$(cat "''${full_path}/home-files/.local/share/iris/configShortRev")
             fi
@@ -324,7 +346,7 @@ builders.writeTemplatedShellApplication {
                 hm_conf_lastMod=$(${pkgs.coreutils}/bin/date -d "@''${hm_conf_lastMod}" +"%Y-%m-%d")
               fi
             fi
-            hm_conf_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${filepath}")
+            hm_conf_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "''${hm_profile_base}/''${filepath}")
             hm_conf_generation_date_time=''${hm_conf_generation_date:0:10}
             if [[ "''${hm_conf_revCount}" == "" ]]; then
               continue
@@ -392,9 +414,16 @@ builders.writeTemplatedShellApplication {
       ensure_config
       echo -e "\nRe-activiating previous home generation ''${1}..."
       
-      if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager-''${1}-link" ]]; then
+      hm_profile_base=""
+      if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
+        hm_profile_base="/nix/var/nix/profiles/per-user/''${USER}" 
+      elif [[ -e "''${HOME}/.local/state/nix/profiles/home-manager" ]]; then
+        hm_profile_base="''${HOME}/.local/state/nix/profiles"
+      fi
+      
+      if [[ -e "''${hm_profile_base}/home-manager-''${1}-link" ]]; then
 
-        nvd diff "/nix/var/nix/profiles/per-user/''${USER}/home-manager" "/nix/var/nix/profiles/per-user/''${USER}/home-manager-''${1}-link"
+        nvd diff "''${hm_profile_base}/home-manager" "''${hm_profile_base}/home-manager-''${1}-link"
         
         if [[ ''${yes-false} == false ]]; then
           # prompt loop
@@ -423,7 +452,7 @@ builders.writeTemplatedShellApplication {
       
         echo "Applying home generation ''${1}..."
         # shellcheck disable=SC1090
-        . "/nix/var/nix/profiles/per-user/''${USER}/home-manager-''${1}-link/activate"
+        . "''${hm_profile_base}/home-manager-''${1}-link/activate"
       else
         echo "Could not find generation, use the 'iris lsgen' command to list valid generation numbers."
         exit 1
