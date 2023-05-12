@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+yabai -m config \
+    layout bsp
+    split_ratio 0.5

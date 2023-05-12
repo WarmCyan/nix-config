@@ -57,6 +57,7 @@ in
   # karabiner config to turn caps lock into hyper
   home.file.".config/karabiner/karabiner.json".text = readFile ./karabiner.json;
   home.file.".skhdrc".text = readFile ./skhdrc;
+  home.file.".yabairc".text = readFile ./yabairc;
 
   home.homeDirectory = lib.mkForce "/Users/81n";
   
