@@ -1,6 +1,39 @@
+# hyper = caps lock
+# meh = shift + caps lock
+
+ 
 #hyper - return : "/Users/81n/Applications/Home Manager Apps/kitty.app" -d ~
 #hyper - return : kitty -d ~
-hyper - return : "/Users/81n/Applications/Home Manager Apps/kitty.app/Contents/MacOS/kitty" --single-instance -d ~
+#
+# hyper - return : "/Users/81n/Applications/Home Manager Apps/kitty.app/Contents/MacOS/kitty" --single-instance --instance-group "normal" -d ~
+# meh - return : "/Users/81n/Applications/Home Manager Apps/kitty.app/Contents/MacOS/kitty" --single-instance --title kitty_float --instance-group "floating" -d ~
+
+hyper - return : "/Users/81n/Applications/Home Manager Apps/kitty.app/Contents/MacOS/kitty" -d ~
+meh - return : "/Users/81n/Applications/Home Manager Apps/kitty.app/Contents/MacOS/kitty" --title kitty_float -d ~
+
+# && yabai -m window --toggle float
+#meh - return : "/Users/81n/Applications/Home Manager Apps/kitty.app/Contents/MacOS/kitty" --single-instance --title kitty_float --instance-group "floating" -d ~
 #hyper - return : kitty -d ~
 #
 hyper - c : "/Applications/Firefox.app/Contents/MacOS/firefox"
+
+meh - 1 : yabai -m window --space 1
+meh - 2 : yabai -m window --space 2
+meh - 3 : yabai -m window --space 3
+meh - 4 : yabai -m window --space 4
+meh - 5 : yabai -m window --space 5
+meh - 6 : yabai -m window --space 6
+meh - 7 : yabai -m window --space 7
+meh - 8 : yabai -m window --space 8
+meh - 9 : yabai -m window --space 9
+meh - 0 : yabai -m window --space 10
+
+
+hyper - h : yabai -m window --focus west
+hyper - j : yabai -m window --focus south
+hyper - k : yabai -m window --focus north
+hyper - l : yabai -m window --focus east
+
+meh - space : yabai -m window --toggle float
+
+hyper - q : skhd --key "cmd - q"

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
 yabai -m config \
-    layout bsp
+    layout bsp \
     split_ratio 0.5
+
+yabai -m rule --add app="^System Prefences$" manage=off
+yabai -m rule --add title="^kitty_float$" manage=off
