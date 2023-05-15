@@ -28,12 +28,19 @@ meh - 8 : yabai -m window --space 8
 meh - 9 : yabai -m window --space 9
 meh - 0 : yabai -m window --space 10
 
-
 hyper - h : yabai -m window --focus west
 hyper - j : yabai -m window --focus south
 hyper - k : yabai -m window --focus north
 hyper - l : yabai -m window --focus east
 
+meh - h : yabai -m window --swap west
+meh - j : yabai -m window --swap south
+meh - k : yabai -m window --swap north
+meh - l : yabai -m window --swap east
+
 meh - space : yabai -m window --toggle float
 
-hyper - q : skhd --key "cmd - q"
+hyper - q : skhd --key "cmd - q" && yabai -m window --focus recent
+
+hyper - v : yabai -m window --toggle split
+hyper - f : yabai -m window --toggle zoom-fullscreen
