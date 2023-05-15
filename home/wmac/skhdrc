@@ -42,7 +42,7 @@ meh - l : yabai -m window --swap east
 
 meh - space : yabai -m window --toggle float
 
-hyper - q : skhd --key "cmd - q" && yabai -m window --focus recent
+hyper - q : skhd --key "cmd - w" && yabai -m window --focus recent
 
 hyper - v : yabai -m window --toggle split
 hyper - f : yabai -m window --toggle zoom-fullscreen
