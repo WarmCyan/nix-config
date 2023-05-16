@@ -43,7 +43,7 @@
   };
 
   # Enable bluetooth
-  hardware.bluetooth.enable = true;
+  hardware.bluetooth.enable = true; 
   services.blueman.enable = true;
 
   # Set your time zone.
@@ -79,9 +79,9 @@
   # enable using the caps lock key has Mod5
   services.xserver.displayManager.sessionCommands = /* bash */''
     # set up the monitors
-    LEFT="DP-5"
+    LEFT="DP-0"
     CENTER="DP-2"
-    RIGHT="DP-1"
+    RIGHT="DP-5"
     HDMI="HDMI"
     
     # old 3 side by side normal orientations
@@ -92,9 +92,9 @@
     #   --output $HDMI --off
       
     ${pkgs.xorg.xrandr}/bin/xrandr \
-      --output $LEFT --mode 1920x1080 --pos 0x420 --rotate normal \
-      --output $RIGHT --mode 1920x1080 --pos 4480x0 --rotate right \
-      --output $CENTER --mode 2560x1440 --pos 1920x240 --rotate normal \
+      --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right \
+      --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left \
+      --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal \
       --output $HDMI --off
     
     # set up my caps lock keyboard configuration
@@ -127,7 +127,9 @@
     shell = pkgs.zsh;
   };
 
-  #programs.zsh.enable = true;
+  # NOTE: re-enabling this on 3/25/2023, I thought I disabled it because of
+  # speed issues, but I get an error now when I compile my config otherwise.
+  programs.zsh.enable = true;
 
   # https://linuxhint.com/how-to-instal-steam-on-nixos/
   programs.steam = {

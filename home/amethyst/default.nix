@@ -74,8 +74,11 @@
 
     pulseaudio
 
-    #libsForQt5.bluedevil
+    libsForQt5.bluedevil
     
+    usbutils    # I assume this is where I get lsusb?
+
+    libreoffice-qt
   ];
 
   home.sessionVariables = {

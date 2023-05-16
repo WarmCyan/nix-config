@@ -17,7 +17,7 @@
   # enabling drivers for focusrite scarlett gen 3 2i2
   # https://github.com/geoffreybennett/alsa-scarlett-gui/blob/master/USAGE.md
   boot.extraModprobeConfig = ''
-    options snd_usb_audio vid=0x1235 pid=0x8210 device_setup=1
+    options snd_usb_audio vid=0x1235 pid=0x8210 device_setup=1 bt_coex_active=0
   '';
 
   fileSystems."/" =
