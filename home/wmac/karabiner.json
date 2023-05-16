@@ -10,7 +10,7 @@
         {
             "complex_modifications": {
                 "parameters": {
-                    "basic.simultaneous_threshold_milliseconds": 50,
+                    "basic.simultaneous_threshold_milliseconds": 250,
                     "basic.to_delayed_action_delay_milliseconds": 500,
                     "basic.to_if_alone_timeout_milliseconds": 1000,
                     "basic.to_if_held_down_threshold_milliseconds": 500,
@@ -18,17 +18,39 @@
                 },
                 "rules": [
                     {
+                        "description": "CapsLock+shift to meh",
+                        "manipulators": [
+                            {
+                                "description": "capslock+shift = esc(click) | meh(hold)",
+                                "from": {
+                                    "key_code": "caps_lock",
+                                    "modifiers": { 
+                                        "mandatory": [
+                                            "left_shift"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "right_shift",
+                                        "modifiers": [
+                                            "right_option",
+                                            "right_control"
+                                        ]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "CapsLock to Hyper",
                         "manipulators": [
                             {
                                 "description": "capslock = esc(click) | hyper(hold)",
                                 "from": {
                                     "key_code": "caps_lock",
-                                    "modifiers": {
-                                        "optional": [
-                                            "any"
-                                        ]
-                                    }
+                                    "modifiers": { }
                                 },
                                 "to": [
                                     {

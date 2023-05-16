@@ -47,6 +47,8 @@ in
     tools     # check which of my tools are installed (and also reminders of what my tools are!)
     engilog   # my on-the-go brainstorming and thoughts engineering log tool
 
+    jq
+
     # -- Making mac suck less --
     # karabiner-elements  # NOTE: I couldn't get this to work, had to install with brew. I still set the config down below
     # skhd # (same as above)
@@ -54,11 +56,27 @@ in
     # https://github.com/koekeishiya/yabai/issues/843
   ];
 
+  home.homeDirectory = lib.mkForce "/Users/81n";
+
   # karabiner config to turn caps lock into hyper
   home.file.".config/karabiner/karabiner.json".text = readFile ./karabiner.json;
   home.file.".skhdrc".text = readFile ./skhdrc;
 
-  home.homeDirectory = lib.mkForce "/Users/81n";
+  
+  #home.file.".yabairc".text = readFile ./yabairc;
+  home.activation = {
+    removeExistingYabaiRC = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+      rm -rf "/Users/81n/.yabairc"
+    '';
+
+    copyYabaiRC = let
+      newYabai = pkgs.writeText "tmp_yabairc" (readFile ./yabairc);
+    in lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+      rm -rf "/Users/81n/.yabairc"
+      cp "${newYabai}" "/Users/81n/.yabairc"
+      chmod +x "/Users/81n/.yabairc"
+    '';
+  };
   
   programs.kitty = {
     enable = true;
