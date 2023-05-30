@@ -59,7 +59,8 @@ in {
         # instead of 0-based...using font-4 means setting format-font = 5, etc.
         font-0 = "Iosevka Nerd Font:pixelsize=12;3";
         font-1 = "Iosevka Nerd Font:style=Bold:size=12;3";
-        font-2 = "Iosevka Nerd Font:pixelsize=20;3";
+        #font-2 = "Iosevka Nerd Font:pixelsize=20;3";
+        font-2 = "Inconsolata Nerd Font:pixelsize=20;3";
         font-3 = "Iosevka Nerd Font:pixelsize=15;3";
         
         font-4 = "Iosevka Nerd Font:size=12;3";
@@ -261,6 +262,8 @@ in {
         label-font = 2;
       };
 
+      # NOTE: full block is u2588
+
       # NOTE: this does work, but maybe it would be better to just make rofi
       # appear when clicking the system name
       "module/terminal" = {
@@ -272,18 +275,18 @@ in {
       
       "module/sepLR_background_primary" = {
         type = "custom/text";
-        content = " "; # ue0bc
+      content = " "; # ue0bc
         content-foreground = "${cBackground}";
         content-background = "${cPrimary}";
         content-font = 3;
       };
-      "module/sepLR_primary_background" = {
-        type = "custom/text";
-        content = " "; # ue0bc
-        content-foreground = "${cPrimary}";
-        content-background = "${cPrimary}";
-        content-font = 3;
-      };
+      # "module/sepLR_primary_background" = {
+      #   type = "custom/text";
+      #   content = ""; # ue0bc
+      #   content-foreground = "${cPrimary}";
+      #   content-background = "${cPrimary}";
+      #   content-font = 3;
+      # };
       "module/sepLR_primary_warmdark" = {
         type = "custom/text";
         content = " "; # ue0bc
