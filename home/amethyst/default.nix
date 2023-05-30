@@ -79,6 +79,7 @@
     usbutils    # I assume this is where I get lsusb?
 
     libreoffice-qt
+    calibre
   ];
 
   home.sessionVariables = {

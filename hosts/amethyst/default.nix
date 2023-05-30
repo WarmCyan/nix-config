@@ -193,6 +193,9 @@
     #pavucontrol
     # easyeffects # can't seem to get this to work, crashes when adding any
     # effect
+
+
+    gparted
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
