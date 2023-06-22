@@ -48,6 +48,10 @@ in
     engilog   # my on-the-go brainstorming and thoughts engineering log tool
 
     jq
+    # currently commented below because I installed them with brew at the time
+    #drawio
+    #rsync
+    #gimp
 
     # -- Making mac suck less --
     # karabiner-elements  # NOTE: I couldn't get this to work, had to install with brew. I still set the config down below
@@ -63,6 +67,11 @@ in
   home.file.".skhdrc".text = readFile ./skhdrc;
 
   
+  
+  # .yabairc file is expected to be executable, and unfortunately there's no way
+  # with the above home.file API to set the permissions on the output file. So
+  # instead we wait until after env activation and manually run the commands to
+  # make it exeuctable
   #home.file.".yabairc".text = readFile ./yabairc;
   home.activation = {
     removeExistingYabaiRC = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
