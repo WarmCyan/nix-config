@@ -26,7 +26,7 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "engilog";
-  version = "0.1.0";
+  version = "0.1.1";
   description = "Tool for keeping engineering logs - off the cuff notes, decisions, and brain context while working.";
   usage = "engilog [-h|--help] [--version]";
   initColors = true;
@@ -98,7 +98,7 @@ builders.writeTemplatedShellApplication {
     
     double_needed=false
     # shellcheck disable=SC2012
-    count=$(ls "''${notes_dir}" -1q | wc -l)
+    count=$(ls -1q "''${notes_dir}" | wc -l)
 
     if [[ "''${count}" -gt ''${#references_single[@]} ]]; then
       double_needed=true
