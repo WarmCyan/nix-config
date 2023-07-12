@@ -67,6 +67,7 @@
     dunst             # notifications
     betterlockscreen  # super cool lock screen based on i3lock
     arandr            # multi-monitor configuration tool
+    xclip             # clipboard tool 
 
     # -- other --
     obsidian
@@ -80,6 +81,10 @@
 
     libreoffice-qt
     calibre
+
+    reaper
+    lmms
+    drawio
   ];
 
   home.sessionVariables = {
