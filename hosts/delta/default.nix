@@ -15,6 +15,9 @@
   boot.loader.timeout = 2;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
+  # https://github.com/NixOS/nixpkgs/issues/106461 (will want to abstract some
+  # of these into a module)
+  boot.blacklistedKernelModules = [ "dvb_usb_rtl28xxu" ];
 
   networking = {
     useDHCP = false; # I think networkmanager does this
@@ -68,13 +71,14 @@
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "plugdev" ];  # plugdev for rtl-sdr
     packages = with pkgs; [
       firefox
       kate
     ];
     shell = pkgs.zsh;
   };
+  users.groups.plugdev = {};
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -86,6 +90,9 @@
   ];
   
   programs.nix-ld.enable = true;
+
+  # https://github.com/NixOS/nixpkgs/issues/106461 rtlsdr
+  services.udev.packages = [ pkgs.rtl-sdr ];
   
   services.openssh = {
     enable = true;

@@ -1,6 +1,6 @@
 # delta, home configuration for primary laptop
 
-{ pkgs, config, ... }:
+{ pkgs, lib, config, ... }:
 {
   imports = [
     ../common/cli-core
@@ -34,6 +34,16 @@
     # mpdevil
     
     lxappearance  # don't actually use...
+
+    engilog
+
+    anki-bin
+
+    sdrangel
+    gqrx
+    rtl-sdr
+
+    usbutils
   ];
   
   home.sessionVariables = {
@@ -117,4 +127,11 @@
     modifcolor=d28c3dee
     bgcolor=000000ff
   '';
+  
+  programs.vscode = {
+    enable = true;
+    extensions = with pkgs.vscode-extensions; lib.mkForce [
+      vscodevim.vim
+    ];
+  };
 }
