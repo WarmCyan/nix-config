@@ -85,6 +85,8 @@
     reaper
     lmms
     drawio
+    obs-studio
+    vlc
   ];
 
   home.sessionVariables = {
