@@ -60,7 +60,7 @@ in {
         font-0 = "Iosevka Nerd Font:pixelsize=12;3";
         font-1 = "Iosevka Nerd Font:style=Bold:size=12;3";
         #font-2 = "Iosevka Nerd Font:pixelsize=20;3";
-        font-2 = "Inconsolata Nerd Font:pixelsize=20;3";
+        font-2 = "Inconsolata Nerd Font Mono:pixelsize=22;5";
         font-3 = "Iosevka Nerd Font:pixelsize=15;3";
         
         font-4 = "Iosevka Nerd Font:size=12;3";
@@ -188,8 +188,8 @@ in {
       "module/mpd-controls" = {
         type = "internal/mpd";
 
-        format-online = "<icon-prev> <toggle> <icon-next>";
-        format-offline = "<icon-prev> <toggle> <icon-next>";
+        format-online = "<icon-prev> <toggle> <icon-next> ";
+        format-offline = "<icon-prev> <toggle> <icon-next> ";
         
         format-online-background = "${cPrimary}";
         format-online-foreground = "${cBackground}";
@@ -239,7 +239,7 @@ in {
 
       "module/pipewire" = {
         type = "custom/script";
-        label = " %output% ";
+        label = "  %output% ";
         #label-font = 3;
         format-foreground = "${cBackground}";
         format-background = "${cPrimary}";
@@ -296,28 +296,28 @@ in {
       };
       "module/sepRL_primary_warmdark" = {
         type = "custom/text";
-        content = " "; # ue0be 
+        content = " "; # ue0be 
         content-foreground = "${cPrimary}";
         content-background = "${cWarmDark}";
         content-font = 3;
       };
       "module/sepRL_background_primary" = {
         type = "custom/text";
-        content = " "; # ue0be 
+        content = " "; # ue0be 
         content-foreground = "${cBackground}";
         content-background = "${cPrimary}";
         content-font = 3;
       };
       "module/sepRL_background_warmdark" = {
         type = "custom/text";
-        content = " "; # ue0be 
+        content = " "; # ue0be 
         content-foreground = "${cBackground}";
         content-background = "${cWarmDark}";
         content-font = 3;
       };
       "module/sepRL_warmdark_background" = {
         type = "custom/text";
-        content = " "; # ue0be 
+        content = " "; # ue0be 
         content-foreground = "${cWarmDark}";
         content-background = "${cBackground}";
         content-font = 3;
@@ -332,7 +332,7 @@ in {
       };
       "module/sepRL21" = {
         type = "custom/text";
-        content = " "; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
+        content = ""; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
         content-foreground = "${cPrimary}";
         content-background = "${cBackground}";
         content-font = 3;
@@ -340,14 +340,14 @@ in {
       
       "module/sepRL10" = {
         type = "custom/text";
-        content = " "; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
+        content = " "; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
         content-background = "${cWarmDark}";
         content-foreground = "${cBackground}";
         content-font = 3;
       };
       "module/sepRL01" = {
         type = "custom/text";
-        content = " "; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
+        content = " "; # ue0be  # I have no idea why the spacing needs to be like this now, I changed it in v114
         content-foreground = "${cWarmDark}";
         content-background = "${cBackground}";
         content-font = 3;

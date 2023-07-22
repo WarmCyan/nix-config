@@ -134,6 +134,7 @@
       remember_window_size = "no";
       initial_window_width = "100c";
       initial_window_height = "25c";
+      shell_integration = "no-cursor";
     };
   };
 
