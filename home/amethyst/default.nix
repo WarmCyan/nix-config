@@ -87,6 +87,9 @@
     drawio
     obs-studio
     vlc
+
+
+    julia-bin
   ];
 
   home.sessionVariables = {
