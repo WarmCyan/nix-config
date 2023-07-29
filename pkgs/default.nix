@@ -17,6 +17,7 @@
   export-dots = pkgs.callPackage ./export-dots.nix { inherit pkgs builders; };
 
   tools = pkgs.callPackage ./tools.nix { inherit pkgs builders; };
+  pluto = pkgs.callPackage ./pluto.nix { inherit pkgs builders; };
 
   volume = pkgs.callPackage ./barscripts/volume.nix { };
   batt = pkgs.callPackage ./barscripts/batt.nix { };

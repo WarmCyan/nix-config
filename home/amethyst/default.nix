@@ -90,6 +90,8 @@
 
 
     julia-bin
+
+    pluto
   ];
 
   home.sessionVariables = {
