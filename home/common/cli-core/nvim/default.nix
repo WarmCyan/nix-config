@@ -37,6 +37,7 @@ in
 
       # -- Langs --
       vim-nix
+      julia-vim
 
       # -- Utils --
       fzfWrapper # TODO: unclear on differences between this one and fzf-vim

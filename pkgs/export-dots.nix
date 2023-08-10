@@ -18,7 +18,7 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "export-dots";
-  version = "0.4.0";
+  version = "0.4.1";
   description = "Turn nix-ified configs and scripts into non-nix-ified versions, so they can be copied onto systems that are too hard to get nix onto.";
   usage = "export-dots [LOCATION]  # LOCATION by default is ~/dots";
   parameters = {};
@@ -38,8 +38,18 @@ builders.writeTemplatedShellApplication {
 
   VERSION=$(export-dots --version) # :D :D :D :D this is fine
 
-  # attempt to get current iris system/config info
+
+  
+  hm_profile_base=""
   if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
+    hm_profile_base="/nix/var/nix/profiles/per-user/''${USER}" 
+  elif [[ -e "''${HOME}/.local/state/nix/profiles/home-manager" ]]; then
+    hm_profile_base="''${HOME}/.local/state/nix/profiles"
+  fi
+      
+
+  # attempt to get current iris system/config info
+  if [[ "$hm_profile_base" != "" ]]; then
     if [[ -e "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configname" ]]; then
       hm_config=$(cat "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configname")
     fi
@@ -265,6 +275,7 @@ EOF
   export_simple_fixed_tool "add-jupyter-env"
   export_simple_fixed_tool "sri-hash"
   export_simple_fixed_tool "engilog"
+  export_simple_fixed_tool "pluto"
   export_reference_tool "export-dots"
   export_reference_tool "iris"
   write_installer
