@@ -46,6 +46,10 @@ in
     td-state  # todo-status cycler, used in my nvim config with shift-t
     tools     # check which of my tools are installed (and also reminders of what my tools are!)
     engilog   # my on-the-go brainstorming and thoughts engineering log tool
+    pluto
+
+
+    julia-bin
 
     jq
     # currently commented below because I installed them with brew at the time
