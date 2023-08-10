@@ -21,6 +21,12 @@
     python311Packages.argcomplete
 
     ffmpeg
+    inkscape
+
+    asciinema
+    asciinema-agg
+
+    julia-bin
   ];
 
   programs.vscode = {
