@@ -59,6 +59,7 @@
     # -- creative --
     blender
     gimp
+    inkscape
 
     # -- utils --
     flameshot         # screenshot tool
@@ -87,7 +88,6 @@
     drawio
     obs-studio
     vlc
-
 
     julia-bin
 
