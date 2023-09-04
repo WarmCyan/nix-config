@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+# This script grabs the current configuration and hardware nix files
+# on a new nixos system and puts them into a new iris repo host folder.
+#
+# Then it modifies the flake file to add a new nixos configuration, and
+# finally it runs the new configuration so you're bootstraped with an
+# iris environment.
+
+
+# make sure the default configuration files exist
+echo "Checking nixos config file existance:"
+
+echo -en "/etc/nixos/configuration.nix\t\t"
+if [[ -f "/etc/nixos/configuration.nix" ]]; then
+  echo "PASS"
+else
+  echo "FAIL"
+  exit 1
+fi
+
+echo -en "/etc/nixos/hardware-configuration.nix\t"
+if [[ -f "/etc/nixos/configuration.nix" ]]; then
+  echo "PASS"
+else
+  echo "FAIL"
+  exit 2
+fi
+
+# get some info from the user
+read -r -p "Configuration name: " config_name
+read -r -p "System (x86_64-linux): " system
+read -r -p "Unstable? [y/n]: " unstable
+hostname=$(hostname)
+
+if [[ "${system}" == "" ]]; then
+  system="x86_64-linux"
+fi
+
+if [[ "${unstable}" != "y" && "${unstable}" != "n" ]]; then
+  echo "Invalid stable/unstable option"
+  exit 3
+fi
+
+# create the new host directory and copy in the configs
+mkdir -p "hosts/${config_name}"
+cp /etc/nixos/configuration.nix "hosts/${config_name}/default.nix"
+cp /etc/nixos/hardware-configuration.nix "hosts/${config_name}"
+
+# make sure the flake will see them!
+git add "hosts/${config_name}/default.nix" "hosts/${config_name}"
+
+# add a new configuration to flake.nix
+if [[ "${unstable}" == "y" ]]; then
+  sed -i "/nixosConfigurations = {/a\
+  ${config_name} = mkSystem {\n\
+  configName = \"${config_name}\";\n\
+  hostname = \"${hostname}\";\n\
+  system = \"${system}\";\n\
+};\
+  " flake.nix
+else
+  sed -i "/nixosConfigurations = {/a\
+  ${config_name} = mkStableSystem {\n\
+  configName = \"${config_name}\";\n\
+  hostname = \"${hostname}\";\n\
+  system = \"${system}\";\n\
+};\
+  " flake.nix
+fi
+
+# run the appropriate nixos-rebuild command
+sudo nixos-rebuild switch --flake .\#"${config_name}"

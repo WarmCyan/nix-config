@@ -37,6 +37,7 @@ in
 
       # -- Langs --
       vim-nix
+      julia-vim
 
       # -- Utils --
       fzfWrapper # TODO: unclear on differences between this one and fzf-vim
@@ -77,11 +78,11 @@ in
       nodePackages.vim-language-server
 
       # -- Python language server stuff --
-      python39Packages.python-lsp-server
-      python39Packages.pylsp-mypy # TODO: unclear if working
-      python39Packages.pyls-isort
-      python39Packages.python-lsp-black
-      python39Packages.flake8
+      python310Packages.python-lsp-server
+      #python310Packages.pylsp-mypy # TODO: unclear if working
+      python310Packages.pyls-isort
+      python310Packages.python-lsp-black
+      python310Packages.flake8
 
       universal-ctags # important for vista-vim to work 
       fzf

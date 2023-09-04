@@ -87,6 +87,17 @@
     fi
   '' else "";
 
+  # eventually need params to help do nocolor check
+  colorInitFunction = initColors: params:
+  if initColors then
+  /* bash */ ''
+  ${builtins.readFile ./color_init.sh}
+
+  # SC2119 - yes I know I'm not passing local args yet
+  # shellcheck disable=SC2119
+  color_init
+  '' else "";
+
   # TODO: nocolor check/init color check
   expandParameters = params: version: parameterParser:
   if parameterParser then (
@@ -105,6 +116,9 @@
     };
   } else {}))
   else null;
+
+  fixMultiLineBashComment = fullString:
+  builtins.replaceStrings [ "\n" ] [ "\n# " ] fullString;
   
 
   # allow a version number to be associated with a text file
@@ -127,7 +141,7 @@
         preferLocalBuild = true;
         allowSubstitutes = false;
       }
-      ''
+      /* bash */ ''
         target=$out${lib.escapeShellArg destination}
         mkdir -p "$(dirname "$target")"
         if [ -e "$textPath" ]; then
@@ -149,7 +163,7 @@
     description,
     version ? null,
     usage ? null,
-    parameters ? null, # expects a dictionary with descriptions and possible flags
+    parameters ? {}, # expects a dictionary with descriptions and possible flags
     # e.g. parameters = { bash_var_name = { description = "testing"; flags = [
     # "-t" "--testing"; option = false ] } }
     initColors ? false,
@@ -171,12 +185,16 @@
     # TODO: add header and license and stuff
     # TODO: add color stuff
     # TODO: how to deal with positional parameters?
-    text = ''
+    text = /* bash */ ''
       #!${pkgs.runtimeShell}
       
       # ===============================================================
       # ${name}${if version != null then " (${version})" else ""}
-      # ${description}
+      # ${fixMultiLineBashComment description}
+      #
+      ${if usage != null then "# Usage: ${fixMultiLineBashComment usage}" else ""}
+      # Author: Nathan Martindale
+      # License: MIT
       # ===============================================================
       
       set -o errexit
@@ -194,6 +212,8 @@
       ${helpCheck resolved_params}
 
       ${versionCheck version resolved_params}
+
+      ${colorInitFunction initColors resolved_params}
 
       # ---------------------- MAIN SCRIPT CODE -----------------------
       

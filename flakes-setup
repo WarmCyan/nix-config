@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+echo "Setting up flakes..."
+mkdir -p ~/.config/nix
+echo "experimental-features = nix-command flakes" > ~/.config/nix/nix.conf
+
+bash -lic "nix shell . -c bootstrap $1"

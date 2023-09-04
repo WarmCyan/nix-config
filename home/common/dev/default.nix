@@ -21,6 +21,7 @@ in
 
     # -- MY tools! --
     add-jupyter-env # run inside a conda env to add jupyter lab setup
+    sri-hash        # quick nix utility to grab the sri from a github repo
   ];
 
   # TODO: put in fancier vim plugins stuff
@@ -37,36 +38,52 @@ in
   programs.zsh.initExtra = /* sh */ ''
     # >>> mamba initialize >>>
     export MAMBA_EXE='${pkgs.micromamba}/bin/micromamba';
-    export MAMBA_ROOT_PREFIX='/home/${username}/micromamba';
-    __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell zsh --prefix '/home/81n/micromamba' 2> /dev/null)"
+    export MAMBA_ROOT_PREFIX="''${HOME}/micromamba";
+    __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell zsh --prefix "''${HOME}/micromamba" 2> /dev/null)"
     if [ $? -eq 0 ]; then 
         eval "$__mamba_setup"
     else
-        if [ -f "/home/${username}/micromamba/etc/profile.d/micromamba.sh" ]; then
-            . "/home/${username}/micromamba/etc/profile.d/micromamba.sh"
+        if [ -f "''${HOME}/micromamba/etc/profile.d/micromamba.sh" ]; then
+            . "''${HOME}/micromamba/etc/profile.d/micromamba.sh"
         else
-            export  PATH="/home/${username}/micromamba/bin:$PATH"
+            export  PATH="''${HOME}/micromamba/bin:$PATH"
         fi
     fi
     unset __mamba_setup
     # <<< mamba initialize <<<
+
+    # NOTE: Needed because of the change in 1.2.0: https://github.com/mamba-org/mamba/pull/2137/files
+    # for whatever reason though __mamba_exe doesn't seem to exist? I determined
+    # that manually making a function for it that just calls $MAMBA_EXE (like
+    # what the completion used to do) seems to work fine though:
+    __mamba_exe () {
+      $MAMBA_EXE "$@"
+    }
   '';
   
   programs.bash.initExtra = /* sh */ ''
     # >>> mamba initialize >>>
     export MAMBA_EXE='${pkgs.micromamba}/bin/micromamba';
-    export MAMBA_ROOT_PREFIX='/home/${username}/micromamba';
-    __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell bash --prefix '/home/81n/micromamba' 2> /dev/null)"
+    export MAMBA_ROOT_PREFIX="''${HOME}/micromamba";
+    __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell bash --prefix "''${HOME}/micromamba" 2> /dev/null)"
     if [ $? -eq 0 ]; then 
         eval "$__mamba_setup"
     else
-        if [ -f "/home/${username}/micromamba/etc/profile.d/micromamba.sh" ]; then
-            . "/home/${username}/micromamba/etc/profile.d/micromamba.sh"
+        if [ -f "''${HOME}/micromamba/etc/profile.d/micromamba.sh" ]; then
+            . "''${HOME}/micromamba/etc/profile.d/micromamba.sh"
         else
-            export  PATH="/home/${username}/micromamba/bin:$PATH"
+            export  PATH="''${HOME}/micromamba/bin:$PATH"
         fi
     fi
     unset __mamba_setup
     # <<< mamba initialize <<<
+    
+    # NOTE: Needed because of the change in 1.2.0: https://github.com/mamba-org/mamba/pull/2137/files
+    # for whatever reason though __mamba_exe doesn't seem to exist? I determined
+    # that manually making a function for it that just calls $MAMBA_EXE (like
+    # what the completion used to do) seems to work fine though:
+    __mamba_exe () {
+      $MAMBA_EXE "$@"
+    }
   '';
 }

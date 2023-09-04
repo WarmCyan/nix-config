@@ -78,6 +78,8 @@ autocmd FileType vue setlocal tabstop=2
 autocmd FileType vue setlocal shiftwidth=2 
 autocmd FileType vue setlocal softtabstop=2
 
+autocmd FileType make setlocal noexpandtab
+autocmd FileType make setlocal softtabstop=0
 
 " folding
 set foldenable
@@ -194,6 +196,9 @@ nnoremap <tab>x :tabclose<cr>
 
 " Split line (on next space)
 nnoremap S f<space>s<cr><esc>==
+
+" Todo-cycling with my custom td-state tool
+nmap <s-t> V:'<,'>!td-state "`cat`"<cr>W
 
 
 " ==============================================================================

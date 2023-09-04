@@ -3,15 +3,14 @@
 # commands
 
 # TODO: command to regenerate hardware config and copy in?
-# TODO: it would be cool if we could "star" generations or something
 # TODO: once we store git hash, allow grabbing the git log up to that hash for given generation.
 
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
-  version = "0.4.1";
+  version = "1.0.3";
   description = "Management tool for my systems/nix-config flake.";
-  usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom";
+  usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)(lsgen)(r|revert)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom\n\tiris lsgen sh\n\tiris r sh 10 30\t# reverts system to system generation 10 and home to home generation 30";
   parameters = {
     sync = {
       flags = [ "-S" "--sync" ];
@@ -23,6 +22,11 @@ builders.writeTemplatedShellApplication {
       description = "Update the flake lock file. (This runs before a build step if specified)";
       option = true;
     };
+    updatePinned = {
+      flags = [ "--update-pinned" ];
+      description = "Update the pinned nixpkgs version to the currently locked nixpkgs-unstable. (This runs before a build step if specified)";
+      option = true;
+    };
     yes = {
       flags = [ "-y" "--yes" ];
       description = "Automatically apply the (h)ome and/or (s)ystem configuration without prompting.";
@@ -30,11 +34,11 @@ builders.writeTemplatedShellApplication {
     };
   };
   runtimeInputs = [ 
-    #pkgs.expect 
-    #pkgs.unstable.nix-output-monitor 
     pkgs.unstable.figlet # unstable to get new contributed fonts
     pkgs.unstable.nvd
     pkgs.lolcat
+    pkgs.ripgrep
+    pkgs.jq
     # pkgs.testing2 # this just demonstrates that I can indeed require my own scripts
   ];
   text = /* bash */ ''
@@ -74,14 +78,14 @@ builders.writeTemplatedShellApplication {
         if [[ -e "/etc/iris/configLastModified" ]]; then
           sys_lastMod=$(cat "/etc/iris/configLastModified")
           if [[ "''${sys_lastMod}" != "dirty" ]]; then
-            sys_lastMod=$(date -d "@''${sys_lastMod}" +"%Y-%m-%d")
+            sys_lastMod=$(${pkgs.coreutils}/bin/date -d "@''${sys_lastMod}" +"%Y-%m-%d")
           fi
         fi
       
         system_generation_pointer=$(readlink "/nix/var/nix/profiles/system")
         system_generation_number=$(readlink "/nix/var/nix/profiles/system" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
         #system_nix_store_pointer=$(readlink "/nix/var/nix/profiles/''${system_generation_pointer}")
-        system_generation_date=$(stat -c %y "/nix/var/nix/profiles/''${system_generation_pointer}")
+        system_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "/nix/var/nix/profiles/''${system_generation_pointer}")
         system_generation_date_time=''${system_generation_date:0:10}
         #echo -e "System gen: \t''${system_generation_number} (''${system_generation_date_time}) ''${sys_config} \tv''${sys_revCount}-''${sys_hash} (''${sys_lastMod})"
         printf "%-13s%-3s %-13s %-10s v%-12s (%s)\n" \
@@ -93,8 +97,15 @@ builders.writeTemplatedShellApplication {
           "''${sys_lastMod}"
         #echo -e "\t-> ''${system_nix_store_pointer}"
       fi
-      
+
+      hm_profile_base=""
       if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
+        hm_profile_base="/nix/var/nix/profiles/per-user/''${USER}" 
+      elif [[ -e "''${HOME}/.local/state/nix/profiles/home-manager" ]]; then
+        hm_profile_base="''${HOME}/.local/state/nix/profiles"
+      fi
+      
+      if [[ "$hm_profile_base" != "" ]]; then
         if [[ -e "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configname" ]]; then
           hm_config=$(cat "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configname")
         fi
@@ -113,14 +124,14 @@ builders.writeTemplatedShellApplication {
         if [[ -e "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configLastModified" ]]; then
           hm_lastMod=$(cat "''${XDG_DATA_HOME-$HOME/.local/share}/iris/configLastModified")
           if [[ "''${hm_lastMod}" != "dirty" ]]; then
-            hm_lastMod=$(date -d "@''${hm_lastMod}" +"%Y-%m-%d")
+            hm_lastMod=$(${pkgs.coreutils}/bin/date -d "@''${hm_lastMod}" +"%Y-%m-%d")
           fi
         fi
       
-        hm_generation_pointer=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager")
-        hm_generation_number=$(readlink "/nix/var/nix/profiles/per-user/''${USER}/home-manager" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
+        hm_generation_pointer=$(readlink "''${hm_profile_base}/home-manager")
+        hm_generation_number=$(readlink "''${hm_profile_base}/home-manager" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
         #hm_nix_store_pointer=$(readlink "/nix/var/nix/profiles/''${hm_generation_pointer}")
-        hm_generation_date=$(stat -c %y "/nix/var/nix/profiles/per-user/''${USER}/''${hm_generation_pointer}")
+        hm_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "''${hm_profile_base}/''${hm_generation_pointer}")
         hm_generation_date_time=''${hm_generation_date:0:10}
         #echo -e "Home gen: \t''${hm_generation_number} (''${hm_generation_date_time}) ''${hm_config} \tv''${hm_revCount}-''${hm_hash} (''${hm_lastMod})"
         printf "%-13s%-3s %-13s %-10s v%-12s (%s)\n" \
@@ -234,10 +245,17 @@ builders.writeTemplatedShellApplication {
           exit 1
         fi
         
+        hm_profile_base=""
+        if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
+          hm_profile_base="/nix/var/nix/profiles/per-user/''${USER}" 
+        elif [[ -e "''${HOME}/.local/state/nix/profiles/home-manager" ]]; then
+          hm_profile_base="''${HOME}/.local/state/nix/profiles"
+        fi
+        
         home-manager build --flake .\#"''${hm_config}"
         rm -f result-home
         mv result result-home
-        nvd diff "/nix/var/nix/profiles/per-user/''${USER}/home-manager" result-home
+        nvd diff "''${hm_profile_base}/home-manager" result-home
         
         if [[ ''${yes-false} == false ]]; then
           # prompt loop
@@ -267,7 +285,7 @@ builders.writeTemplatedShellApplication {
 
         # if we've hit this point, we're good to do the build! 
         echo "Applying home result..."
-        nix-env --profile "/nix/var/nix/profiles/per-user/''${USER}/home-manager" --set ./result-home
+        nix-env --profile "''${hm_profile_base}/home-manager" --set ./result-home  # TODO: what does this do?
         result-home/activate
       popd &> /dev/null
     }
@@ -285,18 +303,275 @@ builders.writeTemplatedShellApplication {
       grep -P ".*\ =\ mk(StableSystem|System)" "''${config_location}/flake.nix" | sed -e "s/\s*\([A-Za-z0-9\-\_\@]*\)\ =.*/\1/g"
     }
 
+    function list_home_gens () {
+      ensure_config
+      
+      hm_profile_base=""
+      if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
+        hm_profile_base="/nix/var/nix/profiles/per-user/''${USER}" 
+      elif [[ -e "''${HOME}/.local/state/nix/profiles/home-manager" ]]; then
+        hm_profile_base="''${HOME}/.local/state/nix/profiles"
+      fi
+        
+      echo -e "\nPrevious clean home generations:"
+      printf "%-5s   %-12s   %-12s\n" "GEN" "GEN DATE" "GIT VERSION"
+      echo "------------------------------------"
+      printf "Collecting...\r"
+      if [[ -e "''${hm_profile_base}/home-manager" ]]; then
+        pushd "''${hm_profile_base}" &> /dev/null
+
+        {
+          for filepath in home-manager-*-link; do
+            #echo "''${filepath}"
+            # shellcheck disable=SC2001
+            gen_num=$(echo "''${filepath}" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
+            
+            hm_conf_hash=""
+            hm_conf_revCount=""
+            hm_conf_lastMod=""
+            
+            full_path="''${hm_profile_base}/''${filepath}"
+            if [[ -e "''${full_path}/home-files/.local/share/iris/configShortRev" ]]; then
+              hm_conf_hash=$(cat "''${full_path}/home-files/.local/share/iris/configShortRev")
+            fi
+            if [[ -e "''${full_path}/home-files/.local/share/iris/configRevCount" ]]; then
+              hm_conf_revCount=$(cat "''${full_path}/home-files/.local/share/iris/configRevCount")
+              if [[ "''${hm_conf_revCount}" == "dirty" ]]; then
+                hm_conf_revCount=""
+              fi
+            fi
+            if [[ -e "''${full_path}/home-files/.local/share/iris/configLastModified" ]]; then
+              hm_conf_lastMod=$(cat "''${full_path}/home-files/.local/share/iris/configLastModified")
+              if [[ "''${hm_conf_lastMod}" != "dirty" ]]; then
+                hm_conf_lastMod=$(${pkgs.coreutils}/bin/date -d "@''${hm_conf_lastMod}" +"%Y-%m-%d")
+              fi
+            fi
+            hm_conf_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "''${hm_profile_base}/''${filepath}")
+            hm_conf_generation_date_time=''${hm_conf_generation_date:0:10}
+            if [[ "''${hm_conf_revCount}" == "" ]]; then
+              continue
+            fi
+
+            printf "%-5s - %-12s - v%-12s\n" "''${gen_num}" "(''${hm_conf_generation_date_time})" "''${hm_conf_revCount}-''${hm_conf_hash}"
+          done
+        } 2>&1 | sort -n | cat
+
+        popd &> /dev/null
+      fi
+    }
+    
+    function list_sys_gens () {
+      ensure_config
+      echo -e "\nPrevious clean system generations:"
+      printf "%-5s   %-12s   %-12s\n" "GEN" "GEN DATE" "GIT VERSION"
+      echo "------------------------------------"
+      printf "Collecting...\r"
+      if [[ -e "/nix/var/nix/profiles/system" ]]; then
+        pushd "/nix/var/nix/profiles/" &> /dev/null
+
+        {
+          for filepath in system-*-link; do
+            #echo "''${filepath}"
+            # shellcheck disable=SC2001
+            gen_num=$(echo "''${filepath}" | sed -e "s/[A-Za-z\-]*\([0-9]*\)/\1/g")
+            
+            system_hash=""
+            system_revCount=""
+            system_lastMod=""
+            
+            full_path="/nix/var/nix/profiles/''${filepath}"
+            if [[ -e "''${full_path}/etc/iris/configShortRev" ]]; then
+              system_hash=$(cat "''${full_path}/etc/iris/configShortRev")
+            fi
+            if [[ -e "''${full_path}/etc/iris/configRevCount" ]]; then
+              system_revCount=$(cat "''${full_path}/etc/iris/configRevCount")
+              if [[ "''${system_revCount}" == "dirty" ]]; then
+                system_revCount=""
+              fi
+            fi
+            if [[ -e "''${full_path}/etc/iris/configLastModified" ]]; then
+              system_lastMod=$(cat "''${full_path}/etc/iris/configLastModified")
+              if [[ "''${system_lastMod}" != "dirty" ]]; then
+                system_lastMod=$(${pkgs.coreutils}/bin/date -d "@''${system_lastMod}" +"%Y-%m-%d")
+              fi
+            fi
+            system_generation_date=$(${pkgs.coreutils}/bin/stat -c %y "/nix/var/nix/profiles/''${filepath}")
+            system_generation_date_time=''${system_generation_date:0:10}
+            if [[ "''${system_revCount}" == "" ]]; then
+              continue
+            fi
+
+            printf "%-5s - %-12s - v%-12s\n" "''${gen_num}" "(''${system_generation_date_time})" "''${system_revCount}-''${system_hash}"
+          done
+        } 2>&1 | sort -n | cat
+
+        popd &> /dev/null
+      fi
+    }
+
+    function activate_previous_home_gen () {
+      # NOTE: expects to be passed a string number
+      ensure_config
+      echo -e "\nRe-activiating previous home generation ''${1}..."
+      
+      hm_profile_base=""
+      if [[ -e "/nix/var/nix/profiles/per-user/''${USER}/home-manager" ]]; then
+        hm_profile_base="/nix/var/nix/profiles/per-user/''${USER}" 
+      elif [[ -e "''${HOME}/.local/state/nix/profiles/home-manager" ]]; then
+        hm_profile_base="''${HOME}/.local/state/nix/profiles"
+      fi
+      
+      if [[ -e "''${hm_profile_base}/home-manager-''${1}-link" ]]; then
+
+        nvd diff "''${hm_profile_base}/home-manager" "''${hm_profile_base}/home-manager-''${1}-link"
+        
+        if [[ ''${yes-false} == false ]]; then
+          # prompt loop
+          valid_response=false
+          while [[ ''${valid_response} == false ]]; do
+            read -r -p "Apply previous home generation result? [Y/n]" response 
+            case "''${response}" in
+              [nN][oO]|[nN])
+                echo "Previous home generation not applied."
+                return
+                ;;
+              [yY][eE][sS]|[yY])
+                valid_response=true
+                break
+                ;;
+              "")
+                valid_response=true
+                break
+                ;;
+              *)
+                echo "Invalid response, please enter [y]es or [n]o." 
+                ;;
+            esac
+          done
+        fi
+      
+        echo "Applying home generation ''${1}..."
+        # shellcheck disable=SC1090
+        . "''${hm_profile_base}/home-manager-''${1}-link/activate"
+      else
+        echo "Could not find generation, use the 'iris lsgen' command to list valid generation numbers."
+        exit 1
+      fi
+    }
+    
+    function activate_previous_sys_gen () {
+      # NOTE: expects to be passed a string number
+      ensure_config
+      echo -e "\nRe-activiating previous system generation ''${1}..."
+      
+      if [[ -e "/nix/var/nix/profiles/system-''${1}-link" ]]; then
+
+        nvd diff "/nix/var/nix/profiles/system" "/nix/var/nix/profiles/system-''${1}-link"
+        
+        if [[ ''${yes-false} == false ]]; then
+          # prompt loop
+          valid_response=false
+          while [[ ''${valid_response} == false ]]; do
+            read -r -p "Apply previous system result? [Y/n]" response 
+            case "''${response}" in
+              [nN][oO]|[nN])
+                echo "Previous system generation not applied."
+                return
+                ;;
+              [yY][eE][sS]|[yY])
+                valid_response=true
+                break
+                ;;
+              "")
+                valid_response=true
+                break
+                ;;
+              *)
+                echo "Invalid response, please enter [y]es or [n]o." 
+                ;;
+            esac
+          done
+        fi
+      
+        echo "Applying system generation ''${1}..."
+        # shellcheck disable=SC1090
+        . "/nix/var/nix/profiles/system-''${1}-link/activate"
+      else
+        echo "Could not find generation, use the 'iris lsgen' command to list valid generation numbers."
+        exit 1
+      fi
+    }
+
+    function update_pinned_nixpkgs () {
+      # finds out the current rev of nixpkgs-unstable in local flake lock, 
+      # then modifies flake nixpkgs-pinned to that rev, after ensuring pinned
+      # isn't already in use anywhere
+      ensure_config
+
+      # make sure we're not using pinned somewhere
+      echo -e "\nChecking for existing pinned package usage..."
+      pushd "''${config_location}" &> /dev/null
+        found=false
+        
+        # check in the home configs
+        pushd home &> /dev/null
+          if rg "pinned\."; then
+            found=true
+          fi
+        popd &> /dev/null
+        
+        # check in the nixos system configs
+        pushd hosts &> /dev/null
+          if rg "pinned\."; then
+            found=true
+          fi
+        popd &> /dev/null
+
+
+        if [[ ''${found} == true ]]; then
+          echo "WARNING: existing uses of pinned packages found, updating pinned channel before changing these could lead to unintended breakages!"
+          # prompt loop
+          valid_response=false
+          while [[ ''${valid_response} == false ]]; do
+            read -r -p "Update nixpkgs-pinned anyway? [y/n]" response 
+            case "''${response}" in
+              [nN][oO]|[nN])
+                echo "Not updating pinned nixpkgs."
+                exit 1
+                ;;
+              [yY][eE][sS]|[yY])
+                valid_response=true
+                break
+                ;;
+              *)
+                echo "Invalid response, please enter [y]es or [n]o." 
+                ;;
+            esac
+          done
+        fi
+        
+        # get current nixpkgs-unstable revision
+        unstableRevision=$(jq -r '.nodes."nixpkgs-unstable"'.locked.rev flake.lock)
+
+        echo "Updating flake pinned nixpkgs to revision ''${unstableRevision}"
+        # change the flake.nix (danger!)
+        sed -i -E "s/nixpkgs\-pinned.url\ =\ .*\;\$/nixpkgs\-pinned.url\ =\ \"github:nixos\/nixpkgs?rev=''${unstableRevision}\";/" flake.nix
+      popd &> /dev/null
+    }
+
     function open_for_edit () {
       ensure_config
       pushd "''${config_location}" &> /dev/null
       # NOTE: vim is not in requested runtimeInputs because we're assuming nvim
       # is on the machine - this is a potentially faulty assumption...but I want
       # to use whatever is already there.
+      
       if [[ $# -gt 1 ]]; then
         echo -e "\nEditing $1 and $2..."
-        vim -O "$1" "$2"
+        ''${EDITOR:=vim} -O "$1" "$2"
       else
         echo -e "\nEditing $1..."
-        vim "$1"
+        ''${EDITOR:=vim} "$1"
       fi
       popd &> /dev/null
     }
@@ -309,6 +584,13 @@ builders.writeTemplatedShellApplication {
 
     if [[ ''${sync-false} == true ]]; then
       sync_repo
+    fi
+
+    # NOTE: we have to run update-pinned before a regular update! 
+    # this allows us to both update pinned and the regular nixpkgs-unstable
+    # without changing them both to the same latest nixpkgs-unstable
+    if [[ ''${updatePinned--false} == true ]]; then
+      update_pinned_nixpkgs
     fi
 
     if [[ ''${update-false} == true ]]; then
@@ -434,8 +716,60 @@ builders.writeTemplatedShellApplication {
               ;;
           esac
           ;;
+        lsgen)
+          case "''${config_types}" in
+            hs|sh|"")
+              list_home_gens
+              list_sys_gens
+              ;;
+            h)
+              list_home_gens
+              ;;
+            s)
+              list_sys_gens
+              ;;
+            *)
+              echo "Invalid config types, please specify 'h' and/or 's'"
+              exit 1
+              ;;
+          esac
+          ;;
+        r|revert)
+          if [[ "''${config1}" == "" ]]; then
+            echo "Please specify a generation number to revert to."
+            exit 1
+          fi
+          case "''${config_types}" in
+            sh)
+              if [[ "''${config2}" == "" ]]; then
+                echo "Please specify both generation numbers to revert to."
+                exit 1
+              fi
+              activate_previous_home_gen "''${config2}"
+              activate_previous_sys_gen "''${config1}"
+              ;;
+            hs)
+              if [[ "''${config2}" == "" ]]; then
+                echo "Please specify both generation numbers to revert to."
+                exit 1
+              fi
+              activate_previous_home_gen "''${config1}"
+              activate_previous_sys_gen "''${config2}"
+              ;;
+            h)
+              activate_previous_home_gen "''${config1}"
+              ;;
+            s)
+              activate_previous_sys_gen "''${config1}"
+              ;;
+            *)
+              echo "Invalid config types, please specify 'h' and/or 's'"
+              exit 1
+              ;;
+          esac
+          ;;
         *)
-          echo "Invalid command, please specify [b|build]|[e|edit]|[n|new]|ls"
+          echo "Invalid command, please specify [b|build]|[e|edit]|[n|new]|[r|revert]|ls|lsgen"
           exit 1
           ;;
       esac

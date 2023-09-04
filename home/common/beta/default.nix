@@ -3,6 +3,10 @@
   home.packages = with pkgs; [
     testing # my first nix shell package thingy!
     testing2
+
+    export-dots
+
+    engilog
   ];
 
   # (move to dev when tested)

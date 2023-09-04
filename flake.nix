@@ -39,28 +39,13 @@
 # TODO's
 # ===============================
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
-# DONE: Add overlay for cmp-nvim-lsp-signature-help
-# DONE: Add bootstrapping capability
-# STRT: Start adding personal pkgs tools.
-# DONE: setup terminfo_dirs because I feel like that's been a problem? See phantom sessionVariables
-# TODO: package/cmd to grab the sha256 of a repo, see old flake
 # TODO: way to automate firefox speedups? https://www.drivereasy.com/knowledge/speed-up-firefox/ (will need to add nur which has firefox and extensions)
 # TODO: script to keep backup ref to home-manager gen and make it easy to switch to that one
 # TODO: add pre-commit stuff to this
-# TODO: make a exportshellcolors script that exports vars for colors, since it's easy to include that as a runtime dependency with  the writeshellapplication
 # TODO: snippet for nix header block
-# TODO: make a modified writeshellapplication that takes a version and a description and adds it to a special list that I can view with a separate package
 # TODO: fix vim auto line break to be how I used to have it
-# STRT: fix non writable settings.json for vscode
-# DONE: add everforest vscode theme overlay
-# TODO: submit everforest theme extension to nixpkgs, use https://github.com/NixOS/nixpkgs/pull/191145 as a model
-# TODO: the nix lock file should be per machine, that way if I update on one I don't break it in the others 
-# TODO: tool to build flake and grab configs and publish to separate repo for when nix unavailable
-# TODO: it would be cool if features could be specified without ".nix" if it's
-# just a file and not a folder
 # TODO: investigate allowing serving a nix store via ssh https://nixos.org/manual/nix/stable/package-management/ssh-substituter.html
 # TODO: make some nice plymouth boot stuff! 
-# TODO: my lib should prob be called iris-lib to avoid ambiguity and confusion. (call it utils like in https://jdisaacs.com/blog/nixos-config/
 
 # MODULES NEEDED
 #================================
@@ -114,7 +99,10 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.05";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.11";
+    
+    # pinned is auto-generated with `iris --update-pinned`
+    nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -128,17 +116,27 @@
 
   outputs = inputs:
   let
-    lib = import ./lib { inherit inputs; }; # This feels problematic, should probably be "mylib" instead
-    inherit (lib) mkHome mkSystem mkStableSystem forAllSystems;
+    mylib = import ./lib { inherit inputs; }; # This feels problematic, should probably be "mylib" instead
+    inherit (mylib) mkHome mkSystem mkStableSystem forAllSystems;
     inherit (builtins) attrValues;
   in
   rec {
-    inherit lib; # TODO: ....why is this here? does this let you do outputs.lib? or self.lib?
+    inherit mylib;
 
 
     # =================== NIXOS CONFIGURATIONS ==================
 
     nixosConfigurations = {
+      delta = mkSystem {
+        configName = "delta";
+        hostname = "delta";
+        system = "x86_64-linux";
+      };  
+      amethyst = mkSystem {
+        configName = "amethyst";
+        hostname = "amethyst";
+        system = "x86_64-linux";
+      };  
       therock = mkStableSystem {
         configName = "therock";
         hostname = "therock";
@@ -160,13 +158,17 @@
         hostname = "phantom";
         noNixos = true;
       };
+      amethyst = mkHome {
+        configName = "amethyst";
+        username = "dwl";
+        hostname = "amethyst";
+      };
 	
       # primary laptop
       delta = mkHome {
         configName = "delta";
         username = "dwl";
         hostname = "delta";
-        noNixos = true;
       };
 
       # homeserver
@@ -196,6 +198,17 @@
         noNixos = true;
         gitEmail = "martindalena@ornl.gov";
       };
+
+      # work laptop (mac)
+      wmac = mkHome {
+        configName = "wmac";
+        username = "81n";
+        hostname = "MAC135974";
+	system = "aarch64-darwin";
+        #noNixos = true;
+        gitEmail = "martindalena@ornl.gov";
+        configLocation = "/Users/81n/lab/nix-config";
+      };
     };
     
     # ===========================================================
@@ -213,6 +226,10 @@
           config.allowUnfree = true;
         };
         stable = import inputs.nixpkgs-stable {
+          system = prev.system;
+          config.allowUnfree = true;
+        };
+        pinned = import inputs.nixpkgs-pinned {
           system = prev.system;
           config.allowUnfree = true;
         };

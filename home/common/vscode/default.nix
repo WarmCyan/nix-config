@@ -84,10 +84,13 @@ in {
       "editor.multiCursorModifier" = "ctrlCmd";
       "editor.definitionLinkOpensInPeek" = true;
       "editor.stickyScroll.enabled" = true;
+      "editor.minimap.enabled" = false;
 
       "diffEditor.codeLens" = true;
 
       "window.titleBarStyle" = "custom";
+
+      "python.condaPath" = "~/micromamba/condabin/conda";
     };
   };
 
