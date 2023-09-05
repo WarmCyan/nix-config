@@ -92,6 +92,11 @@
     julia-bin
 
     pluto
+
+    unzip
+    ffmpeg
+
+    mixxx
   ];
 
   home.sessionVariables = {
