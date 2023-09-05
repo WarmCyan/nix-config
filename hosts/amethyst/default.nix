@@ -105,7 +105,6 @@
   '';
 
   services.udisks2.enable = true; # necessary for udiskie to work in home-manager (usb automounting)
-  
 
   # Configure keymap in X11
   services.xserver = {

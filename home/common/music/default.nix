@@ -44,9 +44,11 @@
         count = 3;
         separator = ";";
         source = "track";
+        force = false;
       };
       replaygain = {
         auto = true;
+        backend = "ffmpeg";
       };
       importfeeds = {
         formats = [ "m3u" "m3u_session" ];
