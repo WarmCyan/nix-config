@@ -468,7 +468,14 @@ require('nvim_comment').setup()
     --default = true
 --})
 
+
+
 EOF
+
+let g:vimwiki_list = [{'path': '~/lazuli/',
+                      \ 'syntax': 'markdown', 'ext': '.md'}]
+
+let g:vimwiki_global_ext = 0
 
 
 " https://github.com/liuchengxu/vista.vim/blob/master/doc/vista.txt

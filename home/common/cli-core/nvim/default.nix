@@ -44,6 +44,7 @@ in
       fzf-vim
       nvim-comment # shortcut to comment lines
       vim-tmux-navigator # vim-side of navigating between tmux/vim panes
+      vimwiki
 
       # -- Visual improvements --
       everforest # beautiful colorscheme
