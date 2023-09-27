@@ -44,7 +44,8 @@ in
       fzf-vim
       nvim-comment # shortcut to comment lines
       vim-tmux-navigator # vim-side of navigating between tmux/vim panes
-      vimwiki
+      vimwiki # allow using alongside obsidian and still doing link nav
+      nvim-tree-lua # file explorer sidebar
 
       # -- Visual improvements --
       everforest # beautiful colorscheme

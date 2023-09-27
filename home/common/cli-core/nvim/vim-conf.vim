@@ -468,6 +468,47 @@ require('nvim_comment').setup()
     --default = true
 --})
 
+--vim.g.loaded_netrw = 1
+--vim.g.loaded_netrwPlugin = 1
+-- TODO: does some of this need to go into an on_attach method?
+
+local function tree_on_attach(bufnr)
+    local api = require("nvim-tree.api")
+
+    local function opts(desc)
+        return { desc="nvim-tree: " .. desc, buffer=bufnr, noremap=true, silent = true, nowait=true }
+    end
+    
+    local function vsplit_preview()
+        local node = api.tree.get_node_under_cursor()
+        if node.nodes ~= nil then
+            -- expand or collapse folder
+            api.node.open.edit()
+        else
+            -- open file as vsplit
+            api.node.open.vertical()
+        end
+        
+        -- Finally refocus on tree if it was lost
+        api.tree.focus()
+    end
+
+    api.config.mappings.default_on_attach(bufnr)
+
+    
+    -- TODO: how do I make these shortcuts only apply in the nvimtree window
+    vim.keymap.set("n", "L", vsplit_preview, opts("VSplit Preview"))
+    --vim.keymap.set("n", "<C-0>", api.tree.close(), opts("VSplit Preview"))
+    -- vim.keymap.set("n", "H", api.tree.collapse_all, opts("Collapse All"))
+    -- TODO: set c-f to be focus nvim tree if already open
+end
+
+require("nvim-tree").setup({
+    on_attach=tree_on_attach
+})
+-- TODO: c-f overwrites autoformat up above
+vim.api.nvim_set_keymap("n", "<C-f>", ":NvimTreeFocus<cr>", {silent=false, noremap=true})
+-- https://github.com/nvim-tree/nvim-tree.lua/wiki/Recipes
 
 
 EOF
