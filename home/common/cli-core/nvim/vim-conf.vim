@@ -489,3 +489,7 @@ let g:vista_floating_delay = 0
 "autocmd FileType vista,vista_kind nnoremap <buffer> <silent> / :<c-u>call vista#finder#fzf#Run()<CR>
 nnoremap // :<c-u>Vista finder<CR>
 nnoremap <leader>v :Vista<CR>
+
+
+" https://github.com/wellle/context.vim
+let g:context_enabled = 1

@@ -52,6 +52,8 @@ in
       nvim-web-devicons # TODO: unclear if this works w/o font-awesome?
       indent-blankline-nvim # show indent line and current block highlight
       vista-vim # shows a "map" of all the symbols from lsp
+      context-vim # similar to the vscode experimental option that keeps the 
+                  # current scope line in view
 
       # -- Autocompletion --
       nvim-cmp
