@@ -200,6 +200,14 @@ nnoremap S f<space>s<cr><esc>==
 " Todo-cycling with my custom td-state tool
 nmap <s-t> V:'<,'>!td-state "`cat`"<cr>W
 
+" Make terminal also use jk for escape
+tnoremap jk <C-\><C-n>
+
+noremap <C-t>h <C-w>v:terminal<cr>a
+noremap <C-t>j <C-w>s<C-w>j:terminal<cr>a
+noremap <C-t>k <C-w>s:terminal<cr>a
+noremap <C-t>l <C-w>v<C-w>l:terminal<cr>a
+
 
 " ==============================================================================
 " ABBREVIATIONS
@@ -318,18 +326,19 @@ cmp.setup({
         { name = 'nvim_lsp' },
         { name = 'buffer' },
         { name = 'treesitter' },
-        { name = 'path' },
+        -- { name = 'path' }, -- https://github.com/hrsh7th/nvim-cmp/issues/874
         { name = 'luasnip' },
         { name = 'nvim_lsp_signature_help' },
     })
 })
 
-cmp.setup.cmdline(':', {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = cmp.config.sources({
-        { name = 'path' }
-    })
-})
+-- seemed to be breaking command line autocomplete
+-- cmp.setup.cmdline(':', {
+--     mapping = cmp.mapping.preset.cmdline(),
+--     sources = cmp.config.sources({
+--         { name = 'path' }
+--     })
+-- })
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
@@ -346,7 +355,7 @@ vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {f
 -- https://github.com/neovim/nvim-lspconfig
 local on_attach = function(client, bufnr)
     local bufopts = { noremap=true, silent=true, buffer=bufnr }
-    vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts) -- run autoformat
+    vim.keymap.set('n', '<C-a>', vim.lsp.buf.format, bufopts) -- run autoformat
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts) -- open up a window with info about symbol under cursor
     vim.keymap.set('n', '<C-p>', vim.lsp.buf.signature_help, bufopts)
     vim.keymap.set('i', '<C-p>', vim.lsp.buf.signature_help, bufopts)
@@ -376,15 +385,15 @@ lspconfig.pylsp.setup({
         pylsp = {
             configurationSources = {"flake8"},
             plugins = {
-                pylint = { enabled = false },
-                flake8 = { enabled = true },
-                pycodestyle = { enabled = false },
-                pyflakes = { enabled = true },
+                --pylint = { enabled = false },
+                --flake8 = { enabled = true },
+                --pycodestyle = { enabled = false },
+                --pyflakes = { enabled = true },
                 -- https://github.com/python-lsp/pylsp-mypy/issues/35 conflicts with https://github.com/python-lsp/python-lsp-black ...
-                black = { enabled = true }, 
-                pylsp_black = { enabled = true },
-                pyls_isort = { enabled = true },
-                pylsp_mypy = { enabled = true, live_mode = true, dmypy = true },
+                -- black = { enabled = true }, 
+                -- pylsp_black = { enabled = true },
+                -- pyls_isort = { enabled = true },
+                -- pylsp_mypy = { enabled = true, live_mode = true, dmypy = true },
             }
         }
     }
@@ -395,6 +404,7 @@ local null_ls = require('null-ls')
 local util = require 'lspconfig/util'
 null_ls.setup({
     sources = {
+        -- js
         null_ls.builtins.code_actions.eslint.with({
             only_local = "node_modules/.bin"
         }),
@@ -406,6 +416,10 @@ null_ls.setup({
         }),
 
         -- null_ls.builtins.diagnostics.vint
+
+        -- python (these don't seem to work with pylsp, unclear why)
+        null_ls.builtins.formatting.black,
+        null_ls.builtins.formatting.isort
     },
     on_attach = on_attach,
     capabilities = capabilities

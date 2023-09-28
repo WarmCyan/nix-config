@@ -123,7 +123,6 @@
   rec {
     inherit mylib;
 
-
     # =================== NIXOS CONFIGURATIONS ==================
 
     nixosConfigurations = {
@@ -204,7 +203,7 @@
         configName = "wmac";
         username = "81n";
         hostname = "MAC135974";
-	system = "aarch64-darwin";
+        system = "aarch64-darwin";
         #noNixos = true;
         gitEmail = "martindalena@ornl.gov";
         configLocation = "/Users/81n/lab/nix-config";
