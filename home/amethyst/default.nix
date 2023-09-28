@@ -97,6 +97,16 @@
     ffmpeg
 
     mixxx
+    # bashmount  # bash tui for interfacing with udisks
+    # sound-juicer
+    # lshw  # outputs information about all hardware
+    # gvfs  # maybe gets the HAL daemon running or something?
+    
+    
+    asunder  # CD ripper
+
+    imagemagick
+    
   ];
 
   home.sessionVariables = {

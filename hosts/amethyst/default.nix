@@ -105,6 +105,8 @@
   '';
 
   services.udisks2.enable = true; # necessary for udiskie to work in home-manager (usb automounting)
+  # services.gvfs.enable = true;  # possibly necessary for cdroms?
+  # services.devmon.enable = true;  # possibly necessary for cdroms?
 
   # Configure keymap in X11
   services.xserver = {
