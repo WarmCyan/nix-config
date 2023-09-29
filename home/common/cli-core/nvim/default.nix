@@ -35,6 +35,12 @@ in
 
     plugins = with pkgs.vimPlugins; [
 
+      # TODO: to try next:
+      # neotest
+      # notebooknavigator.nvim
+      # compter.nvim
+      # noedim
+
       # -- Langs --
       vim-nix
       julia-vim
@@ -46,6 +52,9 @@ in
       vim-tmux-navigator # vim-side of navigating between tmux/vim panes
       vimwiki # allow using alongside obsidian and still doing link nav
       nvim-tree-lua # file explorer sidebar
+      bufferline-nvim # better bufferline that works with both tabs and buffers
+      term-edit-nvim # allow editing cmdline text in nvim terminal
+      flatten-nvim # opening file in terminal in neovim won't nest
 
       # -- Visual improvements --
       everforest # beautiful colorscheme

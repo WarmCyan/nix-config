@@ -355,7 +355,7 @@ vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {f
 -- https://github.com/neovim/nvim-lspconfig
 local on_attach = function(client, bufnr)
     local bufopts = { noremap=true, silent=true, buffer=bufnr }
-    vim.keymap.set('n', '<C-a>', vim.lsp.buf.format, bufopts) -- run autoformat
+    vim.keymap.set('n', '<C-f>', vim.lsp.buf.format, bufopts) -- run autoformat
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts) -- open up a window with info about symbol under cursor
     vim.keymap.set('n', '<C-p>', vim.lsp.buf.signature_help, bufopts)
     vim.keymap.set('i', '<C-p>', vim.lsp.buf.signature_help, bufopts)
@@ -521,9 +521,28 @@ require("nvim-tree").setup({
     on_attach=tree_on_attach
 })
 -- TODO: c-f overwrites autoformat up above
-vim.api.nvim_set_keymap("n", "<C-f>", ":NvimTreeFocus<cr>", {silent=false, noremap=true})
+vim.api.nvim_set_keymap("n", "<LEADER>e", ":NvimTreeToggle<cr>", {silent=true, noremap=true})
 -- https://github.com/nvim-tree/nvim-tree.lua/wiki/Recipes
 
+require("bufferline").setup({
+    options = {
+        offsets = {
+            {
+                filetype = "NvimTree",
+                text = "File Explorer",
+                text_align = "center",
+                separator = true,
+            }
+        },
+        always_show_bufferline = false,
+    }
+})
+
+require("term-edit").setup({
+    prompt_end = '%$ ',
+})
+
+require("flatten").setup({})
 
 EOF
 
