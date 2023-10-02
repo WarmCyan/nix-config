@@ -2,16 +2,18 @@
 { inputs, ... }: final: prev:
 {
   vimPlugins = prev.vimPlugins // {
-    cmp-nvim-lsp-signature-help = prev.vimUtils.buildVimPluginFrom2Nix {
-      pname = "cmp-nvim-lsp-signature-help";
-      version = "2022-06-08";
-      src = prev.fetchFromGitHub {
-        owner = "hrsh7th";
-        repo = "cmp-nvim-lsp-signature-help";
-        rev = "8014f6d120f72fe0a135025c4d41e3fe41fd411b";
-        sha256 = "1k61aw9mp012h625jqrf311vnsm2rg27k08lxa4nv8kp6nk7il29";
-      };
-    };
+    # commented because it's in the actual nixos packages now, but
+    # leaving for reference
+    # cmp-nvim-lsp-signature-help = prev.vimUtils.buildVimPluginFrom2Nix {
+    #   pname = "cmp-nvim-lsp-signature-help";
+    #   version = "2022-06-08";
+    #   src = prev.fetchFromGitHub {
+    #     owner = "hrsh7th";
+    #     repo = "cmp-nvim-lsp-signature-help";
+    #     rev = "8014f6d120f72fe0a135025c4d41e3fe41fd411b";
+    #     sha256 = "1k61aw9mp012h625jqrf311vnsm2rg27k08lxa4nv8kp6nk7il29";
+    #   };
+    # };
     # Enable language fencing, e.g. something = /* sh */ ''
     vim-nix = prev.vimPlugins.vim-nix.overrideAttrs
       (_oldAttrs: rec {
@@ -23,6 +25,31 @@
           sha256 = "sha256-7TDW6Dgy/H7PRrIvTMpmXO5/3K5F1d4p3rLYon6h6OU=";
         };
       });
+    # Use rsync to auto sync files for "remote dev"
+    # rsync-nvim = prev.vimUtils.buildVimPluginFrom2Nix {
+    #   pname = "rsync-nvim";
+    #   version = "2023-10-02";
+    #   src = prev.fetchFromGitHub {
+    #     owner = "OscarCreator";
+    #     repo = "rsync.nvim";
+    #     rev = "bc5789e73083692af2a21c72216d0b5985b929e3";
+    #     sha256 = "sha256-4wGHDBOmBJEDR0qXpkj3mzlKsD+ScRj/KmsnET8tmEc=";
+    #   };
+    # };
+    # rsync-nvim = prev.vimUtils.buildVimPlugin {
+    #   pname = "rsync-nvim";
+    #   version = "2023-10-02";
+    #   src = prev.fetchFromGitHub {
+    #     owner = "OscarCreator";
+    #     repo = "rsync.nvim";
+    #     rev = "bc5789e73083692af2a21c72216d0b5985b929e3";
+    #     sha256 = "sha256-4wGHDBOmBJEDR0qXpkj3mzlKsD+ScRj/KmsnET8tmEc=";
+    #   };
+    #   buildInputs = [ prev.cargo prev.openssl ];
+    #   buildPhase = ''
+    #     make build
+    #   '';
+    # };
   }; # // import ../pkgs/vim-plugins { pkgs = prev } # TODO: !!!
 
   # TODO: could submit this as a pull request to

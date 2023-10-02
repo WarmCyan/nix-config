@@ -152,7 +152,7 @@ vnoremap ; :
 nnoremap Y y$
 
 " more sane usages of H and L
-nnoremap H ^
+nmap H ^
 nnoremap L $
 
 " convert word before cursor (or on cursor) to upper case (uses z mark)
@@ -544,7 +544,23 @@ require("term-edit").setup({
 
 require("flatten").setup({})
 
+--require("rsync").setup({})
+--require('packer').startup(function(use) 
+--    use 'wbthomason/packer.nvim'
+--    --use {
+--    --    'OscarCreator/rsync.nvim',
+--    --    run = 'make',
+--    --    requires = {'nvim-lua/plenary.nvim'},
+--    --    config = function()
+--    --        require("rsync").setup()
+--    --    end
+--    --}
+--end)
+
 EOF
+
+" otherwise my H binding doesn't work
+let g:context_add_mappings = 0
 
 let g:vimwiki_list = [{'path': '~/lazuli/',
                       \ 'syntax': 'markdown', 'ext': '.md'}]

@@ -55,6 +55,8 @@ in
       bufferline-nvim # better bufferline that works with both tabs and buffers
       term-edit-nvim # allow editing cmdline text in nvim terminal
       flatten-nvim # opening file in terminal in neovim won't nest
+      # rsync-nvim # allow auto syncing from a remote source via rsync
+      # packer-nvim # some things are easier to install with the packer nvim package manager. # TODO: just using this to build rsync-nvim
 
       # -- Visual improvements --
       everforest # beautiful colorscheme
