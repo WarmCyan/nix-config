@@ -189,10 +189,17 @@ nnoremap <F3> :bnext<CR>
 nnoremap <C-I> <C-A>
 
 " tab control
-nnoremap <tab>h :tabprev<cr>
-nnoremap <tab>l :tabnext<cr>
-nnoremap <tab><enter> :tabnew<cr>
-nnoremap <tab>x :tabclose<cr>
+" I'm moving these instead to buffer controls because of the
+" bufferline plugin
+" nnoremap <tab>h :tabprev<cr>
+" nnoremap <tab>l :tabnext<cr>
+" nnoremap <tab><enter> :tabnew<cr>
+" nnoremap <tab>x :tabclose<cr>
+ 
+nnoremap <tab>h :bprevious<cr>
+nnoremap <tab>l :bnext<cr>
+nnoremap <tab>x :bdelete<cr>
+
 
 " Split line (on next space)
 nnoremap S f<space>s<cr><esc>==
@@ -556,6 +563,42 @@ require("flatten").setup({})
 --    --    end
 --    --}
 --end)
+
+
+require("neotest").setup({
+    adapters = {
+        require("neotest-python")({
+            dap= { justMyCode = false },
+        }),
+    },
+    running={
+        concurrent = false -- can run into conflicts between tests
+    },
+})
+vim.api.nvim_set_keymap("n", "<LEADER>t", ":Neotest summary<CR>", {silent=true, noremap=true})
+
+require("dap-python").setup()
+
+-- don't keep swapping out the current buffer if already open in another
+local dap = require("dap")
+dap.defaults.fallback.switchbuf = 'useopen,uselast'
+
+-- nvim-dap mappings
+vim.keymap.set('n', '<F5>', function() require('dap').continue() end)
+vim.keymap.set('n', '<F9>', function() require('dap').terminate() end)
+vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
+vim.keymap.set('n', '<F11>', function() require('dap').step_into() end)
+vim.keymap.set('n', '<F12>', function() require('dap').step_out() end)
+vim.keymap.set('n', '<Leader>b', function() require('dap').toggle_breakpoint() end)
+vim.keymap.set('n', '<Leader>df', function()
+    local widgets = require('dap.ui.widgets')
+    widgets.sidebar(widgets.frames).open()
+end)
+vim.keymap.set('n', '<Leader>ds', function()
+    local widgets = require('dap.ui.widgets')
+    widgets.sidebar(widgets.scopes).open()
+end)
+vim.keymap.set('n', '<Leader>dr', function() require('dap').repl.open() end)
 
 EOF
 

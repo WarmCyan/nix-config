@@ -57,6 +57,13 @@ in
       flatten-nvim # opening file in terminal in neovim won't nest
       # rsync-nvim # allow auto syncing from a remote source via rsync
       # packer-nvim # some things are easier to install with the packer nvim package manager. # TODO: just using this to build rsync-nvim
+      plenary-nvim # helper functions for many other plugins
+
+      # -- testing and debugging
+      neotest # allow running unit tests within neovim
+      neotest-python  # neotest plugin for pytest
+      nvim-dap  # debug adapter protocol
+      nvim-dap-python # easy config for python dap
 
       # -- Visual improvements --
       everforest # beautiful colorscheme
@@ -104,6 +111,8 @@ in
       python311Packages.pyls-isort
       python311Packages.python-lsp-black
       python311Packages.flake8
+
+      python311Packages.debugpy # required for nvim-dap-python to work I think
 
     
       universal-ctags # important for vista-vim to work 
