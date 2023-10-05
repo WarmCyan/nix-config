@@ -600,6 +600,18 @@ vim.keymap.set('n', '<Leader>ds', function()
 end)
 vim.keymap.set('n', '<Leader>dr', function() require('dap').repl.open() end)
 
+
+require("sibling-swap").setup({
+    keymaps = {
+        ["<space>l"] = "swap_with_right",
+        ["<space>h"] = "swap_with_left",
+        ["<space>."] = "swap_with_right_with_opp",
+        ["<space>,"] = "swap_with_left_with_opp",
+    },
+})
+
+require("nvim-surround").setup()
+
 EOF
 
 " otherwise my H binding doesn't work

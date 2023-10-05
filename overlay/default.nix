@@ -25,6 +25,17 @@
           sha256 = "sha256-7TDW6Dgy/H7PRrIvTMpmXO5/3K5F1d4p3rLYon6h6OU=";
         };
       });
+    # allow C-. and C-, to swap sibling nodes quickly
+    sibling-swap = prev.vimUtils.buildVimPluginFrom2Nix {
+      pname = "sibling-swap";
+      version = "2023-10-05";
+      src = prev.fetchFromGitHub {
+        owner = "Wansmer";
+        repo = "sibling-swap.nvim";
+        rev = "58b256f2a7def9b63be275b373c748c012b3a604";
+        sha256 = "sha256-tS0eG0JbvfhX9BIkmfC3u+dIcZvuQvYsB7vw25JX/gg=";
+      };
+    };
     # Use rsync to auto sync files for "remote dev"
     # rsync-nvim = prev.vimUtils.buildVimPluginFrom2Nix {
     #   pname = "rsync-nvim";
