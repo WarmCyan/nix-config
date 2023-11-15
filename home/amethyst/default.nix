@@ -107,6 +107,18 @@
 
     imagemagick
     
+    gnumake
+
+
+    bespokesynth
+    #(wine.override { wineBuild = "wine64"; })
+    wineWowPackages.unstableFull
+
+    surge-XT
+    sfizz
+    yabridgectl
+    yabridge
+    carla
   ];
 
   home.sessionVariables = {
