@@ -27,6 +27,8 @@
     asciinema-agg
 
     julia-bin
+
+    xclip
   ];
 
   programs.vscode = {
