@@ -392,10 +392,10 @@ lspconfig.pylsp.setup({
         pylsp = {
             configurationSources = {"flake8"},
             plugins = {
-                --pylint = { enabled = false },
-                --flake8 = { enabled = true },
-                --pycodestyle = { enabled = false },
-                --pyflakes = { enabled = true },
+                pylint = { enabled = false },
+                flake8 = { enabled = true },
+                -- pycodestyle = { enabled = false },
+                -- pyflakes = { enabled = true },
                 -- https://github.com/python-lsp/pylsp-mypy/issues/35 conflicts with https://github.com/python-lsp/python-lsp-black ...
                 -- black = { enabled = true }, 
                 -- pylsp_black = { enabled = true },
@@ -473,6 +473,8 @@ require('lualine').setup {
 
 vim.opt.list = true
 require("ibl").setup({
+    --show_current_context = true,
+    --show_current_context_start = true,
     -- use_treesitter = true,
     -- https://github.com/lukas-reineke/indent-blankline.nvim/issues/271
     --context_patterns = {

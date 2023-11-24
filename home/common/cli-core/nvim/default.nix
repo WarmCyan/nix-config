@@ -62,7 +62,7 @@ in
       nvim-surround # make it easier to change quotes/braces around a thing etc.
 
       # -- testing and debugging
-      neotest # allow running unit tests within neovim
+      #neotest # allow running unit tests within neovim
       neotest-python  # neotest plugin for pytest
       nvim-dap  # debug adapter protocol
       nvim-dap-python # easy config for python dap
@@ -95,6 +95,9 @@ in
       # -- Snippets --
       luasnip
       cmp_luasnip
+    ] ++ [
+      pkgs.stable.vimPlugins.neotest
+      #pkgs.pinned.vimPlugins.neotest-python
     ];
 
     extraPackages = with pkgs; [
