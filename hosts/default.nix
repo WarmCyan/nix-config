@@ -62,5 +62,9 @@ in
       dates = lib.mkDefault "weekly";
     };
   };
-  nixpkgs.config.allowUnfree = true;
+  #nixpkgs.config.allowUnfree = true;
+  # the above broke with this? https://github.com/NixOS/nixpkgs/pull/258447
+  # https://discourse.nixos.org/t/your-system-configures-nixpkgs-with-an-externally-created-instance/33802 
+  # nixpkgs.config.allowUnfree = true;
+  #pkgs.config.allowUnfree = true;
 }
