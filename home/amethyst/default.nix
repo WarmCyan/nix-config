@@ -119,6 +119,9 @@
     yabridgectl
     yabridge
     carla
+
+
+    dnsutils # includes nslookup
   ];
 
   home.sessionVariables = {

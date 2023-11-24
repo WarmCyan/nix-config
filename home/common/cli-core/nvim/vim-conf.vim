@@ -472,16 +472,24 @@ require('lualine').setup {
 }
 
 vim.opt.list = true
-require("indent_blankline").setup {
-    show_current_context = true,
-    show_current_context_start = true,
+require("ibl").setup({
     -- use_treesitter = true,
     -- https://github.com/lukas-reineke/indent-blankline.nvim/issues/271
     --context_patterns = {
         --"class", "function", "method", "block", "list_literal", "selector",
         --"^if", "^table", "if_statement", "while", "for",
     --},
-}
+})
+--require("indent_blankline").setup {
+--    show_current_context = true,
+--    show_current_context_start = true,
+--    -- use_treesitter = true,
+--    -- https://github.com/lukas-reineke/indent-blankline.nvim/issues/271
+--    --context_patterns = {
+--        --"class", "function", "method", "block", "list_literal", "selector",
+--        --"^if", "^table", "if_statement", "while", "for",
+--    --},
+--}
 
 require('nvim_comment').setup()
 
