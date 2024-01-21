@@ -122,6 +122,9 @@
 
 
     dnsutils # includes nslookup
+
+
+    zip
   ];
 
   home.sessionVariables = {
