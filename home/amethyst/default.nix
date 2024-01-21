@@ -71,7 +71,10 @@
     xclip             # clipboard tool 
 
     # -- other --
-    obsidian
+    unstable.obsidian  # the explicit unstable is currently necessary to get the overlay from flake that
+                       # lists electron 25.9.0 (eol) as a permitted insecure
+                       # package. TODO: remove this once obsidian updates
+    #obsidian
     python311
 
     pulseaudio

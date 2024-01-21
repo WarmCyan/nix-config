@@ -223,6 +223,7 @@
         unstable = import inputs.nixpkgs-unstable {
           system = prev.system;
           config.allowUnfree = true;
+          config.permittedInsecurePackages = [ "electron-25.9.0" ];
         };
         stable = import inputs.nixpkgs-stable {
           system = prev.system;
