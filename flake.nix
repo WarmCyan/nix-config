@@ -36,6 +36,11 @@
 
 # (2022/10/26) Another valuable set of dotfiles to reference: https://man.sr.ht/~hutzdog/dotfiles/
 
+
+
+# the nixos/flake book, potentially some good conventions to use here:
+# https://nixos-and-flakes.thiscute.world/nixos-with-flakes/downgrade-or-upgrade-packages
+
 # TODO's
 # ===============================
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
