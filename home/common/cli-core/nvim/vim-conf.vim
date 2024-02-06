@@ -394,8 +394,9 @@ lspconfig.pylsp.setup({
             plugins = {
                 pylint = { enabled = false },
                 flake8 = { enabled = true },
-                -- pycodestyle = { enabled = false },
-                -- pyflakes = { enabled = true },
+                pycodestyle = { enabled = false },
+                pyflakes = { enabled = false },
+                mccabe = { enabled = false },
                 -- https://github.com/python-lsp/pylsp-mypy/issues/35 conflicts with https://github.com/python-lsp/python-lsp-black ...
                 -- black = { enabled = true }, 
                 -- pylsp_black = { enabled = true },

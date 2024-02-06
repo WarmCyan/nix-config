@@ -112,13 +112,25 @@ in
       # python310Packages.flake8
 
       # -- Python language server stuff --
-      python311Packages.python-lsp-server
-      python311Packages.pyls-isort
-      python311Packages.python-lsp-black
-      python311Packages.flake8
+      # python311Packages.python-lsp-server
+      # python311Packages.pyls-isort
+      # python311Packages.python-lsp-black
+      # python311Packages.flake8
+      # python311Packages.debugpy # required for nvim-dap-python to work I think
 
-      python311Packages.debugpy # required for nvim-dap-python to work I think
+      # python312Packages.python-lsp-server
+      # python312Packages.pyls-isort
+      # python312Packages.python-lsp-black
+      # python312Packages.flake8
+      # python312Packages.debugpy # required for nvim-dap-python to work I think
 
+      (python3.withPackages (ps: with ps; [
+        python-lsp-server
+        pyls-isort
+        python-lsp-black
+        flake8
+        debugpy
+      ]))
     
       universal-ctags # important for vista-vim to work 
       fzf

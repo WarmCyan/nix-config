@@ -29,6 +29,8 @@
     julia-bin
 
     xclip
+
+    gifify
   ];
 
   programs.vscode = {
