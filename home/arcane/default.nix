@@ -6,6 +6,7 @@
     ../common/cli-core
     ../common/dev
     ../common/vscode
+    ../common/beta
   ];
 
   # programs.neovim = {

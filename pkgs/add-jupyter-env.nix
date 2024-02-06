@@ -8,14 +8,10 @@ writeShellApplication {
       jupyterlab \
       nodejs \
       jupyterlab_vim \
-      ipydrawio \
-      dask_labextension \
       jupyterlab-lsp \
       python-lsp-server \
       jupyterlab_code_formatter \
       black \
       isort
-      
-    pip install jupyterlab-vimrc
   '';
 }
