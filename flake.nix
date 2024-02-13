@@ -43,6 +43,19 @@
 
 # TODO's
 # ===============================
+# TODO: make each profile use separate lock file through iris
+# TODO: add iris flag to pass next flags to underlying commands
+# TODO: make opengl stuff work on non-nixos: https://github.com/nix-community/nixGL/issues/114#issuecomment-1585323281
+
+# TODO: make an install nix anywhere script https://zameermanji.com/blog/2023/3/26/using-nix-without-root/ 
+#   curl -L https://hydra.nixos.org/job/nix/maintenance-2.20/buildStatic.x86_64-linux/latest/download-by-type/file/binary-dist > nix
+#   export NIX_CONF_DIR="[...]/.config/nix"
+#   (set up the nix.conf)
+#   ./nix ... (will use .local/share/nix)
+# (for it to work on macos will likely need https://github.com/nixie-dev/fakedir)
+
+#
+# 
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
 # TODO: way to automate firefox speedups? https://www.drivereasy.com/knowledge/speed-up-firefox/ (will need to add nur which has firefox and extensions)
 # TODO: script to keep backup ref to home-manager gen and make it easy to switch to that one
