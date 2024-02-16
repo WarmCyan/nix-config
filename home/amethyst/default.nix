@@ -128,6 +128,10 @@
 
 
     zip
+
+    ranger
+    gdb
+    st
   ];
 
   home.sessionVariables = {
@@ -163,8 +167,10 @@
   };
 
   programs.kitty = {
+    # package = pkgs.stable.kitty;
     enable = true;
     theme = "Gruvbox Material Dark Hard";
+    shellIntegration.mode = "disabled";
     #theme = "Everforest Dark Hard";
     settings = {
       font_family = "Droid Sans Mono Slashed for Powerline";
@@ -175,7 +181,8 @@
       remember_window_size = "no";
       initial_window_width = "100c";
       initial_window_height = "25c";
-      shell_integration = "no-cursor";
+      cursor_shape = "block";
+      cursor_blink_interval = "0";
     };
   };
 
