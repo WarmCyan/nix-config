@@ -123,6 +123,13 @@
     nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
 
     home-manager = {
+      # TODO TODO: TODO: TODO: https://discourse.nixos.org/t/anatomy-of-a-nixos-config/40252
+      # TODO: apparently you can follow specific releases? (e.g.
+      # home-manager/release-23.11) would this solve some of the stability
+      # issues?
+      # TODO: is there a way to see a list of changes to options in HM modules
+      # that I use?
+      # TODO: look into using nixvim instead of doing neovim through HM
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs-unstable"; # unsure what this actually does. (It
       # makes it so that home-manager isn't downloading it's own set of nixpkgs,

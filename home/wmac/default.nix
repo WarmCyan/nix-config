@@ -99,6 +99,7 @@ in
     enable = true;
     theme = "Gruvbox Material Dark Hard";
     #theme = "Everforest Dark Hard";
+    shellIntegration.mode = "disabled";
     settings = {
       font_family = "Droid Sans Mono Slashed for Powerline";
       font_size = "12.0";
@@ -108,7 +109,8 @@ in
       remember_window_size = "no";
       initial_window_width = "100c";
       initial_window_height = "25c";
-      shell_integration = "no-cursor";
+      cursor_shape = "block";
+      cursor_blink_interval = "0";
     };
   };
 
