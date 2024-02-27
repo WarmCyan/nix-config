@@ -123,6 +123,7 @@
     nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
 
     home-manager = {
+      # https://github.com/EmergentMind/nix-config
       # TODO TODO: TODO: TODO: https://discourse.nixos.org/t/anatomy-of-a-nixos-config/40252
       # TODO: apparently you can follow specific releases? (e.g.
       # home-manager/release-23.11) would this solve some of the stability
