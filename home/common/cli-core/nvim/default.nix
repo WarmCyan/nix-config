@@ -58,7 +58,7 @@ in
       # rsync-nvim # allow auto syncing from a remote source via rsync
       # packer-nvim # some things are easier to install with the packer nvim package manager. # TODO: just using this to build rsync-nvim
       plenary-nvim # helper functions for many other plugins
-      sibling-swap # allow easy swapping of sibling nodes e.g. function args
+      # sibling-swap # allow easy swapping of sibling nodes e.g. function args
       nvim-surround # make it easier to change quotes/braces around a thing etc.
 
       # -- testing and debugging
@@ -96,7 +96,7 @@ in
       luasnip
       cmp_luasnip
     ] ++ [
-      #pkgs.stable.vimPlugins.neotest
+      pkgs.unstable.vimPlugins.sibling-swap
     ];
 
     extraPackages = with pkgs; [

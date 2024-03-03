@@ -117,7 +117,7 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     
     # keeping around so if I ever need a specific nixpkgs commit, use this
     # nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
@@ -140,14 +140,30 @@
     # TODO: add in nix-colors! 
   };
 
-  outputs = inputs:
+  #outputs = inputs:
+  outputs = { self, nixpkgs, home-manager, ... } @ inputs:
   let
+    inherit (self) outputs;
+    
+    systems = [
+      "x86_64-linux"
+      "aarch64-darwin"
+    ];
+    forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
+    pkgsFor = lib.genAttrs systems (system: import nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
+    });
+  
     mylib = import ./lib { inherit inputs; };
+    lib = nixpkgs.lib // home-manager.lib // mylib;
+    
     inherit (mylib) mkHome mkSystem mkStableSystem forAllSystems;
     inherit (builtins) attrValues;
   in
   rec {
     inherit mylib;
+    inherit pkgsFor;
 
     # =================== NIXOS CONFIGURATIONS ==================
 
@@ -237,28 +253,30 @@
     };
     
     # ===========================================================
+
+    overlays = import ./overlays { inherit inputs outputs; }
 	
-    overlays = {
-      # https://nixos.wiki/wiki/Flakes (see section "Importing packages from multiple channels")
-      # a single overlay that always includes both,
-      # this would allow modules that get imported from both a stable and 
-      # unstable context to work if they require a specific channel, and all the
-      # rest of the packages will just default to whatever context called from.
-      
-      stable-unstable-combo = final: prev: {
-        unstable = import inputs.nixpkgs-unstable {
-          system = prev.system;
-          config.allowUnfree = true;
-          config.permittedInsecurePackages = [ "electron-25.9.0" ];
-        };
-        stable = import inputs.nixpkgs-stable {
-          system = prev.system;
-          config.allowUnfree = true;
-        };
-      };
-      
-      custom-pkgs = import ./overlay { inherit inputs; };
-    };
+    # overlays = {
+    #   # https://nixos.wiki/wiki/Flakes (see section "Importing packages from multiple channels")
+    #   # a single overlay that always includes both,
+    #   # this would allow modules that get imported from both a stable and 
+    #   # unstable context to work if they require a specific channel, and all the
+    #   # rest of the packages will just default to whatever context called from.
+    #  
+    #   stable-unstable-combo = final: prev: {
+    #     unstable = import inputs.nixpkgs-unstable {
+    #       system = prev.system;
+    #       config.allowUnfree = true;
+    #       config.permittedInsecurePackages = [ "electron-25.9.0" ];
+    #     };
+    #     stable = import inputs.nixpkgs {
+    #       system = prev.system;
+    #       config.allowUnfree = true;
+    #     };
+    #   };
+    #  
+    #   custom-pkgs = import ./overlay { inherit inputs; };
+    # };
 
     # overlay-unstable = final: prev: {
     #   unstable = import inputs.nixpkgs-unstable {
@@ -283,7 +301,7 @@
     );
     
     legacyPackagesStable = forAllSystems (system:
-      import inputs.nixpkgs-stable {
+      import inputs.nixpkgs {
         inherit system;
         overlays = attrValues overlays; # ++ [ overlay-unstable ];
         config.allowUnfree = true;
