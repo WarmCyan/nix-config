@@ -44,7 +44,7 @@
           };
         });
       # allow C-. and C-, to swap sibling nodes quickly
-      sibling-swap = prev.vimUtils.buildVimPluginFrom2Nix {
+      sibling-swap = prev.vimUtils.buildVimPlugin {
         pname = "sibling-swap";
         version = "2023-10-05";
         src = prev.fetchFromGitHub {
