@@ -117,10 +117,10 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.11";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-23.11";
     
-    # pinned is auto-generated with `iris --update-pinned`
-    nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
+    # keeping around so if I ever need a specific nixpkgs commit, use this
+    # nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
 
     home-manager = {
       # https://github.com/EmergentMind/nix-config
@@ -131,8 +131,8 @@
       # TODO: is there a way to see a list of changes to options in HM modules
       # that I use?
       # TODO: look into using nixvim instead of doing neovim through HM
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs-unstable"; # unsure what this actually does. (It
+      url = "github:nix-community/home-manager/release-23.11";
+      inputs.nixpkgs.follows = "nixpkgs"; # unsure what this actually does. (It
       # makes it so that home-manager isn't downloading it's own set of nixpkgs,
       # we're "overriding" the nixpkgs input home-manager defines by default)
     };
@@ -142,7 +142,7 @@
 
   outputs = inputs:
   let
-    mylib = import ./lib { inherit inputs; }; # This feels problematic, should probably be "mylib" instead
+    mylib = import ./lib { inherit inputs; };
     inherit (mylib) mkHome mkSystem mkStableSystem forAllSystems;
     inherit (builtins) attrValues;
   in
@@ -252,10 +252,6 @@
           config.permittedInsecurePackages = [ "electron-25.9.0" ];
         };
         stable = import inputs.nixpkgs-stable {
-          system = prev.system;
-          config.allowUnfree = true;
-        };
-        pinned = import inputs.nixpkgs-pinned {
           system = prev.system;
           config.allowUnfree = true;
         };

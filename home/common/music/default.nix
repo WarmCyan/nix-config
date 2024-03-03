@@ -7,7 +7,7 @@
   
   programs.beets = {
     enable = true;
-    package = pkgs.pinned.beets;
+    package = pkgs.beets;
     mpdIntegration.enableUpdate = true;  # mpdupdate plugin
     settings = {
       directory = "~/music";

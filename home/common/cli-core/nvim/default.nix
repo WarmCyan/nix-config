@@ -97,7 +97,6 @@ in
       cmp_luasnip
     ] ++ [
       #pkgs.stable.vimPlugins.neotest
-      #pkgs.pinned.vimPlugins.neotest-python
     ];
 
     extraPackages = with pkgs; [
