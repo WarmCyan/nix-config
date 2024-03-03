@@ -152,6 +152,7 @@
     forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
     pkgsFor = lib.genAttrs systems (system: import nixpkgs {
       inherit system;
+      # overlays = builtins.attrValues outputs.overlays;
       config.allowUnfree = true;
     });
   
@@ -161,9 +162,12 @@
     inherit (mylib) mkHome mkSystem mkStableSystem forAllSystems;
     inherit (builtins) attrValues;
   in
-  rec {
+  {
     inherit mylib;
+    inherit lib;
     inherit pkgsFor;
+
+    overlays = import ./overlays { inherit inputs outputs; };
 
     # =================== NIXOS CONFIGURATIONS ==================
 
@@ -199,10 +203,24 @@
         hostname = "phantom";
         noNixos = true;
       };
-      amethyst = mkHome {
-        configName = "amethyst";
-        username = "dwl";
-        hostname = "amethyst";
+      # amethyst = mkHome {
+      #   configName = "amethyst";
+      #   username = "dwl";
+      #   hostname = "amethyst";
+      # };
+      amethyst = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "amethyst";
+          username = "dwl";
+          configName = "amethyst";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "nathanamartindale@gmail.com";
+          configLocation = "/home/dwl/lab/nix-config";
+          noNixos = false;
+        };
       };
 	
       # primary laptop
@@ -253,8 +271,6 @@
     };
     
     # ===========================================================
-
-    overlays = import ./overlays { inherit inputs outputs; }
 	
     # overlays = {
     #   # https://nixos.wiki/wiki/Flakes (see section "Importing packages from multiple channels")
@@ -292,40 +308,40 @@
     #   };
     # };
 
-    legacyPackagesUnstable = forAllSystems (system:
-      import inputs.nixpkgs-unstable {
-        inherit system;
-        overlays = attrValues overlays; # ++ [ overlay-stable ];
-        config.allowUnfree = true;
-      }
-    );
-    
-    legacyPackagesStable = forAllSystems (system:
-      import inputs.nixpkgs {
-        inherit system;
-        overlays = attrValues overlays; # ++ [ overlay-unstable ];
-        config.allowUnfree = true;
-      }
-    );
+    # legacyPackagesUnstable = forAllSystems (system:
+    #   import inputs.nixpkgs-unstable {
+    #     inherit system;
+    #     overlays = attrValues overlays; # ++ [ overlay-stable ];
+    #     config.allowUnfree = true;
+    #   }
+    # );
+    #
+    # legacyPackagesStable = forAllSystems (system:
+    #   import inputs.nixpkgs {
+    #     inherit system;
+    #     overlays = attrValues overlays; # ++ [ overlay-unstable ];
+    #     config.allowUnfree = true;
+    #   }
+    # );
     
     # home-manager bootstrap script. If home-manager isn't yet installed, run
     # `nix shell .` and then `bootstrap [NAME OF HOME CONFIG]`
     # TODO: why isn't this just using the writeshellscript whatever?
     # checkout the bootstrap used in https://github.com/Misterio77/nix-starter-configs/blob/main/standard/shell.nix
-    packages = forAllSystems (system: {
-      default = with legacyPackagesUnstable.${system}; 
-      stdenv.mkDerivation rec {
-        name = "bootstrap-script";
-        installPhase = /* bash */ ''
-          mkdir -p $out/bin
-          echo "#!${runtimeShell}" >> $out/bin/bootstrap
-          echo "export TERMINFO_DIRS=/usr/share/terminfo" >> $out/bin/bootstrap
-          echo "nix build --no-write-lock-file home-manager" >> $out/bin/bootstrap
-          echo "./result/bin/home-manager --flake \".#\$1\" switch --impure" >> $out/bin/bootstrap
-          chmod +x $out/bin/bootstrap
-        '';
-        dontUnpack = true;
-      };
-    });
+    # packages = forAllSystems (system: {
+    #   default = with legacyPackagesUnstable.${system}; 
+    #   stdenv.mkDerivation rec {
+    #     name = "bootstrap-script";
+    #     installPhase = /* bash */ ''
+    #       mkdir -p $out/bin
+    #       echo "#!${runtimeShell}" >> $out/bin/bootstrap
+    #       echo "export TERMINFO_DIRS=/usr/share/terminfo" >> $out/bin/bootstrap
+    #       echo "nix build --no-write-lock-file home-manager" >> $out/bin/bootstrap
+    #       echo "./result/bin/home-manager --flake \".#\$1\" switch --impure" >> $out/bin/bootstrap
+    #       chmod +x $out/bin/bootstrap
+    #     '';
+    #     dontUnpack = true;
+    #   };
+    # });
   };
 }

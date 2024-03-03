@@ -23,7 +23,8 @@ rec {
   builtins.trace "\nBuilding (STABLE) system configuration ${configName} for host ${hostname}...\nsystem: ${system}"
   nixpkgs.lib.nixosSystem {
     inherit system modules;
-    pkgs = outputs.legacyPackagesStable.${system};
+    # pkgs = outputs.legacyPackagesStable.${system};
+    pkgs = pkgsFor.${system};
     specialArgs = { # these are args that get passed to all modules
       inherit self inputs outputs configName hostname timezone configLocation;
       stable = true;
@@ -41,7 +42,8 @@ rec {
   builtins.trace "\nBuilding system configuration ${configName} for host ${hostname}...\nsystem: ${system}"
   nixpkgs-unstable.lib.nixosSystem {
     inherit system modules;
-    pkgs = outputs.legacyPackagesUnstable.${system};
+    #pkgs = outputs.legacyPackagesUnstable.${system};
+    pkgs = pkgsFor.${system};
     specialArgs = { # these are args that get passed to all modules
       inherit self inputs outputs configName hostname timezone configLocation;
       stable = false;
@@ -70,7 +72,8 @@ rec {
     #mkOption
     gitEmail ? "nathanamartindale@gmail.com",
     configLocation ? "/home/dwl/lab/nix-config",
-    modules ? [ ../home ]
+    modules ? [ ../home ],
+    pkgs
   }:
   builtins.trace "\nBuilding home for ${username}@${hostname}...\nsystem: ${system}"
   homeManagerConfiguration {

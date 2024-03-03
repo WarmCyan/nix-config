@@ -10,11 +10,16 @@
       config.allowUnfree = true;
       # obsidian currently breaks without this
       config.permittedInsecurePackages = [ "electron-25.9.0" ];
-    }
-  }
+    };
+  };
 
   modifications = final: prev: {
     vimPlugins = prev.vimPlugins // {
+
+      # make it easier to add in unstable vim plugins without needing to
+      # explicitly ref pkgs.unstable.vimPlugins
+      unstable = final.unstable.vimPlugins;
+      
       # commented because it's in the actual nixos packages now, but
       # leaving for reference
       # cmp-nvim-lsp-signature-help = prev.vimUtils.buildVimPluginFrom2Nix {
@@ -87,7 +92,7 @@
       };
     };
 
-  }
+  };
   
   # don't need anymore because it's been updated
   #micromamba = prev.callPackage ./micromamba.nix { };
