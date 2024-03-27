@@ -224,11 +224,25 @@
       };
 	
       # primary laptop
-      delta = mkHome {
-        configName = "delta";
-        username = "dwl";
-        hostname = "delta";
+      delta = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "delta";
+          username = "dwl";
+          configName = "delta";
+          configLocation = "/home/dwl/lab/nix-config";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "nathanamartindale@gmail.com";
+          noNixos = false;
+        };
       };
+      # delta = mkHome {
+      #   configName = "delta";
+      #   username = "dwl";
+      #   hostname = "delta";
+      # };
 
       # homeserver
       therock = mkHome {
