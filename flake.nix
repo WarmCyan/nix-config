@@ -195,9 +195,16 @@
         };
       };
       therock = mkStableSystem {
-        configName = "therock";
-        hostname = "therock";
-        system = "x86_64-linux";
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./hosts ];
+        specialArgs = {
+          inherit self inputs outputs;
+          stable = true;
+          configName = "therock";
+          hostname = "therock";
+          configLocation = "/home/dwl/lab/nix-config";
+          timezone = "America/New_York";
+        };
       };
     };
 
@@ -258,9 +265,18 @@
 
       # homeserver
       therock = mkHome {
-        configName = "therock";
-        username = "dwl";
-        hostname = "therock";
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "therock";
+          username = "dwl";
+          configName = "therock";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "nathanamartindale@gmail.com";
+          configLocation = "/home/dwl/lab/nix-config";
+          noNixos = false;
+        };
       };
 
       # work linux workstation 
