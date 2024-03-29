@@ -21,7 +21,7 @@ in
 
   home.packages = with pkgs; [
     powerline-fonts
-    coreutils  # otherwise we use mac's which are super broken (e.g. 'rm' doesn't support --preserve-root)
+    coreutils-full  # otherwise we use mac's which are super broken (e.g. 'rm' doesn't support --preserve-root)
     bash  # not actually sure why this isn't already installed since we have it in cli-core configs
 
 
@@ -62,6 +62,10 @@ in
     # skhd # (same as above)
     
     # https://github.com/koekeishiya/yabai/issues/843
+
+    #zeal
+
+    lsyncd
   ];
 
   home.homeDirectory = lib.mkForce "/Users/81n";
@@ -95,6 +99,7 @@ in
     enable = true;
     theme = "Gruvbox Material Dark Hard";
     #theme = "Everforest Dark Hard";
+    shellIntegration.mode = "disabled";
     settings = {
       font_family = "Droid Sans Mono Slashed for Powerline";
       font_size = "12.0";
@@ -104,6 +109,8 @@ in
       remember_window_size = "no";
       initial_window_width = "100c";
       initial_window_height = "25c";
+      cursor_shape = "block";
+      cursor_blink_interval = "0";
     };
   };
 

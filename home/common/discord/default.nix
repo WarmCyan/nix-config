@@ -2,8 +2,8 @@
 {
   home.packages = with pkgs; [
     # https://github.com/Misterio77/nix-config/blob/main/home/misterio/features/desktop/common/discord.nix
-    pinned.discord
-    pinned.discocss
+    discord
+    discocss
   ];
 
 

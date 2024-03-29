@@ -36,8 +36,26 @@
 
 # (2022/10/26) Another valuable set of dotfiles to reference: https://man.sr.ht/~hutzdog/dotfiles/
 
+
+
+# the nixos/flake book, potentially some good conventions to use here:
+# https://nixos-and-flakes.thiscute.world/nixos-with-flakes/downgrade-or-upgrade-packages
+
 # TODO's
 # ===============================
+# TODO: make each profile use separate lock file through iris
+# TODO: add iris flag to pass next flags to underlying commands
+# TODO: make opengl stuff work on non-nixos: https://github.com/nix-community/nixGL/issues/114#issuecomment-1585323281
+
+# TODO: make an install nix anywhere script https://zameermanji.com/blog/2023/3/26/using-nix-without-root/ 
+#   curl -L https://hydra.nixos.org/job/nix/maintenance-2.20/buildStatic.x86_64-linux/latest/download-by-type/file/binary-dist > nix
+#   export NIX_CONF_DIR="[...]/.config/nix"
+#   (set up the nix.conf)
+#   ./nix ... (will use .local/share/nix)
+# (for it to work on macos will likely need https://github.com/nixie-dev/fakedir)
+
+#
+# 
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
 # TODO: way to automate firefox speedups? https://www.drivereasy.com/knowledge/speed-up-firefox/ (will need to add nur which has firefox and extensions)
 # TODO: script to keep backup ref to home-manager gen and make it easy to switch to that one
@@ -99,14 +117,22 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-22.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     
-    # pinned is auto-generated with `iris --update-pinned`
-    nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
+    # keeping around so if I ever need a specific nixpkgs commit, use this
+    # nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
 
     home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs-unstable"; # unsure what this actually does. (It
+      # https://github.com/EmergentMind/nix-config
+      # TODO TODO: TODO: TODO: https://discourse.nixos.org/t/anatomy-of-a-nixos-config/40252
+      # TODO: apparently you can follow specific releases? (e.g.
+      # home-manager/release-23.11) would this solve some of the stability
+      # issues?
+      # TODO: is there a way to see a list of changes to options in HM modules
+      # that I use?
+      # TODO: look into using nixvim instead of doing neovim through HM
+      url = "github:nix-community/home-manager/release-23.11";
+      inputs.nixpkgs.follows = "nixpkgs"; # unsure what this actually does. (It
       # makes it so that home-manager isn't downloading it's own set of nixpkgs,
       # we're "overriding" the nixpkgs input home-manager defines by default)
     };
@@ -114,15 +140,34 @@
     # TODO: add in nix-colors! 
   };
 
-  outputs = inputs:
+  #outputs = inputs:
+  outputs = { self, nixpkgs, home-manager, ... } @ inputs:
   let
-    mylib = import ./lib { inherit inputs; }; # This feels problematic, should probably be "mylib" instead
+    inherit (self) outputs;
+    
+    systems = [
+      "x86_64-linux"
+      "aarch64-darwin"
+    ];
+    forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
+    pkgsFor = lib.genAttrs systems (system: import nixpkgs {
+      inherit system;
+      overlays = builtins.attrValues outputs.overlays;
+      config.allowUnfree = true;
+    });
+  
+    mylib = import ./lib { inherit inputs; };
+    lib = nixpkgs.lib // home-manager.lib // mylib;
+    
     inherit (mylib) mkHome mkSystem mkStableSystem forAllSystems;
     inherit (builtins) attrValues;
   in
-  rec {
+  {
     inherit mylib;
+    inherit lib;
+    inherit pkgsFor;
 
+    overlays = import ./overlays { inherit inputs outputs; };
 
     # =================== NIXOS CONFIGURATIONS ==================
 
@@ -132,15 +177,34 @@
         hostname = "delta";
         system = "x86_64-linux";
       };  
-      amethyst = mkSystem {
-        configName = "amethyst";
-        hostname = "amethyst";
-        system = "x86_64-linux";
-      };  
+      # amethyst = mkSystem {
+      #   configName = "amethyst";
+      #   hostname = "amethyst";
+      #   system = "x86_64-linux";
+      # };  
+      amethyst = lib.nixosSystem {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./hosts ];
+        specialArgs = {
+          inherit self inputs outputs;
+          stable = true;
+          configName = "amethyst";
+          hostname = "amethyst";
+          configLocation = "/home/dwl/lab/nix-config";
+          timezone = "America/New_York";
+        };
+      };
       therock = mkStableSystem {
-        configName = "therock";
-        hostname = "therock";
-        system = "x86_64-linux";
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./hosts ];
+        specialArgs = {
+          inherit self inputs outputs;
+          stable = true;
+          configName = "therock";
+          hostname = "therock";
+          configLocation = "/home/dwl/lab/nix-config";
+          timezone = "America/New_York";
+        };
       };
     };
 
@@ -158,24 +222,61 @@
         hostname = "phantom";
         noNixos = true;
       };
-      amethyst = mkHome {
-        configName = "amethyst";
-        username = "dwl";
-        hostname = "amethyst";
+      # amethyst = mkHome {
+      #   configName = "amethyst";
+      #   username = "dwl";
+      #   hostname = "amethyst";
+      # };
+      amethyst = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "amethyst";
+          username = "dwl";
+          configName = "amethyst";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "nathanamartindale@gmail.com";
+          configLocation = "/home/dwl/lab/nix-config";
+          noNixos = false;
+        };
       };
 	
       # primary laptop
-      delta = mkHome {
-        configName = "delta";
-        username = "dwl";
-        hostname = "delta";
+      delta = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "delta";
+          username = "dwl";
+          configName = "delta";
+          configLocation = "/home/dwl/lab/nix-config";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "nathanamartindale@gmail.com";
+          noNixos = false;
+        };
       };
+      # delta = mkHome {
+      #   configName = "delta";
+      #   username = "dwl";
+      #   hostname = "delta";
+      # };
 
       # homeserver
       therock = mkHome {
-        configName = "therock";
-        username = "dwl";
-        hostname = "therock";
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "therock";
+          username = "dwl";
+          configName = "therock";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "nathanamartindale@gmail.com";
+          configLocation = "/home/dwl/lab/nix-config";
+          noNixos = false;
+        };
       };
 
       # work linux workstation 
@@ -204,7 +305,7 @@
         configName = "wmac";
         username = "81n";
         hostname = "MAC135974";
-	system = "aarch64-darwin";
+        system = "aarch64-darwin";
         #noNixos = true;
         gitEmail = "martindalena@ornl.gov";
         configLocation = "/Users/81n/lab/nix-config";
@@ -213,30 +314,27 @@
     
     # ===========================================================
 	
-    overlays = {
-      # https://nixos.wiki/wiki/Flakes (see section "Importing packages from multiple channels")
-      # a single overlay that always includes both,
-      # this would allow modules that get imported from both a stable and 
-      # unstable context to work if they require a specific channel, and all the
-      # rest of the packages will just default to whatever context called from.
-      
-      stable-unstable-combo = final: prev: {
-        unstable = import inputs.nixpkgs-unstable {
-          system = prev.system;
-          config.allowUnfree = true;
-        };
-        stable = import inputs.nixpkgs-stable {
-          system = prev.system;
-          config.allowUnfree = true;
-        };
-        pinned = import inputs.nixpkgs-pinned {
-          system = prev.system;
-          config.allowUnfree = true;
-        };
-      };
-      
-      custom-pkgs = import ./overlay { inherit inputs; };
-    };
+    # overlays = {
+    #   # https://nixos.wiki/wiki/Flakes (see section "Importing packages from multiple channels")
+    #   # a single overlay that always includes both,
+    #   # this would allow modules that get imported from both a stable and 
+    #   # unstable context to work if they require a specific channel, and all the
+    #   # rest of the packages will just default to whatever context called from.
+    #  
+    #   stable-unstable-combo = final: prev: {
+    #     unstable = import inputs.nixpkgs-unstable {
+    #       system = prev.system;
+    #       config.allowUnfree = true;
+    #       config.permittedInsecurePackages = [ "electron-25.9.0" ];
+    #     };
+    #     stable = import inputs.nixpkgs {
+    #       system = prev.system;
+    #       config.allowUnfree = true;
+    #     };
+    #   };
+    #  
+    #   custom-pkgs = import ./overlay { inherit inputs; };
+    # };
 
     # overlay-unstable = final: prev: {
     #   unstable = import inputs.nixpkgs-unstable {
@@ -252,40 +350,40 @@
     #   };
     # };
 
-    legacyPackagesUnstable = forAllSystems (system:
-      import inputs.nixpkgs-unstable {
-        inherit system;
-        overlays = attrValues overlays; # ++ [ overlay-stable ];
-        config.allowUnfree = true;
-      }
-    );
-    
-    legacyPackagesStable = forAllSystems (system:
-      import inputs.nixpkgs-stable {
-        inherit system;
-        overlays = attrValues overlays; # ++ [ overlay-unstable ];
-        config.allowUnfree = true;
-      }
-    );
+    # legacyPackagesUnstable = forAllSystems (system:
+    #   import inputs.nixpkgs-unstable {
+    #     inherit system;
+    #     overlays = attrValues overlays; # ++ [ overlay-stable ];
+    #     config.allowUnfree = true;
+    #   }
+    # );
+    #
+    # legacyPackagesStable = forAllSystems (system:
+    #   import inputs.nixpkgs {
+    #     inherit system;
+    #     overlays = attrValues overlays; # ++ [ overlay-unstable ];
+    #     config.allowUnfree = true;
+    #   }
+    # );
     
     # home-manager bootstrap script. If home-manager isn't yet installed, run
     # `nix shell .` and then `bootstrap [NAME OF HOME CONFIG]`
     # TODO: why isn't this just using the writeshellscript whatever?
     # checkout the bootstrap used in https://github.com/Misterio77/nix-starter-configs/blob/main/standard/shell.nix
-    packages = forAllSystems (system: {
-      default = with legacyPackagesUnstable.${system}; 
-      stdenv.mkDerivation rec {
-        name = "bootstrap-script";
-        installPhase = /* bash */ ''
-          mkdir -p $out/bin
-          echo "#!${runtimeShell}" >> $out/bin/bootstrap
-          echo "export TERMINFO_DIRS=/usr/share/terminfo" >> $out/bin/bootstrap
-          echo "nix build --no-write-lock-file home-manager" >> $out/bin/bootstrap
-          echo "./result/bin/home-manager --flake \".#\$1\" switch --impure" >> $out/bin/bootstrap
-          chmod +x $out/bin/bootstrap
-        '';
-        dontUnpack = true;
-      };
-    });
+    # packages = forAllSystems (system: {
+    #   default = with legacyPackagesUnstable.${system}; 
+    #   stdenv.mkDerivation rec {
+    #     name = "bootstrap-script";
+    #     installPhase = /* bash */ ''
+    #       mkdir -p $out/bin
+    #       echo "#!${runtimeShell}" >> $out/bin/bootstrap
+    #       echo "export TERMINFO_DIRS=/usr/share/terminfo" >> $out/bin/bootstrap
+    #       echo "nix build --no-write-lock-file home-manager" >> $out/bin/bootstrap
+    #       echo "./result/bin/home-manager --flake \".#\$1\" switch --impure" >> $out/bin/bootstrap
+    #       chmod +x $out/bin/bootstrap
+    #     '';
+    #     dontUnpack = true;
+    #   };
+    # });
   };
 }

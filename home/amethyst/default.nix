@@ -71,7 +71,10 @@
     xclip             # clipboard tool 
 
     # -- other --
-    obsidian
+    unstable.obsidian  # the explicit unstable is currently necessary to get the overlay from flake that
+                       # lists electron 25.9.0 (eol) as a permitted insecure
+                       # package. TODO: remove this once obsidian updates
+    #obsidian
     python311
 
     pulseaudio
@@ -92,6 +95,43 @@
     julia-bin
 
     pluto
+
+    unzip
+    ffmpeg
+
+    mixxx
+    # bashmount  # bash tui for interfacing with udisks
+    # sound-juicer
+    # lshw  # outputs information about all hardware
+    # gvfs  # maybe gets the HAL daemon running or something?
+    
+    
+    asunder  # CD ripper
+
+    imagemagick
+    
+    gnumake
+
+
+    bespokesynth
+    #(wine.override { wineBuild = "wine64"; })
+    wineWowPackages.unstableFull
+
+    surge-XT
+    sfizz
+    yabridgectl
+    yabridge
+    carla
+
+
+    dnsutils # includes nslookup
+
+
+    zip
+
+    ranger
+    gdb
+    st
   ];
 
   home.sessionVariables = {
@@ -127,8 +167,10 @@
   };
 
   programs.kitty = {
+    # package = pkgs.stable.kitty;
     enable = true;
     theme = "Gruvbox Material Dark Hard";
+    shellIntegration.mode = "disabled";
     #theme = "Everforest Dark Hard";
     settings = {
       font_family = "Droid Sans Mono Slashed for Powerline";
@@ -139,7 +181,8 @@
       remember_window_size = "no";
       initial_window_width = "100c";
       initial_window_height = "25c";
-      shell_integration = "no-cursor";
+      cursor_shape = "block";
+      cursor_blink_interval = "0";
     };
   };
 

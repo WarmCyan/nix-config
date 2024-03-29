@@ -152,7 +152,7 @@ vnoremap ; :
 nnoremap Y y$
 
 " more sane usages of H and L
-nnoremap H ^
+nmap H ^
 nnoremap L $
 
 " convert word before cursor (or on cursor) to upper case (uses z mark)
@@ -189,16 +189,31 @@ nnoremap <F3> :bnext<CR>
 nnoremap <C-I> <C-A>
 
 " tab control
-nnoremap <tab>h :tabprev<cr>
-nnoremap <tab>l :tabnext<cr>
-nnoremap <tab><enter> :tabnew<cr>
-nnoremap <tab>x :tabclose<cr>
+" I'm moving these instead to buffer controls because of the
+" bufferline plugin
+" nnoremap <tab>h :tabprev<cr>
+" nnoremap <tab>l :tabnext<cr>
+" nnoremap <tab><enter> :tabnew<cr>
+" nnoremap <tab>x :tabclose<cr>
+ 
+nnoremap <tab>h :bprevious<cr>
+nnoremap <tab>l :bnext<cr>
+nnoremap <tab>x :bdelete<cr>
+
 
 " Split line (on next space)
 nnoremap S f<space>s<cr><esc>==
 
 " Todo-cycling with my custom td-state tool
 nmap <s-t> V:'<,'>!td-state "`cat`"<cr>W
+
+" Make terminal also use jk for escape
+tnoremap jk <C-\><C-n>
+
+noremap <C-t>h <C-w>v:terminal<cr>a
+noremap <C-t>j <C-w>s<C-w>j:terminal<cr>a
+noremap <C-t>k <C-w>s:terminal<cr>a
+noremap <C-t>l <C-w>v<C-w>l:terminal<cr>a
 
 
 " ==============================================================================
@@ -293,7 +308,7 @@ cmp.setup({
         ['<C-Space>'] = cmp.mapping.complete(),
         ['<CR>'] = cmp.mapping.confirm {
             behavior = cmp.ConfirmBehavior.Replace,
-            select = true,
+            select = false,
         },
         ['<Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
@@ -318,18 +333,19 @@ cmp.setup({
         { name = 'nvim_lsp' },
         { name = 'buffer' },
         { name = 'treesitter' },
-        { name = 'path' },
+        -- { name = 'path' }, -- https://github.com/hrsh7th/nvim-cmp/issues/874
         { name = 'luasnip' },
         { name = 'nvim_lsp_signature_help' },
     })
 })
 
-cmp.setup.cmdline(':', {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = cmp.config.sources({
-        { name = 'path' }
-    })
-})
+-- seemed to be breaking command line autocomplete
+-- cmp.setup.cmdline(':', {
+--     mapping = cmp.mapping.preset.cmdline(),
+--     sources = cmp.config.sources({
+--         { name = 'path' }
+--     })
+-- })
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
@@ -346,7 +362,7 @@ vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {f
 -- https://github.com/neovim/nvim-lspconfig
 local on_attach = function(client, bufnr)
     local bufopts = { noremap=true, silent=true, buffer=bufnr }
-    vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts) -- run autoformat
+    vim.keymap.set('n', '<C-f>', vim.lsp.buf.format, bufopts) -- run autoformat
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts) -- open up a window with info about symbol under cursor
     vim.keymap.set('n', '<C-p>', vim.lsp.buf.signature_help, bufopts)
     vim.keymap.set('i', '<C-p>', vim.lsp.buf.signature_help, bufopts)
@@ -379,12 +395,13 @@ lspconfig.pylsp.setup({
                 pylint = { enabled = false },
                 flake8 = { enabled = true },
                 pycodestyle = { enabled = false },
-                pyflakes = { enabled = true },
+                pyflakes = { enabled = false },
+                mccabe = { enabled = false },
                 -- https://github.com/python-lsp/pylsp-mypy/issues/35 conflicts with https://github.com/python-lsp/python-lsp-black ...
-                black = { enabled = true }, 
-                pylsp_black = { enabled = true },
-                pyls_isort = { enabled = true },
-                pylsp_mypy = { enabled = true, live_mode = true, dmypy = true },
+                -- black = { enabled = true }, 
+                -- pylsp_black = { enabled = true },
+                -- pyls_isort = { enabled = true },
+                -- pylsp_mypy = { enabled = true, live_mode = true, dmypy = true },
             }
         }
     }
@@ -395,6 +412,7 @@ local null_ls = require('null-ls')
 local util = require 'lspconfig/util'
 null_ls.setup({
     sources = {
+        -- js
         null_ls.builtins.code_actions.eslint.with({
             only_local = "node_modules/.bin"
         }),
@@ -406,6 +424,10 @@ null_ls.setup({
         }),
 
         -- null_ls.builtins.diagnostics.vint
+
+        -- python (these don't seem to work with pylsp, unclear why)
+        null_ls.builtins.formatting.black,
+        null_ls.builtins.formatting.isort
     },
     on_attach = on_attach,
     capabilities = capabilities
@@ -451,16 +473,26 @@ require('lualine').setup {
 }
 
 vim.opt.list = true
-require("indent_blankline").setup {
-    show_current_context = true,
-    show_current_context_start = true,
+require("ibl").setup({
+    --show_current_context = true,
+    --show_current_context_start = true,
     -- use_treesitter = true,
     -- https://github.com/lukas-reineke/indent-blankline.nvim/issues/271
     --context_patterns = {
         --"class", "function", "method", "block", "list_literal", "selector",
         --"^if", "^table", "if_statement", "while", "for",
     --},
-}
+})
+--require("indent_blankline").setup {
+--    show_current_context = true,
+--    show_current_context_start = true,
+--    -- use_treesitter = true,
+--    -- https://github.com/lukas-reineke/indent-blankline.nvim/issues/271
+--    --context_patterns = {
+--        --"class", "function", "method", "block", "list_literal", "selector",
+--        --"^if", "^table", "if_statement", "while", "for",
+--    --},
+--}
 
 require('nvim_comment').setup()
 
@@ -468,7 +500,138 @@ require('nvim_comment').setup()
     --default = true
 --})
 
+--vim.g.loaded_netrw = 1
+--vim.g.loaded_netrwPlugin = 1
+-- TODO: does some of this need to go into an on_attach method?
+
+local function tree_on_attach(bufnr)
+    local api = require("nvim-tree.api")
+
+    local function opts(desc)
+        return { desc="nvim-tree: " .. desc, buffer=bufnr, noremap=true, silent = true, nowait=true }
+    end
+    
+    local function vsplit_preview()
+        local node = api.tree.get_node_under_cursor()
+        if node.nodes ~= nil then
+            -- expand or collapse folder
+            api.node.open.edit()
+        else
+            -- open file as vsplit
+            api.node.open.vertical()
+        end
+        
+        -- Finally refocus on tree if it was lost
+        api.tree.focus()
+    end
+
+    api.config.mappings.default_on_attach(bufnr)
+
+    
+    -- TODO: how do I make these shortcuts only apply in the nvimtree window
+    vim.keymap.set("n", "L", vsplit_preview, opts("VSplit Preview"))
+    --vim.keymap.set("n", "<C-0>", api.tree.close(), opts("VSplit Preview"))
+    -- vim.keymap.set("n", "H", api.tree.collapse_all, opts("Collapse All"))
+    -- TODO: set c-f to be focus nvim tree if already open
+end
+
+require("nvim-tree").setup({
+    on_attach=tree_on_attach
+})
+-- TODO: c-f overwrites autoformat up above
+vim.api.nvim_set_keymap("n", "<LEADER>e", ":NvimTreeToggle<cr>", {silent=true, noremap=true})
+-- https://github.com/nvim-tree/nvim-tree.lua/wiki/Recipes
+
+require("bufferline").setup({
+    options = {
+        offsets = {
+            {
+                filetype = "NvimTree",
+                text = "File Explorer",
+                text_align = "center",
+                separator = true,
+            }
+        },
+        always_show_bufferline = false,
+    }
+})
+
+require("term-edit").setup({
+    prompt_end = '%$ ',
+})
+
+require("flatten").setup({})
+
+--require("rsync").setup({})
+--require('packer').startup(function(use) 
+--    use 'wbthomason/packer.nvim'
+--    --use {
+--    --    'OscarCreator/rsync.nvim',
+--    --    run = 'make',
+--    --    requires = {'nvim-lua/plenary.nvim'},
+--    --    config = function()
+--    --        require("rsync").setup()
+--    --    end
+--    --}
+--end)
+
+
+require("neotest").setup({
+    adapters = {
+        require("neotest-python")({
+            dap= { justMyCode = false },
+        }),
+    },
+    running={
+        concurrent = false -- can run into conflicts between tests
+    },
+})
+vim.api.nvim_set_keymap("n", "<LEADER>t", ":Neotest summary<CR>", {silent=true, noremap=true})
+
+require("dap-python").setup()
+
+-- don't keep swapping out the current buffer if already open in another
+local dap = require("dap")
+dap.defaults.fallback.switchbuf = 'useopen,uselast'
+
+-- nvim-dap mappings
+vim.keymap.set('n', '<F5>', function() require('dap').continue() end)
+vim.keymap.set('n', '<F9>', function() require('dap').terminate() end)
+vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
+vim.keymap.set('n', '<F11>', function() require('dap').step_into() end)
+vim.keymap.set('n', '<F12>', function() require('dap').step_out() end)
+vim.keymap.set('n', '<Leader>b', function() require('dap').toggle_breakpoint() end)
+vim.keymap.set('n', '<Leader>df', function()
+    local widgets = require('dap.ui.widgets')
+    widgets.sidebar(widgets.frames).open()
+end)
+vim.keymap.set('n', '<Leader>ds', function()
+    local widgets = require('dap.ui.widgets')
+    widgets.sidebar(widgets.scopes).open()
+end)
+vim.keymap.set('n', '<Leader>dr', function() require('dap').repl.open() end)
+
+
+require("sibling-swap").setup({
+    keymaps = {
+        ["<space>l"] = "swap_with_right",
+        ["<space>h"] = "swap_with_left",
+        ["<space>."] = "swap_with_right_with_opp",
+        ["<space>,"] = "swap_with_left_with_opp",
+    },
+})
+
+require("nvim-surround").setup()
+
 EOF
+
+" otherwise my H binding doesn't work
+let g:context_add_mappings = 0
+
+let g:vimwiki_list = [{'path': '~/lazuli/',
+                      \ 'syntax': 'markdown', 'ext': '.md'}]
+
+let g:vimwiki_global_ext = 0
 
 
 " https://github.com/liuchengxu/vista.vim/blob/master/doc/vista.txt
@@ -482,3 +645,7 @@ let g:vista_floating_delay = 0
 "autocmd FileType vista,vista_kind nnoremap <buffer> <silent> / :<c-u>call vista#finder#fzf#Run()<CR>
 nnoremap // :<c-u>Vista finder<CR>
 nnoremap <leader>v :Vista<CR>
+
+
+" https://github.com/wellle/context.vim
+let g:context_enabled = 1

@@ -1,7 +1,7 @@
 # The top level import module for all the home-manager configuration modules
 # This file is where we deal with the "features" list that gets passed in.
 
-{ self, inputs, lib, username, features, noNixos, configName, configLocation, pkgs, config, ... }:
+{ self, inputs, lib, username, features, noNixos, configName, configLocation, pkgs, config, outputs, ... }:
 # let
 #   inherit (builtins) map pathExists filter;
 # in
@@ -40,6 +40,14 @@ in
     sessionVariables = {
       # https://github.com/nix-community/home-manager/pull/797
       TERMINFO_DIRS = "/usr/share/terminfo"; 
+    };
+  };
+
+
+  nixpkgs = {
+    overlays = builtins.attrValues outputs.overlays;
+    config = {
+      allowUnfree = true;
     };
   };
 }

@@ -12,6 +12,8 @@
   td-state = pkgs.callPackage ./td-state.nix { inherit builders; };
   engilog = pkgs.callPackage ./engilog.nix { inherit builders; };
 
+  gifify = pkgs.callPackage ./gifify.nix { inherit builders; };
+
   kbd-capslock = pkgs.callPackage ./kbd-capslock.nix { inherit pkgs builders; };
   
   export-dots = pkgs.callPackage ./export-dots.nix { inherit pkgs builders; };

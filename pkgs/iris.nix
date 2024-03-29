@@ -8,7 +8,7 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
-  version = "1.0.3";
+  version = "1.1.0";
   description = "Management tool for my systems/nix-config flake.";
   usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)(lsgen)(r|revert)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom\n\tiris lsgen sh\n\tiris r sh 10 30\t# reverts system to system generation 10 and home to home generation 30";
   parameters = {
@@ -22,11 +22,6 @@ builders.writeTemplatedShellApplication {
       description = "Update the flake lock file. (This runs before a build step if specified)";
       option = true;
     };
-    updatePinned = {
-      flags = [ "--update-pinned" ];
-      description = "Update the pinned nixpkgs version to the currently locked nixpkgs-unstable. (This runs before a build step if specified)";
-      option = true;
-    };
     yes = {
       flags = [ "-y" "--yes" ];
       description = "Automatically apply the (h)ome and/or (s)ystem configuration without prompting.";
@@ -37,8 +32,6 @@ builders.writeTemplatedShellApplication {
     pkgs.unstable.figlet # unstable to get new contributed fonts
     pkgs.unstable.nvd
     pkgs.lolcat
-    pkgs.ripgrep
-    pkgs.jq
     # pkgs.testing2 # this just demonstrates that I can indeed require my own scripts
   ];
   text = /* bash */ ''
@@ -502,63 +495,6 @@ builders.writeTemplatedShellApplication {
       fi
     }
 
-    function update_pinned_nixpkgs () {
-      # finds out the current rev of nixpkgs-unstable in local flake lock, 
-      # then modifies flake nixpkgs-pinned to that rev, after ensuring pinned
-      # isn't already in use anywhere
-      ensure_config
-
-      # make sure we're not using pinned somewhere
-      echo -e "\nChecking for existing pinned package usage..."
-      pushd "''${config_location}" &> /dev/null
-        found=false
-        
-        # check in the home configs
-        pushd home &> /dev/null
-          if rg "pinned\."; then
-            found=true
-          fi
-        popd &> /dev/null
-        
-        # check in the nixos system configs
-        pushd hosts &> /dev/null
-          if rg "pinned\."; then
-            found=true
-          fi
-        popd &> /dev/null
-
-
-        if [[ ''${found} == true ]]; then
-          echo "WARNING: existing uses of pinned packages found, updating pinned channel before changing these could lead to unintended breakages!"
-          # prompt loop
-          valid_response=false
-          while [[ ''${valid_response} == false ]]; do
-            read -r -p "Update nixpkgs-pinned anyway? [y/n]" response 
-            case "''${response}" in
-              [nN][oO]|[nN])
-                echo "Not updating pinned nixpkgs."
-                exit 1
-                ;;
-              [yY][eE][sS]|[yY])
-                valid_response=true
-                break
-                ;;
-              *)
-                echo "Invalid response, please enter [y]es or [n]o." 
-                ;;
-            esac
-          done
-        fi
-        
-        # get current nixpkgs-unstable revision
-        unstableRevision=$(jq -r '.nodes."nixpkgs-unstable"'.locked.rev flake.lock)
-
-        echo "Updating flake pinned nixpkgs to revision ''${unstableRevision}"
-        # change the flake.nix (danger!)
-        sed -i -E "s/nixpkgs\-pinned.url\ =\ .*\;\$/nixpkgs\-pinned.url\ =\ \"github:nixos\/nixpkgs?rev=''${unstableRevision}\";/" flake.nix
-      popd &> /dev/null
-    }
-
     function open_for_edit () {
       ensure_config
       pushd "''${config_location}" &> /dev/null
@@ -584,13 +520,6 @@ builders.writeTemplatedShellApplication {
 
     if [[ ''${sync-false} == true ]]; then
       sync_repo
-    fi
-
-    # NOTE: we have to run update-pinned before a regular update! 
-    # this allows us to both update pinned and the regular nixpkgs-unstable
-    # without changing them both to the same latest nixpkgs-unstable
-    if [[ ''${updatePinned--false} == true ]]; then
-      update_pinned_nixpkgs
     fi
 
     if [[ ''${update-false} == true ]]; then

@@ -22,7 +22,6 @@
 
     grub = {
       enable = true;
-      version = 2;
       devices = [ "nodev" ];
       efiSupport = true;
       useOSProber = true;
@@ -102,10 +101,50 @@
 
     # allow keyring authentication, apparently fails without this
     ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
+
+    # give a decent theme in case I need to use xterm (modified variant of
+    # kitty's 'gruvbox material dark hard')
+    ${pkgs.xorg.xrdb}/bin/xrdb -merge <<EOF
+      ! Black
+      *color0: #151414
+      *color8: #928374
+
+      ! Red
+      *color1: #ea6962
+      *color9: #ea6962
+
+      ! Green
+      *color2:  #a9b665
+      *color10: #a9b665
+
+      ! Yellow
+      *color3:  #e78a4e
+      *color11: #d8a657
+
+      ! Blue
+      *color4:  #7daea3
+      *color12: #7daea3
+
+      ! Magenta
+      *color5:  #d3869b
+      *color13: #d3869b
+
+      ! Cyan
+      *color6:  #89b482
+      *color14: #89b482
+
+      ! White
+      *color7:  #d4be98
+      *color15: #d4be98
+
+      *background: #1d2021
+      *foreground: #d4be98
+    EOF
   '';
 
   services.udisks2.enable = true; # necessary for udiskie to work in home-manager (usb automounting)
-  
+  # services.gvfs.enable = true;  # possibly necessary for cdroms?
+  # services.devmon.enable = true;  # possibly necessary for cdroms?
 
   # Configure keymap in X11
   services.xserver = {
@@ -161,6 +200,7 @@
   };
 
   xdg.portal.enable = true;
+  xdg.portal.config.common.default = "*";
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   services.flatpak.enable = true; # enabling this solely for steam right now because of the glibc-eac bug https://github.com/ValveSoftware/Proton/issues/6051
 

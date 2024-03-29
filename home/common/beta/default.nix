@@ -9,27 +9,84 @@
     engilog
   ];
 
-  # (move to dev when tested)
-  home.file.".jupyter/lab/user-settings/jupyterlab-vimrc/vimrc.jupyterlab-settings".text = /* json */ ''
-    {
-      "imap": [
-        ["jk", "<Space><Bs><Esc>"]
-      ],
-      "nnoremap": [
-        [",", ";"]
-      ],
-      "nmap": [
-        [";", ":"],
-        ["Y", "y$"],
-        ["H", "^"],
-        ["L", "$"],
-        [":n", ":nohlsearch"]
-      ],
-      "vmap": [
-        [";", ":"]
-      ]
-    }
+  home.file.".jupyter/lab/user-settings/@axlair/jupyterlab_vim/plugin.jupyterlab-settings".text = /* json */ ''
+  {
+    // Notebook Vim
+    // @axlair/jupyterlab_vim:plugin
+    // Notebook Vim Settings
+    // *****************************
+
+    "enabled": true,
+    "enabledInEditors": true,
+    "extraKeybindings": [
+      {
+        "command": "jk",
+        "keys": "<Esc>",
+        "context": "insert",
+        "enabled": true
+      },
+      {
+        "command": ",",
+        "keys": ";",
+        "mapfn": "noremap",
+        "enabled": true
+      },
+      {
+        "command": ";",
+        "keys": ":",
+        "context": "visual",
+        "enabled": true
+      },
+      {
+        "command": ";",
+        "keys": ":",
+        "enabled": true
+      },
+      {
+        "command": "Y",
+        "keys": "y$",
+        "enabled": true
+      },
+      {
+        "command": "H",
+        "keys": "^",
+        "enabled": true
+      },
+      {
+        "command": "L",
+        "keys": "$",
+        "enabled": true
+      },
+      {
+        "command": "\\n",
+        "keys": ":nohlsearch",
+        "enabled": true
+      }
+    ]
+  }
   '';
+
+  # (move to dev when tested)
+  # home.file.".jupyter/lab/user-settings/jupyterlab-vimrc/vimrc.jupyterlab-settings".text = /* json */ ''
+  #   {
+  #     "imap": [
+  #       ["jk", "<Space><Bs><Esc>"]
+  #     ],
+  #     "nnoremap": [
+  #       [",", ";"]
+  #     ],
+  #     "nmap": [
+  #       [";", ":"],
+  #       ["Y", "y$"],
+  #       ["H", "^"],
+  #       ["L", "$"],
+  #       [":n", ":nohlsearch"]
+  #     ],
+  #     "vmap": [
+  #       [";", ":"]
+  #     ]
+  #   }
+  # '';
 
   home.file.".jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings".text = /* json */ ''
   {

@@ -3,12 +3,13 @@
 
 { inputs, ... }:
 let
-  inherit (inputs) self home-manager nixpkgs-unstable nixpkgs-stable;
-  inherit (nixpkgs-stable.lib) systems genAttrs;
-  inherit (self) outputs; # what is self? How are we getting outputs??? (oh, this is the self from the output parameters in flake.nix)
+  inherit (inputs) self home-manager nixpkgs-unstable nixpkgs;
+  inherit (nixpkgs.lib) systems genAttrs;
+  inherit (self) outputs pkgsFor; # what is self? How are we getting outputs??? (oh, this is the self from the output parameters in flake.nix)
   inherit (home-manager.lib) homeManagerConfiguration;
 in
 rec {
+  # can be removed once I know forEachSystem works
   forAllSystems = genAttrs systems.flakeExposed;
 
   mkStableSystem = {
@@ -20,9 +21,10 @@ rec {
     configLocation ? "/home/dwl/lab/nix-config"
   }:
   builtins.trace "\nBuilding (STABLE) system configuration ${configName} for host ${hostname}...\nsystem: ${system}"
-  nixpkgs-stable.lib.nixosSystem {
+  nixpkgs.lib.nixosSystem {
     inherit system modules;
-    pkgs = outputs.legacyPackagesStable.${system};
+    # pkgs = outputs.legacyPackagesStable.${system};
+    pkgs = pkgsFor.${system};
     specialArgs = { # these are args that get passed to all modules
       inherit self inputs outputs configName hostname timezone configLocation;
       stable = true;
@@ -40,7 +42,8 @@ rec {
   builtins.trace "\nBuilding system configuration ${configName} for host ${hostname}...\nsystem: ${system}"
   nixpkgs-unstable.lib.nixosSystem {
     inherit system modules;
-    pkgs = outputs.legacyPackagesUnstable.${system};
+    #pkgs = outputs.legacyPackagesUnstable.${system};
+    pkgs = pkgsFor.${system};
     specialArgs = { # these are args that get passed to all modules
       inherit self inputs outputs configName hostname timezone configLocation;
       stable = false;
@@ -69,11 +72,13 @@ rec {
     #mkOption
     gitEmail ? "nathanamartindale@gmail.com",
     configLocation ? "/home/dwl/lab/nix-config",
-    modules ? [ ../home ]
+    modules ? [ ../home ],
+    pkgs
   }:
   builtins.trace "\nBuilding home for ${username}@${hostname}...\nsystem: ${system}"
   homeManagerConfiguration {
-    pkgs = outputs.legacyPackagesUnstable.${system};
+    #pkgs = outputs.legacyPackagesUnstable.${system};
+    pkgs = pkgsFor.${system};
     inherit modules;
     extraSpecialArgs = { # these are args that get passed to all modules
       inherit self inputs outputs hostname username wallpaper features

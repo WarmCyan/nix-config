@@ -6,6 +6,7 @@
     ../common/cli-core
     ../common/dev
     ../common/vscode
+    ../common/beta
   ];
 
   # programs.neovim = {
@@ -27,6 +28,10 @@
     asciinema-agg
 
     julia-bin
+
+    xclip
+
+    gifify
   ];
 
   programs.vscode = {
