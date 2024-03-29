@@ -41,7 +41,7 @@ in
   
   # nix settings
   nix = {
-    package = pkgs.nixUnstable;
+    # package = pkgs.nixUnstable;
 
     settings = {
       # detects files in store with identical contents and uses single copy

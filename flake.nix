@@ -152,7 +152,7 @@
     forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
     pkgsFor = lib.genAttrs systems (system: import nixpkgs {
       inherit system;
-      # overlays = builtins.attrValues outputs.overlays;
+      overlays = builtins.attrValues outputs.overlays;
       config.allowUnfree = true;
     });
   
@@ -177,11 +177,23 @@
         hostname = "delta";
         system = "x86_64-linux";
       };  
-      amethyst = mkSystem {
-        configName = "amethyst";
-        hostname = "amethyst";
-        system = "x86_64-linux";
-      };  
+      # amethyst = mkSystem {
+      #   configName = "amethyst";
+      #   hostname = "amethyst";
+      #   system = "x86_64-linux";
+      # };  
+      amethyst = lib.nixosSystem {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./hosts ];
+        specialArgs = {
+          inherit self inputs outputs;
+          stable = true;
+          configName = "amethyst";
+          hostname = "amethyst";
+          configLocation = "/home/dwl/lab/nix-config";
+          timezone = "America/New_York";
+        };
+      };
       therock = mkStableSystem {
         configName = "therock";
         hostname = "therock";
