@@ -11,7 +11,9 @@ in
     shfmt       # shell script formatter
 
     # -- Nix tools --
-    rnix-lsp    # nix language server
+    # NOTE: commented out because it's somehow bringing in nix 2.15.3 as
+    # a dependency??
+    #rnix-lsp    # nix language server
     nixfmt      # nix formatter
     deadnix     # nix dead code locator (no idea what this is)
     statix      # nix linter

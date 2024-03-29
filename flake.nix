@@ -194,7 +194,7 @@
           timezone = "America/New_York";
         };
       };
-      therock = mkStableSystem {
+      therock = lib.nixosSystem {
         pkgs = pkgsFor.x86_64-linux;
         modules = [ ./hosts ];
         specialArgs = {
@@ -264,7 +264,7 @@
       # };
 
       # homeserver
-      therock = mkHome {
+      therock = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
         modules = [ ./home ];
         extraSpecialArgs = {

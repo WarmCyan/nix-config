@@ -103,7 +103,6 @@
     };
   
     maxUploadSize = "10G";
-    enableBrokenCiphersForSSE = false;
   };
   
   services.postgresql = {
