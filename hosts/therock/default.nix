@@ -49,6 +49,7 @@
     unstable.nix-output-monitor  # nix-output-monitor, maybe don't actually include this, just make it so my custom packages require it as a dependency.
     unstable.nvd
     tree
+    lshw
   ];
 
   # sound
@@ -81,6 +82,7 @@
 
   services.nextcloud = {
     enable = true;
+    package = pkgs.nextcloud27;
     home = "/var/lib/nextcloud"; # default
     datadir = "/var/lib/nextcloud"; # default
   
@@ -101,6 +103,7 @@
     };
   
     maxUploadSize = "10G";
+    enableBrokenCiphersForSSE = false;
   };
   
   services.postgresql = {
