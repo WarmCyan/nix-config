@@ -289,6 +289,22 @@
         configLocation = "/home/81n/lab/nix-config";
       };
 
+      # work linux laptop 
+      planet = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "planet";
+          username = "81n";
+          configName = "planet";
+          configLocation = "/home/81n/lab/nix-config";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "martindalena@ornl.gov";
+          noNixos = false;
+        };
+      };
+
       # work laptop (wsl)
       wlap = mkHome {
         configName = "wlap";
@@ -365,6 +381,11 @@
     #     config.allowUnfree = true;
     #   }
     # );
+    
+
+# NOTE: the updated way to do this is (after running current ./setup)
+# nix shell nixpkgs#home-manager
+# home-manager switch --flake .#[configname]
     
     # home-manager bootstrap script. If home-manager isn't yet installed, run
     # `nix shell .` and then `bootstrap [NAME OF HOME CONFIG]`
