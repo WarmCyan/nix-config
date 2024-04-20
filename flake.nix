@@ -301,7 +301,7 @@
           configLocation = "/home/81n/lab/nix-config";
           gitUsername = "Martindale, Nathan";
           gitEmail = "martindalena@ornl.gov";
-          noNixos = false;
+          noNixos = true;
         };
       };
 
