@@ -20,6 +20,8 @@
     python311
     python311Packages.pip
     python311Packages.argcomplete
+
+    gnumake
   ];
 
   #programs.vscode = {
