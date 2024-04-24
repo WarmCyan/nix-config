@@ -15,3 +15,7 @@ builders.writeTemplatedShellApplication {
   '';
 }
 
+# I think for this to work in sway, need to do following:
+# setxkbmap -option caps:hyper
+# https://jeromebelleman.gitlab.io/posts/productivity/modkey/
+# https://unix.stackexchange.com/questions/700454/how-to-set-caps-lock-as-hyper-and-change-modifiers-using-xkb

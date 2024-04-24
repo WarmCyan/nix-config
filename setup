@@ -13,5 +13,5 @@ echo "Setting up flakes..."
 mkdir -p ~/.config/nix
 echo "experimental-features = nix-command flakes" > ~/.config/nix/nix.conf
 
-bash -lic "nix-env --set-flag priority 4 nix"
-bash -lic "nix shell . -c bootstrap $1"
+#bash -lic "nix-env --set-flag priority 4 nix"
+#bash -lic "nix shell . -c bootstrap $1"

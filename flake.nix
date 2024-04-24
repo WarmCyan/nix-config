@@ -152,7 +152,7 @@
     forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
     pkgsFor = lib.genAttrs systems (system: import nixpkgs {
       inherit system;
-      # overlays = builtins.attrValues outputs.overlays;
+      overlays = builtins.attrValues outputs.overlays;
       config.allowUnfree = true;
     });
   
@@ -177,15 +177,34 @@
         hostname = "delta";
         system = "x86_64-linux";
       };  
-      amethyst = mkSystem {
-        configName = "amethyst";
-        hostname = "amethyst";
-        system = "x86_64-linux";
-      };  
-      therock = mkStableSystem {
-        configName = "therock";
-        hostname = "therock";
-        system = "x86_64-linux";
+      # amethyst = mkSystem {
+      #   configName = "amethyst";
+      #   hostname = "amethyst";
+      #   system = "x86_64-linux";
+      # };  
+      amethyst = lib.nixosSystem {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./hosts ];
+        specialArgs = {
+          inherit self inputs outputs;
+          stable = true;
+          configName = "amethyst";
+          hostname = "amethyst";
+          configLocation = "/home/dwl/lab/nix-config";
+          timezone = "America/New_York";
+        };
+      };
+      therock = lib.nixosSystem {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./hosts ];
+        specialArgs = {
+          inherit self inputs outputs;
+          stable = true;
+          configName = "therock";
+          hostname = "therock";
+          configLocation = "/home/dwl/lab/nix-config";
+          timezone = "America/New_York";
+        };
       };
     };
 
@@ -224,17 +243,40 @@
       };
 	
       # primary laptop
-      delta = mkHome {
-        configName = "delta";
-        username = "dwl";
-        hostname = "delta";
+      delta = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "delta";
+          username = "dwl";
+          configName = "delta";
+          configLocation = "/home/dwl/lab/nix-config";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "nathanamartindale@gmail.com";
+          noNixos = false;
+        };
       };
+      # delta = mkHome {
+      #   configName = "delta";
+      #   username = "dwl";
+      #   hostname = "delta";
+      # };
 
       # homeserver
-      therock = mkHome {
-        configName = "therock";
-        username = "dwl";
-        hostname = "therock";
+      therock = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "therock";
+          username = "dwl";
+          configName = "therock";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "nathanamartindale@gmail.com";
+          configLocation = "/home/dwl/lab/nix-config";
+          noNixos = false;
+        };
       };
 
       # work linux workstation 
@@ -246,6 +288,22 @@
         noNixos = true;
         gitEmail = "martindalena@ornl.gov";
         configLocation = "/home/81n/lab/nix-config";
+      };
+
+      # work linux laptop 
+      planet = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "planet";
+          username = "81n";
+          configName = "planet";
+          configLocation = "/home/81n/lab/nix-config";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "martindalena@ornl.gov";
+          noNixos = true;
+        };
       };
 
       # work laptop (wsl)
@@ -324,6 +382,11 @@
     #     config.allowUnfree = true;
     #   }
     # );
+    
+
+# NOTE: the updated way to do this is (after running current ./setup)
+# nix shell nixpkgs#home-manager
+# home-manager switch --flake .#[configname]
     
     # home-manager bootstrap script. If home-manager isn't yet installed, run
     # `nix shell .` and then `bootstrap [NAME OF HOME CONFIG]`

@@ -22,7 +22,6 @@
 
     grub = {
       enable = true;
-      version = 2;
       devices = [ "nodev" ];
       efiSupport = true;
       useOSProber = true;
@@ -201,6 +200,7 @@
   };
 
   xdg.portal.enable = true;
+  xdg.portal.config.common.default = "*";
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   services.flatpak.enable = true; # enabling this solely for steam right now because of the glibc-eac bug https://github.com/ValveSoftware/Proton/issues/6051
 

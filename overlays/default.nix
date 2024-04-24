@@ -12,6 +12,19 @@
     };
   };
 
+  # https://github.com/NixOS/nixpkgs/issues/262000
+  fix-hanging-debugpy = final: prev: {
+    python3 = prev.python3.override {
+      packageOverrides = pfinal: pprev: {
+        debugpy = pprev.debugpy.overrideAttrs (oldAttrs: {
+          pytestCheckPhase = "true";
+        });
+      };
+    };
+    python3Packages = final.python3.pkgs;
+  };
+
+
   modifications = final: prev: {
     vimPlugins = prev.vimPlugins // {
 

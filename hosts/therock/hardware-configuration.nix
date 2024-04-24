@@ -9,6 +9,13 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
+  # zfs support
+  boot.supportedFilesystems = [ "zfs" ];
+  boot.zfs.forceImportRoot = false;
+  networking.hostId = "b296d82c";
+  # host id generated with `head -c4 /dev/uranodm | od -A none -t x4`,
+  # see https://openzfs.github.io/openzfs-docs/Getting%20Started/NixOS/index.html#installation
+
   # 500G ssd
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/bb8a1b85-f8d9-46e0-bf26-6d5b2f966465";
@@ -28,6 +35,12 @@
   fileSystems."/storage" = { 
     device = "/dev/disk/by-uuid/15a5eafa-4cb3-42c5-ac26-2ab4d1fb5e93";
     fsType = "ext4";
+  };
+
+  # zfs mirror'd two 8tb disks
+  fileSystems."/depository" = {
+    device = "depository/root";
+    fsType = "zfs";
   };
 
   networking.useDHCP = lib.mkDefault true;

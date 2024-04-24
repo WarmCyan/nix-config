@@ -25,7 +25,7 @@
     arandr            # multi-monitor configuration tool
     
     # -- other --
-    obsidian
+    unstable.obsidian
     python311
     dconf
     
