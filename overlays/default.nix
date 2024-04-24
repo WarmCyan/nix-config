@@ -1,7 +1,6 @@
 # TODO: we need probably an exclusively unstable set of overlays and stable set?
 { inputs, outputs, ... }:
 {
-
   custom-pkgs = final: _prev: import ../pkgs { pkgs = final; lib = outputs.lib; };
 
   unstable-packages = final: _prev: {

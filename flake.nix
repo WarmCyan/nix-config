@@ -239,6 +239,7 @@
 
       # work linux workstation 
       arcane = mkHome {
+        pkgs = pkgsFor.x86_64-linux;
         configName = "arcane";
         username = "81n";
         hostname = "arcane";
