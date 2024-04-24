@@ -22,6 +22,7 @@
     python311Packages.argcomplete
 
     gnumake
+    unstable.obsidian
   ];
 
   #programs.vscode = {
