@@ -103,6 +103,7 @@ in
     extraPackages = with pkgs; [
       nodePackages.bash-language-server
       nodePackages.vim-language-server
+      nodePackages.vls
 
       # -- Python language server stuff --
       # python310Packages.python-lsp-server
