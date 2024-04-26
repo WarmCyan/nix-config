@@ -30,7 +30,18 @@ in
 
     gnumake
     unstable.obsidian
+    jq
   ];
+
+  programs.eww = {
+    enable = true;
+    package = pkgs.eww-wayland;
+    configDir = ./ewwconfig;
+  };
+
+  services.dunst = {
+    enable = true;
+  };
 
   wayland.windowManager.sway = {
     enable = true;

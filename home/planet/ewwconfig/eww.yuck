@@ -1,0 +1,40 @@
+; https://www.reddit.com/r/swaywm/comments/14msbzs/swayworkspace_by_eww/
+; https://github.com/TitouanLazard/Sway_eww
+
+(deflisten workspacesArray :initial "${[1]}" 
+    `bash ~/.config/eww/getWorkspaces.sh`)
+
+(defwidget workspaces [array]
+    (box :class "workspaces"
+            :orientation "h"
+            :space-evenly true
+            :halign "start"
+        (for entry in array
+            (button :onclick `swaymsg workspace "${entry.name}"`
+                :class {entry.focused ? "focused" : ""}
+            `${entry.name}`))))
+
+
+
+
+(defwindow example
+    :monitor 1
+    :geometry (geometry :x "0%"
+                        :y "10px"
+                        :height "30px"
+                        :anchor "top center")
+    :stacking "fg"
+    :exclusive true
+    :reserve (struts :distance "40px" :side "top")
+    :windowtype "dock"
+    :wm-ignore false
+;(greeter :text "Say hello!"
+;    :name "Tim")
+    (workspaces :array workspacesArray)
+)
+
+(defwidget greeter [?text name]
+    (box :orientation "horizontal"
+        :halign "center"
+        text
+        (button :onclick "notify-send 'hello' 'hello, ${name}'" "greet")))
