@@ -17,10 +17,11 @@
   networking = {
     useDHCP = false; # networkmanager does this?
     networkmanager.enable = true;
+    #networkmanager.enable = false;
     
     firewall = {
       enable = true; # default
-      allowedTCPPorts = [ 22 80 443 ];
+      allowedTCPPorts = [ 22 80 443 8080 ];
     };
   };
 
@@ -33,7 +34,9 @@
       kate
     ];
 
-    # openssh.authorizedKeys.keys = []; # TODO: set this up
+    openssh.authorizedKeys.keys = [
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxO5tXpnUz8q/HixsxjLatz9VnV3uBWvm9Qbk4QLjZA2mKmTYhMRK0iH6DNwLVDmorgZwr0tXzV6gLvnTf3uT2PAQQ34Mhoj57eAg3wAXSrEeM8fLuKXucMXKsoSBxNZMUVt+fVAmAG3pB3AhkeCw1yHTTe9Zj+rXEStr90ewc9g3InDF8PpcTmJzsFgdRb5aQxb9LR04+D6malNQSksIlcmxEDYvn/l2az+/+N1b+ymMF1rfi1ipU7e9oQiWwwlMtEROlhHhZxwbLycBhEqYZtbzaRSwUV1BFQ9WIp0xwW11Rq7nmpmeNJ3TA/tU53lz52VGDW7ItkB1WxDBtrYXyS0FpYWE7UXxB013IA04tf7yraitkh/wr9bqXfYpMyctdMc90Jo2E5Xaz6K7EajzeSwbk3jP7MPqH58XIqtLQRvjimfhVk63NFxCCemn8wjtCUjPUAFu3zNVN+5pgywnqYGBhY5pLAWixC2AhVDzYBmlqOH/v1w5OL2Y1phQLmyE= u0_a508@localhost"
+    ];
   };
 
   environment.systemPackages = with pkgs; [
@@ -50,6 +53,8 @@
     unstable.nvd
     tree
     lshw
+
+    wireguard-tools
   ];
 
   # sound
@@ -76,8 +81,10 @@
   
   services.openssh = {
     enable = true;
-    passwordAuthentication = true; # TODO: set this to false
-    permitRootLogin = "no";
+    settings = {
+      PasswordAuthentication = false; # TODO: set this to false
+      PermitRootLogin = "no";
+    };
   };
 
   services.nextcloud = {
@@ -146,20 +153,20 @@
   #   };
   # in {
   # https://docs.nextcloud.com/server/latest/admin_manual/maintenance/backup.html
-  systemd.services."nextcloud-backup" = {
-    serviceConfig.Type = "oneshot";
-    path = with pkgs; [ bash sudo rsync postgresql ];
-    script = /* bash */ ''
-      echo "Backing up nextcloud..."
-      mkdir -p "/storage/nextcloud-backup"
-      # NOTE: couldn't get it to find "occ"?
-      #sudo -u nextcloud php occ maintenance:mode --on
-      rsync -Aavx /var/lib/nextcloud/ /storage/nextcloud-backup/nextcloud-dirbkp_`date +"%Y-%m-%d"`/
-      PGPASSWORD=$(cat "/var/nextcloud-db-pass") pg_dump "nextcloud" -h "localhost" -U "nextcloud" -f /storage/nextcloud-backup/nextcloud-sqlbkp_`date +"%Y-%m-%d"`.bak
-      echo "Done!"
-      #sudo -u nextcloud php occ maintenance:mode --off
-    '';
-  };
+  # systemd.services."nextcloud-backup" = {
+  #   serviceConfig.Type = "oneshot";
+  #   path = with pkgs; [ bash sudo rsync postgresql ];
+  #   script = /* bash */ ''
+  #     echo "Backing up nextcloud..."
+  #     mkdir -p "/storage/nextcloud-backup"
+  #     # NOTE: couldn't get it to find "occ"?
+  #     #sudo -u nextcloud php occ maintenance:mode --on
+  #     rsync -Aavx /var/lib/nextcloud/ /storage/nextcloud-backup/nextcloud-dirbkp_`date +"%Y-%m-%d"`/
+  #     PGPASSWORD=$(cat "/var/nextcloud-db-pass") pg_dump "nextcloud" -h "localhost" -U "nextcloud" -f /storage/nextcloud-backup/nextcloud-sqlbkp_`date +"%Y-%m-%d"`.bak
+  #     echo "Done!"
+  #     #sudo -u nextcloud php occ maintenance:mode --off
+  #   '';
+  # };
   # }
 
   systemd.timers."nextcloud-backup" = {
