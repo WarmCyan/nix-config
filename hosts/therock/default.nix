@@ -202,6 +202,27 @@
       ExecStart = "${pkgs.rclone}/bin/rclone serve webdav /depository/ext-webdav/shared --addr 192.168.130.2:7124 --no-modtime --log-level INFO";
     };
   };
+
+
+  # zfs backup stuff https://www.return12.net/zfs-on-nixos/
+  services.zfs.autoScrub = {
+    enable = true;
+    interval = "*-*-1,15 02:30"; # 1st and 15th of every month
+  };
+  services.sanoid = {
+    enable = true;
+    templates.backup = {
+      hourly = 36;
+      daily = 30;
+      monthly = 3;
+      autoprune = true;
+      autosnap = true;
+    };
+
+    datasets."depository/root" = {
+      useTemplate = [ "backup" ];
+    };
+  };
   
   
   
