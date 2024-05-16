@@ -132,6 +132,9 @@
     ranger
     gdb
     st
+
+    wireguard-tools
+    tcpdump
   ];
 
   home.sessionVariables = {
