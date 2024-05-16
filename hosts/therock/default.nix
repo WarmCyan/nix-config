@@ -157,7 +157,7 @@
       Restart = "on-failure";
       RestartSec = "30s";
       Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
-      ExecStart = "${pkgs.rclone}/bin/rclone serve webdav --htpasswd /depository/htpasswd-nathan /depository/store --addr 192.168.130.2:7121 --no-modtime --log-level INFO";
+      ExecStart = "${pkgs.rclone}/bin/rclone serve webdav --htpasswd /depository/htpasswd-nathan /depository/store --addr 192.168.130.2:7121 --no-modtime --log-level INFO --vfs-cache-mode full --vfs-disk-space-total-size 2000G --vfs-used-is-size";
     };
   };
   systemd.services.rclone-webdav-mum = {
