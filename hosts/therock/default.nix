@@ -1,6 +1,6 @@
 # therock, system configuration for homeserver
 
-{ pkgs, lib, inputs, hostname, ... }: {
+{ pkgs, lib, inputs, hostname, config, ... }: {
   imports = [
     ./hardware-configuration.nix
   ];
@@ -21,7 +21,18 @@
     
     firewall = {
       enable = true; # default
-      allowedTCPPorts = [ 22 80 443 8080 7121 7122 7123 7124 ];
+      allowedTCPPorts = [ 
+        22 
+        80 
+        443 
+        7121 # webdav: me
+        7122 # webdav: mum
+        7123 # webdav: sis
+        7124 # webdav: shared
+        3000 # grafana
+        #9001 # prometheus
+        #9002 # node exporter
+      ];
     };
   };
 
@@ -87,6 +98,47 @@
       PasswordAuthentication = false; # TODO: set this to false
       PermitRootLogin = "no";
     };
+  };
+
+
+  services.grafana = {
+    enable = true;
+    settings = {
+      server = {
+        http_addr = "192.168.1.225";
+        http_port = 3000;
+        domain = "therock.cyan.arpa";
+        root_url = "http://therock.cyan.arpa:3000/";
+      };
+    };
+  };
+
+  services.prometheus = {
+    enable = true;
+    port = 9001;
+
+    exporters = {
+      node = {
+        enable = true;
+        enabledCollectors = [ "systemd" ];
+        port = 9002;
+      };
+    };
+
+    scrapeConfigs = [
+      {
+        job_name = "therock";
+        static_configs = [{
+          targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" ];
+        }];
+      }
+      {
+        job_name = "firewall";
+        static_configs = [{
+          targets = [ "192.168.1.1:9100" ];
+        }];
+      }
+    ];
   };
 
 
