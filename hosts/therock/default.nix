@@ -107,12 +107,27 @@
       server = {
         http_addr = "192.168.1.225";
         http_port = 3000;
-        domain = "therock.cyan.arpa";
-        root_url = "http://therock.cyan.arpa:3000/";
+        # domain = "therock.cyan.arpa";
+        # root_url = "http://therock.cyan.arpa:3000/";
+        domain = "192.168.1.225";
+        root_url = "http://192.168.1.225:3000/";
       };
     };
   };
-
+  # make grafana available to phone through wg as well
+  services.nginx = {
+    enable = true;
+    virtualHosts = {
+      "grafana" = {
+        listen = [{port = 3000; addr="192.168.130.2";}];
+        locations."/" = {
+          proxyPass = "http://192.168.1.225:3000/";
+          recommendedProxySettings = true;
+        };
+      };
+    };
+  };
+  
   services.prometheus = {
     enable = true;
     port = 9001;
@@ -121,6 +136,9 @@
       node = {
         enable = true;
         enabledCollectors = [ "systemd" ];
+        # extraFlags = [
+        #   "--collector.textfile.directory"
+        # ];
         port = 9002;
       };
     };
@@ -276,7 +294,11 @@
     };
   };
   
-  
+  # networking.interfaces.enp3s0.ipv4.routes = [{
+  #   address = "192.168.130.3";
+  #   prefixLength = 32;
+  #   via = "192.168.130.1";
+  # }];
   
   # let 
   #   backupScript = pkgs.writeTextFile {
