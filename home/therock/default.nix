@@ -8,5 +8,10 @@
   ];
 
   home.packages = with pkgs; [
+    tcpdump
   ];
+
+  home.sessionVariables = {
+    EDITOR = "nvim";
+  };
 }
