@@ -32,6 +32,8 @@
     xclip
 
     gifify
+
+    mystmd
   ];
 
   programs.vscode = {
