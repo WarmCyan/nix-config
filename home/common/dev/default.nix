@@ -19,7 +19,7 @@ in
     statix      # nix linter
 
     pre-commit  # we want this separately so we can apply even to non-python projects
-    micromamba  # python environment management
+    unstable.micromamba  # python environment management
 
     # -- MY tools! --
     add-jupyter-env # run inside a conda env to add jupyter lab setup

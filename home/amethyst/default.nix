@@ -132,6 +132,12 @@
     ranger
     gdb
     st
+
+    wireguard-tools
+    tcpdump
+
+    unstable.anki-bin
+    chromium
   ];
 
   home.sessionVariables = {

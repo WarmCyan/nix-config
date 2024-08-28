@@ -32,6 +32,9 @@
     xclip
 
     gifify
+
+    mystmd
+    unstable.obsidian
   ];
 
   programs.vscode = {
