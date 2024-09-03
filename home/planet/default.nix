@@ -33,7 +33,6 @@ in
     jq
 
     mystmd
-    nodejs_21
 
     gimp
     drawio
@@ -42,7 +41,8 @@ in
 
   programs.eww = {
     enable = true;
-    package = pkgs.eww-wayland;
+    #package = pkgs.eww-wayland;
+    package = pkgs.eww;
     configDir = ./ewwconfig;
   };
 
@@ -52,7 +52,9 @@ in
 
   wayland.windowManager.sway = {
     enable = true;
-    package = null;
+    #package = null;
+    package = pkgs.unstable.sway;
+    checkConfig = false;
     config = rec {
       modifier = caps;
       # bars = [ ];
