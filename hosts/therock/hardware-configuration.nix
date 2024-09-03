@@ -12,6 +12,7 @@
   # zfs support
   boot.supportedFilesystems = [ "zfs" ];
   boot.zfs.forceImportRoot = false;
+  boot.zfs.extraPools = [ "backup_depository" ];
   networking.hostId = "b296d82c";
   # host id generated with `head -c4 /dev/uranodm | od -A none -t x4`,
   # see https://openzfs.github.io/openzfs-docs/Getting%20Started/NixOS/index.html#installation
@@ -42,6 +43,15 @@
     device = "depository/root";
     fsType = "zfs";
   };
+  
+  # zfs backup pool on the HDD docking station
+  # fileSystems."/backup_depository" = {
+  #   device = "backup_depository/root";
+  #   fsType = "zfs";
+  #   # the zfsutil option is needed when mounting zfs datasets without "legacy" mountpoints
+  #   options = [ "zfsutil" ];
+  # };
+
 
   networking.useDHCP = lib.mkDefault true;
 
