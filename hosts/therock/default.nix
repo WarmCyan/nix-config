@@ -105,12 +105,12 @@
     enable = true;
     settings = {
       server = {
-        http_addr = "192.168.1.225";
+        http_addr = "192.168.1.3";
         http_port = 3000;
         # domain = "therock.cyan.arpa";
         # root_url = "http://therock.cyan.arpa:3000/";
-        domain = "192.168.1.225";
-        root_url = "http://192.168.1.225:3000/";
+        domain = "192.168.1.3";
+        root_url = "http://192.168.1.3:3000/";
       };
     };
   };
@@ -121,12 +121,60 @@
       "grafana" = {
         listen = [{port = 3000; addr="192.168.130.2";}];
         locations."/" = {
-          proxyPass = "http://192.168.1.225:3000/";
+          proxyPass = "http://192.168.1.3:3000/";
           recommendedProxySettings = true;
         };
       };
     };
   };
+
+  # power.ups = {
+  #   enable = true;
+  #   mode = "netserver";
+  #   ups = {
+  #     usbups = {
+  #       driver = "usbhid-ups";
+  #       port = "auto";
+  #       description = "USB UPS";
+  #     };
+  #   };
+  # };
+   # environment.etc = {
+    #
+    # "nut/upsd.conf".source = pkgs.writeText "upsd.conf"
+    #   ''
+    #     LISTEN 127.0.0.1 3493
+    #   '';
+    # "nut/upsd.users".source = pkgs.writeText "upsd.users"
+    # ''
+    #   [upsmon]
+    #       password  = pass
+    #       upsmon primary
+    #       actions = set
+    #       actions = fsd
+    #       actions = test.panel.start
+    #       instcmds = ALL
+    # '';
+    #
+    # "nut/upsmon.conf".source = pkgs.writeText "upsmon.conf"
+    #   ''
+    #     MONITOR usbups@localhost 1 upsmon pass primary
+    #     MINSUPPLIES 1
+    #     SHUTDOWNCMD "${pkgs.systemd}/bin/systemctl poweroff"
+    #     POLLFREQ 5
+    #     POLLFREQALERT 5
+    #     HOSTSYNC 15
+    #     DEADTIME 15
+    #     POWERDOWNFLAG /etc/killpower
+    #     RBWARNTIME 43200
+    #     NOCOMMWARNTIME 300
+    #     FINALDELAY 5
+    #   '';
+    #
+    # };
+
+  services.apcupsd.enable = true;
+
   
   services.prometheus = {
     enable = true;
@@ -135,15 +183,86 @@
     exporters = {
       node = {
         enable = true;
-        enabledCollectors = [ "systemd" ];
+        enabledCollectors = [ "systemd" "zfs" "wireguard" "nut" "apcupsd" "processes" ];
         # extraFlags = [
         #   "--collector.textfile.directory"
         # ];
         port = 9002;
+        listenAddress = "127.0.0.1";
+      };
+      
+      wireguard = {
+        enable = true;
+        port = 9003;
+        listenAddress = "127.0.0.1";
+      };
+      
+      zfs = {
+        enable = true;
+        port = 9004;
+        listenAddress = "127.0.0.1";
+      };
+      
+      apcupsd = {
+        enable = true;
+        port = 9005;
+        listenAddress = "127.0.0.1";
+      };
+
+      nut = {
+        enable = true;
+        port = 9006;
+        listenAddress = "127.0.0.1";
+        nutServer = "127.0.0.1";
+      };
+      
+      systemd = {
+        enable = true;
+        port = 9007;
+        listenAddress = "127.0.0.1";
       };
     };
 
     scrapeConfigs = [
+      # {
+      #   job_name = "nut";
+      #   metrics_path = "/ups_metrics";
+      #   params = {
+      #     ups = [ "usbups" ];
+      #   };
+      #   static_configs = [{
+      #     targets = [
+      #       "127.0.0.1:${toString config.services.prometheus.exporters.nut.port}"
+      #     ];
+      #     labels = {
+      #       ups = "usbups";
+      #     };
+      #   }];
+      # }
+      {
+        job_name = "apc";
+        static_configs = [{
+          targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.apcupsd.port}" ];
+        }];
+      }
+      {
+        job_name = "systemd";
+        static_configs = [{
+          targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.systemd.port}" ];
+        }];
+      }
+      {
+        job_name = "wireguard";
+        static_configs = [{
+          targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.wireguard.port}" ];
+        }];
+      }
+      {
+        job_name = "zfs";
+        static_configs = [{
+          targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.zfs.port}" ];
+        }];
+      }
       {
         job_name = "therock";
         static_configs = [{
@@ -292,6 +411,15 @@
     datasets."depository/root" = {
       useTemplate = [ "backup" ];
     };
+  };
+
+  services.syncoid = {
+    enable = true;
+    interval = "hourly";
+    localTargetAllow = [ "change-key" "compression" "create" "mountpoint" "receive" "rollback" "mount" "destroy" "release" "hold" ];
+    localSourceAllow = [ "bookmark" "hold" "send" "snapshot" "destroy" "mount" "release" ];
+    commonArgs = [ "--no-sync-snap" "--use-hold" ]; # "--force-delete" ];
+    commands."depository/root".target = "backup_depository/root";
   };
   
   # networking.interfaces.enp3s0.ipv4.routes = [{

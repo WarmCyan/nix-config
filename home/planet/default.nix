@@ -31,11 +31,18 @@ in
     gnumake
     unstable.obsidian
     jq
+
+    mystmd
+
+    gimp
+    drawio
+    inkscape
   ];
 
   programs.eww = {
     enable = true;
-    package = pkgs.eww-wayland;
+    #package = pkgs.eww-wayland;
+    package = pkgs.eww;
     configDir = ./ewwconfig;
   };
 
@@ -45,7 +52,9 @@ in
 
   wayland.windowManager.sway = {
     enable = true;
-    package = null;
+    #package = null;
+    package = pkgs.unstable.sway;
+    checkConfig = false;
     config = rec {
       modifier = caps;
       # bars = [ ];
@@ -148,6 +157,8 @@ in
         
         "${caps}+0" = "workspace number 10";
         "${caps}+Shift+0" = "move container to workspace number 10";
+
+        "Print" = "exec ${pkgs.sway-contrib.grimshot}/bin/grimshot copy area";
       };
 
       # inside ~/.config/xkb/symbols/custom:
@@ -168,12 +179,12 @@ in
       output = {
         DP-5 = {
           mode = "2560x1440@99.946Hz";
-          pos = "0 0";
+          pos = "1080 0";
         };
         DP-3 = {
           mode = "1920x1080";
-          transform = "270";
-          pos = "2560 0";
+          transform = "90";
+          pos = "0 0";
         };
         eDP-1 = {
           disable = "";
