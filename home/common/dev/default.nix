@@ -17,7 +17,7 @@ let
   jupyterVimSettings = {
     enabled = true;
     enabledInEditors = true;
-    extraKeyBindings = [
+    extraKeybindings = [
       { 
         command = "jk";
         keys = "<Esc>";
