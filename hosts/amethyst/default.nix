@@ -78,9 +78,9 @@
   # enable using the caps lock key has Mod5
   services.xserver.displayManager.sessionCommands = /* bash */''
     # set up the monitors
-    LEFT="DP-0"
+    LEFT="DP-1"
     CENTER="DP-2"
-    RIGHT="DP-5"
+    RIGHT="DP-4"
     HDMI="HDMI"
     
     # old 3 side by side normal orientations
