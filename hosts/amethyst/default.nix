@@ -51,13 +51,6 @@
   # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
   services.xserver = {
     enable = true;
-    displayManager.sddm.enable = true;
-    displayManager.sddm.theme = "${(pkgs.fetchFromGitHub {
-      owner = "WildfireXIII";
-      repo = "sddm-chili";
-      rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
-      sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
-    })}";
     desktopManager.session = [
       {
         name = "xsession";
@@ -67,6 +60,17 @@
         '';
       }
     ];
+  };
+  services.displayManager = {
+    sddm = {
+      enable = true;
+      theme = "${(pkgs.fetchFromGitHub {
+        owner = "WildfireXIII";
+        repo = "sddm-chili";
+        rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
+        sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
+      })}";
+    };
   };
   
   hardware.opengl.enable = true;
@@ -93,7 +97,7 @@
     ${pkgs.xorg.xrandr}/bin/xrandr \
       --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right \
       --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left \
-      --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal \
+      --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary \
       --output $HDMI --off
     
     # set up my caps lock keyboard configuration
@@ -148,8 +152,10 @@
 
   # Configure keymap in X11
   services.xserver = {
-    layout = "us";
-    xkbVariant = "";
+    xkb = {
+      layout = "us";
+      variant = "";
+    };
   };
 
   # Enable CUPS to print documents.
