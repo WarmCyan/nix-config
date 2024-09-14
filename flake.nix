@@ -306,6 +306,22 @@
         };
       };
 
+      # work cluster
+      endor = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "endor";
+          username = "81n";
+          configName = "endor";
+          configLocation = "/data/jocasta/home/81n";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "martindalena@ornl.gov";
+          noNixos = true;
+        };
+      };
+
       # work laptop (wsl)
       wlap = mkHome {
         configName = "wlap";
