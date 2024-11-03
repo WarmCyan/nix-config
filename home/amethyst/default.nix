@@ -86,7 +86,7 @@
     libreoffice-qt
     calibre
 
-    reaper
+    unstable.reaper
     lmms
     drawio
     obs-studio
