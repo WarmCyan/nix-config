@@ -51,10 +51,10 @@
     alsa-scarlett-gui # gui controls for focusrite 2i2 gen 3
 
     # -- monitoring tools --
-    glances           # fancier htop
-    nvtop             # nvidia gpu monitoring
-    psensor           # CPU/GPU temp/activity monitoring
-    dconf             # (this is required so psensor can save changes to theme (think it's a gtk thing))
+    glances             # fancier htop
+    nvtop.Packages.full # nvidia gpu monitoring
+    psensor             # CPU/GPU temp/activity monitoring
+    dconf               # (this is required so psensor can save changes to theme (think it's a gtk thing))
 
     # -- creative --
     blender
@@ -156,7 +156,7 @@
 
   qt = {
     enable = true;
-    platformTheme = "gtk";
+    platformTheme.name = "gtk";
     style = {
       #package = pkgs.libsForQt5.qtstyleplugins;
       name = "adwaita-dark";
