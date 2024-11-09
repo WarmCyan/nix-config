@@ -85,11 +85,16 @@
   # display
   services.xserver = {
     enable = true;
-    layout = "us";
+    xkb = {
+      layout = "us";
+      variant = "";
+    };
     
     # KDE/plasma
-    displayManager.sddm.enable = true;
     desktopManager.plasma5.enable = true;
+  };
+  services.displayManager = {
+    sddm.enable = true;
   };
   
   services.openssh = {
