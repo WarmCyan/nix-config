@@ -52,7 +52,7 @@
 
     # -- monitoring tools --
     glances             # fancier htop
-    nvtop.Packages.full # nvidia gpu monitoring
+    nvtopPackages.full  # nvidia gpu monitoring
     psensor             # CPU/GPU temp/activity monitoring
     dconf               # (this is required so psensor can save changes to theme (think it's a gtk thing))
 
