@@ -12,7 +12,7 @@
   # zfs support
   boot.supportedFilesystems = [ "zfs" ];
   boot.zfs.forceImportRoot = false;
-  boot.zfs.extraPools = [ "backup_depository" ];
+  # boot.zfs.extraPools = [ "backup_depository" ];
   networking.hostId = "b296d82c";
   # host id generated with `head -c4 /dev/uranodm | od -A none -t x4`,
   # see https://openzfs.github.io/openzfs-docs/Getting%20Started/NixOS/index.html#installation
@@ -37,6 +37,12 @@
     device = "/dev/disk/by-uuid/15a5eafa-4cb3-42c5-ac26-2ab4d1fb5e93";
     fsType = "ext4";
   };
+
+  # # USB dock for cold storage hot swapped 8tb disks
+  # fileSystems."/backup_depository" = {
+  #   device = "/dev/disk/by-id/usb-USB_3.0_HDD_Docking_Station_201710310028-0:0";
+  #   fsType = "ext4";
+  # };
 
   # zfs mirror'd two 8tb disks
   fileSystems."/depository" = {

@@ -68,6 +68,7 @@
 
     wireguard-tools
     apacheHttpd
+    usbutils
   ];
 
   # sound
@@ -418,14 +419,21 @@
     };
   };
 
-  services.syncoid = {
-    enable = true;
-    interval = "hourly";
-    localTargetAllow = [ "change-key" "compression" "create" "mountpoint" "receive" "rollback" "mount" "destroy" "release" "hold" ];
-    localSourceAllow = [ "bookmark" "hold" "send" "snapshot" "destroy" "mount" "release" ];
-    commonArgs = [ "--no-sync-snap" "--use-hold" ]; # "--force-delete" ];
-    commands."depository/root".target = "backup_depository/root";
-  };
+  # services.syncoid = {
+  #   enable = true;
+  #   interval = "hourly";
+  #   localTargetAllow = [ "change-key" "compression" "create" "mountpoint" "receive" "rollback" "mount" "destroy" "release" "hold" ];
+  #   localSourceAllow = [ "bookmark" "hold" "send" "snapshot" "destroy" "mount" "release" ];
+  #   commonArgs = [ "--no-sync-snap" "--use-hold" ]; # "--force-delete" ];
+  #   commands."depository-hot-swap-a" = {
+  #     source = "depository/root";
+  #     target = "backup_depository_A/root";
+  #   };
+  #   commands."depository-hot-swap-b" = {
+  #     source = "depository/root";
+  #     target = "backup_depository_B/root";
+  #   };
+  # };
   
   # networking.interfaces.enp3s0.ipv4.routes = [{
   #   address = "192.168.130.3";
@@ -471,6 +479,27 @@
   #   };
   # };
   #
+
+
+  systemd.services."depository-backup" = {
+    serviceConfig.Type = "oneshot";
+    path = with pkgs; [ bash sudo rsync mount umount ];
+    script = /* bash */ ''
+      echo "Begining backup..."
+      sudo mount ID=usb-USB_3.0_HDD_Docking_Station_201710310028-0:0-part1 /backup_depository/
+      rsync --archive --delete /depository /backup_depository
+      sudo umount /backup_depository
+      echo "Backup complete!"
+    '';
+  };
+  systemd.timers."depository-backup" = {
+    wantedBy = [ "timers.target" ];
+    partOf = [ "depository-backup.service" ];
+    timerConfig = {
+      Unit = "depository-backup.service";
+      OnCalendar = "*-*-* *:00:00"; # hourly
+    };
+  };
   
 
   # NOTE: this doesn't work if I'm not using an actual domain name.
