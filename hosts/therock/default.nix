@@ -497,7 +497,7 @@
     partOf = [ "depository-backup.service" ];
     timerConfig = {
       Unit = "depository-backup.service";
-      OnCalendar = "*-*-* *:00:00"; # hourly
+      OnCalendar = "*-*-* 00:00:00"; # daily
     };
   };
   
