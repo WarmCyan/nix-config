@@ -189,7 +189,8 @@
     exporters = {
       node = {
         enable = true;
-        enabledCollectors = [ "systemd" "zfs" "wireguard" "nut" "apcupsd" "processes" ];
+        # enabledCollectors = [ "systemd" "zfs" "wireguard" "nut" "apcupsd" "processes" ];
+        enabledCollectors = [ "systemd" "zfs" "processes" ];
         # extraFlags = [
         #   "--collector.textfile.directory"
         # ];
