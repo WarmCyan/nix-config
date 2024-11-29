@@ -172,6 +172,110 @@
     enable=true;
   };
 
+
+  # https://alexplescan.com/posts/2024/08/10/wezterm/
+  programs.wezterm = {
+    enable = true;
+    enableZshIntegration = true;
+    enableBashIntegration = true;
+    extraConfig = /* lua */''
+    local config = wezterm.config_builder()
+
+    config.font_size = 9.0
+    config.font = wezterm.font({ family = "Droid Sans Mono Slashed for Powerline" })
+    config.color_scheme = 'Gruvbox dark, hard (base16)'
+    
+    config.window_decorations = "RESIZE"
+    -- https://wezfurlong.org/wezterm/config/appearance.html#dynamic-color-escape-sequences
+    config.window_frame = {
+      font_size=9.0,
+      font = wezterm.font({ family="Iosevka Nerd Font" }),
+      active_titlebar_bg = "#1177AA",
+      inactive_titlebar_bg = "#353535",
+    }
+
+    config.use_fancy_tab_bar = True
+    config.show_tabs_in_tab_bar = false
+    config.show_new_tab_button_in_tab_bar = false
+
+
+    config.window_padding = {
+      left = 0,
+      right = 0,
+      top = 0,
+      bottom = 0,
+    }
+
+    -- https://github.com/wez/wezterm/discussions/2537
+    wezterm.on('window-focus-changed', function(window, pane)
+    local overrides = window:get_config_overrides() or {}
+    if window:is_focused() then 
+      overrides.window_frame = {
+      font_size=9.0,
+      font = wezterm.font({ family="Iosevka Nerd Font" }),
+        active_titlebar_bg = "#1177AA",
+        inactive_titlebar_bg = "#1177AA",
+      }
+    else 
+      overrides.window_frame = {
+      font_size=9.0,
+      font = wezterm.font({ family="Iosevka Nerd Font" }),
+        active_titlebar_bg = "#353535",
+        inactive_titlebar_bg = "#353535",
+      }
+    end
+    window:set_config_overrides(overrides)
+    end)
+
+    
+    wezterm.on('update-status', function(window, pane)
+      local SOLID_LEFT_ARROW = utf8.char(0xe0b2)
+      local color_scheme = window:effective_config().resolved_palette
+      local bg = color_scheme.background
+      local fg = color_scheme.foreground
+
+
+      -- https://github.com/wez/wezterm/issues/1680#issuecomment-1058124061
+      -- local actual_hostname = pane:get_user_vars().foo
+      local actual_hostname = pane:get_user_vars().WEZTERM_HOST
+      
+      -- local actual_hostname2 = table.concat(pane:get_foreground_process_info().argv, " ")
+      local actual_hostname2 = pane:get_foreground_process_info().argv[1]
+
+      actual_hostname3 = wezterm.hostname()
+      if pane:get_foreground_process_info().argv[1] == "ssh" then
+        actual_hostname3 = pane:get_foreground_process_info().argv[2]
+      end
+      
+      -- https://wezfurlong.org/wezterm/config/lua/window/set_right_status.html
+      -- Figure out the cwd and host of the current pane.
+      -- This will pick up the hostname for the remote host if your
+      -- shell is using OSC 7 on the remote host.
+      local cwd_uri = pane:get_current_working_dir()
+      local cwd = ""
+      local hostname = "NOOOOOOOOOO"
+      if cwd_uri then
+          cwd = cwd_uri.file_path
+          hostname = cwd_uri.host --or wezterm.hostname()
+      end
+
+      window:set_right_status(wezterm.format({
+        -- First, we draw the arrow...
+        { Background = { Color = 'none' } },
+        { Foreground = { Color = bg } },
+        { Text = SOLID_LEFT_ARROW },
+        -- Then we draw our text
+        { Background = { Color = bg } },
+        { Foreground = { Color = fg } },
+        -- { Text = ' ' .. wezterm.hostname() .. ' ' },
+        { Text = ' ' .. actual_hostname3 .. ' ' },
+      }))
+    end)
+    return config
+    '';
+    
+  };
+
   programs.kitty = {
     # package = pkgs.stable.kitty;
     enable = true;
@@ -189,6 +293,12 @@
       initial_window_height = "25c";
       cursor_shape = "block";
       cursor_blink_interval = "0";
+
+      # improve input latency
+      # https://beuke.org/terminal-latency/#fn:2
+      repaint_delay = "8";
+      input_delay = "0";
+      sync_to_monitor = "no";
     };
   };
 

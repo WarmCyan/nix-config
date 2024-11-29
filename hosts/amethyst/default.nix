@@ -164,7 +164,7 @@
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [
       firefox
       kate
@@ -184,6 +184,10 @@
   };
 
   programs.nix-ld.enable = true;
+
+
+  # enable docker
+  virtualisation.docker.enable = true;
   
   
   services.openssh = {
