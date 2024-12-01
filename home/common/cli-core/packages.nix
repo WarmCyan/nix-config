@@ -7,6 +7,9 @@
     fzf       # very effective fuzzy finder
     bat       # fancier cat
     rsync     # better file transfer than scp and cp
+    zip       # gotta be able to work with .zips
+    unzip     # gotta be able to work with .zips
+    gnumake   # ability to run makefiles
 
     # -- TUI tools --
     htop      # standard system cpu viewer

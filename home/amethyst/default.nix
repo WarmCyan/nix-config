@@ -57,9 +57,19 @@
     dconf               # (this is required so psensor can save changes to theme (think it's a gtk thing))
 
     # -- creative --
-    blender
-    gimp
-    inkscape
+    blender         # 3d animation, modeling, video editing
+    gimp            # image editing
+    inkscape        # SVG/illustrator tool
+    obs-studio      # screen recording tool
+    mixxx           # DJ software
+    unstable.reaper # DAW
+    lmms            # my older DAW :')
+    bespokesynth    # experimental DAW
+    surge-XT        # open source hybrid synthesizer
+    sfizz           # soundfont sampler?
+    carla           # windows vsts on linux
+    yabridge        # windows vsts on linux
+    yabridgectl
 
     # -- utils --
     flameshot         # screenshot tool
@@ -68,76 +78,30 @@
     dunst             # notifications
     betterlockscreen  # super cool lock screen based on i3lock
     arandr            # multi-monitor configuration tool
-    xclip             # clipboard tool 
+    xclip             # clipboard tool
+    asunder           # CD ripper
+    vlc               # video/audio player
+    wineWowPackages.unstableFull  # NOTE: necessary for several of the windows vst bridges
+    ffmpeg            # video conversion/editing CLI
+    imagemagick       # image conversion/editing CLI
+    dnsutils          # includes nslookup
+    usbutils          # includes lsusb
+    wireguard-tools   # includes wg
+    tcpdump           # watch/debug packets on network interfaces
+    drawio            # diagramming tool
 
     # -- other --
-    unstable.obsidian  # the explicit unstable is currently necessary to get the overlay from flake that
-                       # lists electron 25.9.0 (eol) as a permitted insecure
-                       # package. TODO: remove this once obsidian updates
-    #obsidian
-    python311
+    unstable.anki-bin   # spaced repetition software
+    chromium            # for the times firefox doesn't cut it
+    libreoffice-qt      # office suite
+    calibre             # ebook library
+    obsidian            # knowledge management
+    python311           # a system (user) python so I can quickly run/test stuff
 
-    pulseaudio
-
-    libsForQt5.bluedevil
-    
-    usbutils    # I assume this is where I get lsusb?
-
-    libreoffice-qt
-    calibre
-
-    unstable.reaper
-    lmms
-    drawio
-    obs-studio
-    vlc
-
-    julia-bin
-
-    pluto
-
-    unzip
-    ffmpeg
-
-    mixxx
-    # bashmount  # bash tui for interfacing with udisks
-    # sound-juicer
-    # lshw  # outputs information about all hardware
-    # gvfs  # maybe gets the HAL daemon running or something?
-    
-    
-    asunder  # CD ripper
-
-    imagemagick
-    
-    gnumake
-
-
-    bespokesynth
-    #(wine.override { wineBuild = "wine64"; })
-    wineWowPackages.unstableFull
-
-    surge-XT
-    sfizz
-    yabridgectl
-    yabridge
-    carla
-
-
-    dnsutils # includes nslookup
-
-
-    zip
+    # pulseaudio
 
     ranger
-    gdb
     st
-
-    wireguard-tools
-    tcpdump
-
-    unstable.anki-bin
-    chromium
   ];
 
   home.sessionVariables = {

@@ -1,7 +1,6 @@
 { pkgs, lib, hostname, username, config, ... }:
 {
   home.packages = with pkgs; [
-    ario
     cantata
   ];
   
