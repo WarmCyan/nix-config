@@ -54,6 +54,8 @@
 #   ./nix ... (will use .local/share/nix)
 # (for it to work on macos will likely need https://github.com/nixie-dev/fakedir)
 
+#   nix shell nixpkgs#homemanager
+
 #
 # 
 # STRT: make the cli-core nvim more minimal, use dev modules to add more plugin stuff
