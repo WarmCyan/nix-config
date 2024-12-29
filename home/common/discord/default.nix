@@ -2,8 +2,8 @@
 {
   home.packages = with pkgs; [
     # https://github.com/Misterio77/nix-config/blob/main/home/misterio/features/desktop/common/discord.nix
-    discord
-    discocss
+    unstable.discord
+    # discocss
   ];
 
 

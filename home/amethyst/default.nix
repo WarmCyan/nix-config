@@ -102,6 +102,7 @@
 
     ranger
     st
+    gcc
   ];
 
   home.sessionVariables = {
