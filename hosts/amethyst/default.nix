@@ -76,6 +76,15 @@
   hardware.opengl.enable = true;
   hardware.opengl.driSupport32Bit = true; # recommended from https://linuxhint.com/how-to-instal-steam-on-nixos/
   services.xserver.videoDrivers = [ "nvidia" ];
+  # (see https://nixos.wiki/wiki/Nvidia)
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement.enable = false;
+    powerManagement.finegrained = false;
+    open = false;
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
 
   # https://discourse.nixos.org/t/xmodmap-keyboard-layout-customization-question/11522
   # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
@@ -83,8 +92,8 @@
   services.xserver.displayManager.sessionCommands = /* bash */''
     # set up the monitors
     LEFT="DP-1"
-    CENTER="DP-2"
-    RIGHT="DP-4"
+    CENTER="DP-4"
+    RIGHT="DP-2"
     HDMI="HDMI"
     
     # old 3 side by side normal orientations

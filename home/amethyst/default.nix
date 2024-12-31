@@ -53,7 +53,7 @@
     # -- monitoring tools --
     glances             # fancier htop
     nvtopPackages.full  # nvidia gpu monitoring
-    psensor             # CPU/GPU temp/activity monitoring
+    #psensor             # CPU/GPU temp/activity monitoring (no longer maintained)
     dconf               # (this is required so psensor can save changes to theme (think it's a gtk thing))
 
     # -- creative --
@@ -103,6 +103,14 @@
     ranger
     st
     gcc
+
+
+    # super experimental
+    arcan
+    # pipeworld
+    # pipeworld-wrapped
+    # durden
+    # durden-wrapped
   ];
 
   home.sessionVariables = {
