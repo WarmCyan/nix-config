@@ -139,11 +139,16 @@
       # we're "overriding" the nixpkgs input home-manager defines by default)
     };
 
+    nixgl = {
+      url = "github:nix-community/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # TODO: add in nix-colors! 
   };
 
   #outputs = inputs:
-  outputs = { self, nixpkgs, home-manager, ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nixgl, ... } @ inputs:
   let
     inherit (self) outputs;
     
@@ -154,7 +159,7 @@
     forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
     pkgsFor = lib.genAttrs systems (system: import nixpkgs {
       inherit system;
-      overlays = builtins.attrValues outputs.overlays;
+      overlays = builtins.attrValues outputs.overlays ++ [ nixgl.overlay ];
       config.allowUnfree = true;
     });
   
@@ -282,14 +287,19 @@
       };
 
       # work linux workstation 
-      arcane = mkHome {
+      arcane = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
-        configName = "arcane";
-        username = "81n";
-        hostname = "arcane";
-        noNixos = true;
-        gitEmail = "martindalena@ornl.gov";
-        configLocation = "/home/81n/lab/nix-config";
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs nixgl;
+          hostname = "arcane";
+          username = "81n";
+          configName = "arcane";
+          configLocation = "/home/81n/lab/nix-config";
+          gitEmail = "martindalena@ornl.gov";
+          gitUsername = "Martindale, Nathan";
+          noNixos = true;
+        };
       };
 
       # work linux laptop 

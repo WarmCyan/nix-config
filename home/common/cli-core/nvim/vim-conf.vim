@@ -24,6 +24,9 @@ endif
 " colorscheme! 
 set background=dark
 let g:everforest_background='hard'
+let g:everforest_enable_italic=0
+let g:everforest_current_word='bold'
+let g:everforest_inlay_hints_background='dimmed'
 colorscheme everforest
 
 " ==============================================================================
@@ -200,20 +203,25 @@ nnoremap <tab>h :bprevious<cr>
 nnoremap <tab>l :bnext<cr>
 nnoremap <tab>x :bdelete<cr>
 
-
-" Split line (on next space)
+" split line (on next space)
 nnoremap S f<space>s<cr><esc>==
 
-" Todo-cycling with my custom td-state tool
+" todo-cycling with my custom td-state tool
 nmap <s-t> V:'<,'>!td-state "`cat`"<cr>W
 
-" Make terminal also use jk for escape
+" make terminal also use jk for escape
 tnoremap jk <C-\><C-n>
 
+" terminal split creation shortcuts
 noremap <C-t>h <C-w>v:terminal<cr>a
 noremap <C-t>j <C-w>s<C-w>j:terminal<cr>a
 noremap <C-t>k <C-w>s:terminal<cr>a
 noremap <C-t>l <C-w>v<C-w>l:terminal<cr>a
+
+" the tree-sitter pluggin introduces a :EditQuery command which makes it so that
+" :E no longer means :Explore. To re-allow this, essentially redefining an :E
+" command, see https://stackoverflow.com/questions/14367440/map-e-to-explore-in-command-mode 
+command! -nargs=* -bar -bang -count=0 -complete=dir E Explore <args>
 
 
 " ==============================================================================
@@ -263,6 +271,8 @@ autocmd BufRead,BufNewFile * syntax match URL "\vhttps?\:\/\/(www\.)?[-a-zA-Z0-9
 autocmd BufRead,BufNewFile * highlight URL ctermfg=magenta cterm=underline guifg=#af87ff gui=bold
 
 
+" stop bold facing comments 
+autocmd BufRead,BufNewFile * highlight Comment cterm=None gui=None
 
 
 
@@ -649,3 +659,4 @@ nnoremap <leader>v :Vista<CR>
 
 " https://github.com/wellle/context.vim
 let g:context_enabled = 1
+let g:context_buftype_blacklist = ['terminal']
