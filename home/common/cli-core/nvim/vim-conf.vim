@@ -255,6 +255,19 @@ highlight link Todo TODO_todo
 highlight link pythonTodo TODO_todo 
 highlight link javaScriptCommentTodo TODO_todo
 
+" link in custom treesitter captures
+highlight link @comment.todo TODO_todo
+highlight link @TODO_todo TODO_todo
+highlight link @TODO_strt TODO_strt
+highlight link @TODO_wait TODO_wait
+highlight link @TODO_done TODO_done
+highlight link @TODO_canc TODO_canc
+highlight link @NOTES_bug NOTES_bug
+highlight link @NOTES_fixd NOTES_fixd
+highlight link @NOTES_idea NOTES_idea
+highlight link @NOTES_note NOTES_note
+
+
 " highlight bug/fixes/ideas
 autocmd BufRead,BufNewFile * syntax match NOTES_bug "\vBUG\:" containedin=ALL
 autocmd BufRead,BufNewFile * syntax match NOTES_fixd "\vFIXD\:" containedin=ALL
@@ -585,6 +598,12 @@ require("flatten").setup({})
 --    --}
 --end)
 
+require("nvim-treesitter.configs").setup {
+    highlight = {
+      enable = true, -- false will disable the whole extension
+      disable = {"vim"}, -- list of language that will be disabled
+    },
+  }
 
 require("neotest").setup({
     adapters = {
