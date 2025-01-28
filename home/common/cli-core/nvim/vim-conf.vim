@@ -266,6 +266,7 @@ highlight link @NOTES_bug NOTES_bug
 highlight link @NOTES_fixd NOTES_fixd
 highlight link @NOTES_idea NOTES_idea
 highlight link @NOTES_note NOTES_note
+highlight link @comment.note NOTES_note
 
 
 " highlight bug/fixes/ideas
