@@ -307,7 +307,7 @@
         pkgs = pkgsFor.x86_64-linux;
         modules = [ ./home ];
         extraSpecialArgs = {
-          inherit self inputs outputs;
+          inherit self inputs outputs nixgl;
           hostname = "planet";
           username = "81n";
           configName = "planet";

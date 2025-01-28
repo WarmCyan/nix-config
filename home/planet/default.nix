@@ -1,6 +1,6 @@
 # planet, home configuration for work linux laptop
 
-{ pkgs, lib, ... }:
+{ pkgs, lib, nixgl, config, ... }:
 let 
   caps = "Mod5";
   win = "Mod4";
@@ -9,6 +9,11 @@ let
   inherit (builtins) readFile;
 in
 {
+  nixGL = {
+    packages = nixgl.packages;
+    defaultWrapper = "mesa";
+  };
+
   imports = [
     ../common/cli-core
     ../common/dev
@@ -37,7 +42,43 @@ in
     gimp
     drawio
     inkscape
+
+    powerline-fonts
+    (nerdfonts.override { fonts = [ "DroidSansMono" "Iosevka" ]; })
+
+    zeal
   ];
+
+  fonts.fontconfig.enable = true;
+
+  programs.kitty = {
+    package = (config.lib.nixGL.wrap pkgs.kitty);
+    enable = true;
+    theme = "Gruvbox Material Dark Hard";
+    shellIntegration.mode = "disabled";
+    #theme = "Everforest Dark Hard";
+    settings = {
+      shell = "${pkgs.zsh}/bin/zsh";
+      # font_family = "Droid Sans Mono Slashed for Powerline";
+      font_family = "DejaVus Sans Mono Slashed for Powerline";
+      font_size = "10.0";
+      #background = "#050505";
+      confirm_os_window_close = "0";
+      color0 = "#151414"; # gruvbox's black is waaay too light
+      remember_window_size = "no";
+      initial_window_width = "100c";
+      initial_window_height = "25c";
+      cursor_shape = "block";
+      cursor_blink_interval = "0";
+
+      # improve input latency
+      # https://beuke.org/terminal-latency/#fn:2
+      repaint_delay = "8";
+      input_delay = "0";
+      sync_to_monitor = "no";
+    };
+  };
+  
 
   programs.eww = {
     enable = true;
@@ -109,12 +150,15 @@ in
       keybindings = lib.mkOptionDefault {
 
         #"${caps}+Return" = "exec ${pkgs.kitty}/bin/kitty";
-        "${caps}+Return" = "exec /usr/bin/kitty";
+        "${caps}+Return" = "exec ${(config.lib.nixGL.wrap pkgs.kitty)}/bin/kitty";
         #"${caps}+Return" = "kitty";
         "${win}+Return" = "exec /usr/bin/foot";
 
         # floating terminal (see float toggle in extraconfig)
-        "${caps}+Shift+Return" = "exec --no-startup-id /usr/bin/kitty --class kitty-floating";
+        "${caps}+Shift+Return" = "exec --no-startup-id ${(config.lib.nixGL.wrap pkgs.kitty)}/bin/kitty --class kitty-floating";
+
+        # local docs browser
+        "${caps}+slash" = "exec ${pkgs.zeal}/bin/zeal";
 
         # hjkl move focus between windows
         "${caps}+h" = "focus left";
