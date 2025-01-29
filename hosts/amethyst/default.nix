@@ -38,6 +38,9 @@
     firewall = {
       enable = true; # default
       allowedTCPPorts = [ 22 ];
+      allowedUDPPortRanges = [
+        { from = 34196; to = 34198; }  # factorio
+      ];
     };
   };
 
