@@ -29,7 +29,7 @@
 	q = "exit";
 	mx = "chmod +x";
 
-    # places
+  # places
 	lab = "cd ~/lab";
     scratch = "cd ~/lab/_env/scratchpad";
 	
@@ -51,4 +51,6 @@
 
   mm = "micromamba";
   conda = "micromamba";
+
+  rgf = "rg --files | rg";
 }
