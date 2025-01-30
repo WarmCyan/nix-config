@@ -53,4 +53,5 @@
   conda = "micromamba";
 
   rgf = "rg --files | rg";
+  ns = "nix-search --flake sys --no-pager";
 }
