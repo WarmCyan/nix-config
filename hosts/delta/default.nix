@@ -78,6 +78,7 @@
     ];
     shell = pkgs.zsh;
   };
+  programs.zsh.enable = true;
   users.groups.plugdev = {};
 
   # List packages installed in system profile. To search, run:
@@ -106,6 +107,11 @@
   # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
   services.xserver = {
     enable = true;
+
+    # https://discourse.nixos.org/t/how-to-start-i3-using-greetd/28028
+    # displayManager.sx.enable = true; # lightweight startx alternative
+    # displayManager.startx.enable = true;
+    
     displayManager.sddm.enable = true;
     displayManager.sddm.theme = "${(pkgs.fetchFromGitHub {
       owner = "WildfireXIII";
@@ -123,6 +129,24 @@
       }
     ];
   };
+
+  # services.greetd = {
+  #   enable = true;
+  #   # vt = config.services.xserver.tty;
+  #   restart = false; # should be disabled when using autologin
+  #   settings = {
+  #     default_session = {
+  #       command = lib.concatStringsSep " " [
+  #         "${pkgs.greetd.tuigreet}/bin/tuigreet"
+  #         "--remember"
+  #         "--asterisks"
+  #         "--time"
+  #         "--cmd ${pkgs.runtimeShell} $HOME/.xsession &"
+  #       ];
+  #       user = "greeter";
+  #     };
+  #   };
+  # };
   
   
   # enable using the caps lock key has Mod5

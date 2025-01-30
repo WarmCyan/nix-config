@@ -117,7 +117,7 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     
     # keeping around so if I ever need a specific nixpkgs commit, use this
     # nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
@@ -131,7 +131,7 @@
       # TODO: is there a way to see a list of changes to options in HM modules
       # that I use?
       # TODO: look into using nixvim instead of doing neovim through HM
-      url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs"; # unsure what this actually does. (It
       # makes it so that home-manager isn't downloading it's own set of nixpkgs,
       # we're "overriding" the nixpkgs input home-manager defines by default)
@@ -172,11 +172,23 @@
     # =================== NIXOS CONFIGURATIONS ==================
 
     nixosConfigurations = {
-      delta = mkSystem {
-        configName = "delta";
-        hostname = "delta";
-        system = "x86_64-linux";
-      };  
+      delta = lib.nixosSystem {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./hosts ];
+        specialArgs = {
+          inherit self inputs outputs;
+          stable = true;
+          configName = "delta";
+          hostname = "delta";
+          configLocation = "/home/dwl/lab/nix-config";
+          timezone = "America/New_York";
+        };
+      };
+      # delta = mkSystem {
+      #   configName = "delta";
+      #   hostname = "delta";
+      #   system = "x86_64-linux";
+      # };  
       # amethyst = mkSystem {
       #   configName = "amethyst";
       #   hostname = "amethyst";
