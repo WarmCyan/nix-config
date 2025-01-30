@@ -26,6 +26,77 @@ let
   inherit (builtins) readFile;
 in
 {
+
+  home.file.".snippets/package.json".text = readFile ./snippets/package.json;
+  home.file.".snippets/json.json".text = readFile ./snippets/json.json;
+  home.file.".snippets/python.json".text = readFile ./snippets/python.json;
+  home.file.".snippets/svelte.json".text = readFile ./snippets/svelte.json;
+  
+  home.file.".config/nvim/queries/comment/highlights.scm".text = ''
+;; extends
+((tag
+  (name) @TODO_todo @nospell
+    ((user) @constant)?
+  ":" @punctuation.delimiter)
+  (#any-of? @TODO_todo "TODO"))
+
+((tag
+  (name) @TODO_strt @nospell
+    ((user) @constant)?
+  ":" @punctuation.delimiter)
+  (#any-of? @TODO_strt "STRT"))
+
+((tag
+  (name) @TODO_wait @nospell
+    ((user) @constant)?
+  ":" @punctuation.delimiter)
+  (#any-of? @TODO_wait "WAIT"))
+
+((tag
+  (name) @TODO_done @nospell
+    ((user) @constant)?
+  ":" @punctuation.delimiter)
+  (#any-of? @TODO_done "DONE"))
+
+((tag
+  (name) @TODO_canc @nospell
+    ((user) @constant)?
+  ":" @punctuation.delimiter)
+  (#any-of? @TODO_canc "CANC"))
+
+((tag
+  (name) @NOTES_bug @nospell
+    ((user) @constant)?
+  ":" @punctuation.delimiter)
+  (#any-of? @NOTES_bug "BUG"))
+
+((tag
+  (name) @NOTES_fixd @nospell
+    ((user) @constant)?
+  ":" @punctuation.delimiter)
+  (#any-of? @NOTES_fixd "FIXD"))
+
+((tag
+  (name) @NOTES_idea @nospell
+    ((user) @constant)?
+  ":" @punctuation.delimiter)
+  (#any-of? @NOTES_idea "IDEA"))
+
+((tag
+  (name) @NOTES_note @nospell
+    ((user) @constant)?
+  ":" @punctuation.delimiter)
+  (#any-of? @NOTES_note "NOTE"))
+
+; ((tag
+;   (name) @TODO_strt @nospell
+;   ("(" @punctuation.bracket
+;     (user) @constant
+;     ")" @punctuation.bracket)?
+;   ":" @punctuation.delimiter)
+;   (#any-of? @TODO_strt "STRT"))
+  '';
+  
   programs.neovim = {
     enable = true;
     viAlias = true;
@@ -83,7 +154,8 @@ in
       cmp-path
 
       # -- Treesitter --
-      (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars)) # TODO: ??
+      # (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars)) # TODO: ??
+      nvim-treesitter.withAllGrammars
       cmp-treesitter
       
       # -- LSP --

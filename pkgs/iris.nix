@@ -8,7 +8,7 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "iris";
-  version = "1.1.0";
+  version = "1.1.1";
   description = "Management tool for my systems/nix-config flake.";
   usage = "iris {COMMAND:[(b|build)(e|edit)(n|new)(ls)(lsgen)(r|revert)]} {SYSTEMS:s/h} {CONFIG1} {CONFIG2} --yes --update\n\nExamples:\n\tiris b sh\n\tiris build s myconfig\n\tiris ls\n\tiris edit\n\tiris edit h phantom\n\tiris lsgen sh\n\tiris r sh 10 30\t# reverts system to system generation 10 and home to home generation 30";
   parameters = {
@@ -245,7 +245,7 @@ builders.writeTemplatedShellApplication {
           hm_profile_base="''${HOME}/.local/state/nix/profiles"
         fi
         
-        home-manager build --flake .\#"''${hm_config}"
+        home-manager build --flake .\#"''${hm_config}" --impure
         rm -f result-home
         mv result result-home
         nvd diff "''${hm_profile_base}/home-manager" result-home

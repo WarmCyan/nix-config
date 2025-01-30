@@ -10,6 +10,7 @@
     zip       # gotta be able to work with .zips
     unzip     # gotta be able to work with .zips
     gnumake   # ability to run makefiles
+    nix-search# faster than nix search
 
     # -- TUI tools --
     htop      # standard system cpu viewer

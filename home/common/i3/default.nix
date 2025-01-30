@@ -2,7 +2,8 @@
 
 { pkgs, lib, ... }:
 let 
-  caps = "Mod5";
+  #caps = "Mod5";
+  caps = "Mod3";
   win = "Mod4";
   alt = "Mod1";
 

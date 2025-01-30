@@ -50,4 +50,14 @@ in
       allowUnfree = true;
     };
   };
+
+  nix = {
+    registry = {
+      # https://discourse.nixos.org/t/local-flake-based-nix-search-nix-run-and-nix-shell/13433/13
+      sys = {
+        from = { type = "indirect"; id = "sys"; };
+        flake = inputs.nixpkgs;
+      };
+    };
+  };
 }
