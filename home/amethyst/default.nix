@@ -111,6 +111,8 @@
     # pipeworld-wrapped
     # durden
     # durden-wrapped
+
+    pluto
   ];
 
   home.sessionVariables = {
