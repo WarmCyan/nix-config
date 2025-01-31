@@ -122,7 +122,7 @@
   gtk = {
     enable = true;
     theme = {
-      package = pkgs.gnome.gnome-themes-extra;
+      package = pkgs.gnome-themes-extra;
       name = "Adwaita-dark";
     };
   };
@@ -252,7 +252,7 @@
   programs.kitty = {
     # package = pkgs.stable.kitty;
     enable = true;
-    theme = "Gruvbox Material Dark Hard";
+    themeFile = "GruvboxMaterialDarkHard";
     shellIntegration.mode = "disabled";
     #theme = "Everforest Dark Hard";
     settings = {
