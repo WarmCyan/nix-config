@@ -63,7 +63,8 @@
   programs.kitty = {
     package = (config.lib.nixGL.wrap pkgs.kitty);
     enable = true;
-    theme = "Gruvbox Material Dark Hard";
+    # theme = "Gruvbox Material Dark Hard";
+    themeFile = "GruvboxMaterialDarkHard";
     shellIntegration.mode = "disabled";
     #theme = "Everforest Dark Hard";
     settings = {
