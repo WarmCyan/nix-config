@@ -4,7 +4,7 @@
 {
   imports = [
     ../common/cli-core
-    ../common/dev
+    #../common/dev
   ];
 
   home.packages = with pkgs; [

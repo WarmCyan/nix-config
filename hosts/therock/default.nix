@@ -3,6 +3,7 @@
 { pkgs, lib, inputs, hostname, config, ... }: {
   imports = [
     ./hardware-configuration.nix
+    ../common/pipewire
   ];
 
   boot = {
@@ -72,18 +73,6 @@
     usbutils
   ];
 
-  # sound
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    jack.enable = true;
-  };
-
   # display
   services.xserver = {
     enable = true;
@@ -126,13 +115,49 @@
     enable = true;
     virtualHosts = {
       "grafana" = {
-        listen = [{port = 3000; addr="192.168.130.2";}];
+        listen = [{ port = 3000; addr="192.168.130.2"; }];
         locations."/" = {
           proxyPass = "http://192.168.1.3:3000/";
           recommendedProxySettings = true;
         };
       };
+      "service-index" = {
+        listen = [{ port = 80; addr = "192.168.130.2"; }];
+        locations."/" = {
+          root = "/etc/web";
+          tryFiles = "/index.html =404";
+          # alias = "/etc/services_index.html";
+        };
+      };
     };
+  };
+
+  environment.etc = {
+    "web/index.html".source = pkgs.writeText "index.html" /* html */ ''
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>DWLabs Wireguard Network</title>
+        <style>
+          body {
+            background-color: black;
+            color: white;
+            font-family: arial;
+          }
+          a {
+            color: #33AAFF;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>DWLabs Wireguard Network</h1>
+        <p>Services server on wireguard network is at 192.168.130.2</p>
+        <p><a href="http://192.168.130.2:3000">Grafana (3000)</a> - network/system monitoring</p>
+        <p><a href="http://192.168.130.2:7121">My files (7121)</a> - rclone webdav storage folder</p>
+        <p><a href="http://192.168.130.2:7124">Shared files (7124)</a> - rclone webdav storage folder</p>
+      </body>
+    </html>
+    '';
   };
 
   # power.ups = {
