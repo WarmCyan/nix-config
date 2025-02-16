@@ -11,9 +11,7 @@
     tcpdump
   ];
 
-  programs.git = {
-    signing.format = "openpgp";
-  };
+  programs.git.signing.format = "openpgp";
 
   programs.gpg = {
     enable = true;
