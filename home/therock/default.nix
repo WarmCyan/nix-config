@@ -11,7 +11,7 @@
     tcpdump
   ];
 
-  programs.git.signing.format = "openpgp";
+  # programs.git.signing.format = "openpgp"; # not a thing until 25.05
 
   programs.gpg = {
     enable = true;
