@@ -1,6 +1,15 @@
 # therock, system configuration for homeserver
 
-{ pkgs, lib, inputs, hostname, config, ... }: {
+{ pkgs, lib, inputs, hostname, config, ... }:
+let
+  portGrafana       = 3000;
+  portKiwix         = 4080;
+  portWebDavNathan  = 7121;
+  portWebDavMum     = 7122;
+  portWebDavSis     = 7123;
+  portWebDavShared  = 7124;
+in
+{
   imports = [
     ./hardware-configuration.nix
     ../common/pipewire
@@ -23,16 +32,23 @@
     firewall = {
       enable = true; # default
       allowedTCPPorts = [ 
-        22 
-        80 
-        443 
-        7121 # webdav: me
-        7122 # webdav: mum
-        7123 # webdav: sis
-        7124 # webdav: shared
-        3000 # grafana
-        #9001 # prometheus
-        #9002 # node exporter
+        22
+        80
+        443
+        portGrafana
+        portKiwix
+        portWebDavNathan
+        portWebDavMum
+        portWebDavSis
+        portWebDavShared
+        # 4080 # kiwix
+        # 7121 # webdav: me
+        # 7122 # webdav: mum
+        # 7123 # webdav: sis
+        # 7124 # webdav: shared
+        # 3000 # grafana
+        # 9001 # prometheus
+        # 9002 # node exporter
       ];
     };
   };
@@ -71,6 +87,7 @@
     wireguard-tools
     apacheHttpd
     usbutils
+    kiwix-tools
   ];
 
   # display
@@ -102,11 +119,11 @@
     settings = {
       server = {
         http_addr = "192.168.1.3";
-        http_port = 3000;
+        http_port = portGrafana;
         # domain = "therock.cyan.arpa";
         # root_url = "http://therock.cyan.arpa:3000/";
         domain = "192.168.1.3";
-        root_url = "http://192.168.1.3:3000/";
+        root_url = "http://192.168.1.3:${toString portGrafana}/";
       };
     };
   };
@@ -115,9 +132,9 @@
     enable = true;
     virtualHosts = {
       "grafana" = {
-        listen = [{ port = 3000; addr="192.168.130.2"; }];
+        listen = [{ port = portGrafana; addr="192.168.130.2"; }];
         locations."/" = {
-          proxyPass = "http://192.168.1.3:3000/";
+          proxyPass = "http://192.168.1.3:${toString portGrafana}/";
           recommendedProxySettings = true;
         };
       };
@@ -152,62 +169,19 @@
       <body>
         <h1>DWLabs Wireguard Network</h1>
         <p>Services server on wireguard network is at 192.168.130.2</p>
-        <p><a href="http://192.168.130.2:3000">Grafana (3000)</a> - network/system monitoring</p>
-        <p><a href="http://192.168.130.2:7121">My files (7121)</a> - rclone webdav storage folder</p>
-        <p><a href="http://192.168.130.2:7124">Shared files (7124)</a> - rclone webdav storage folder</p>
+        <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - Local wikipedia/zim wikis</p>
+        <p><a href="http://192.168.130.2:${toString portGrafana}">Grafana (${toString portGrafana})</a> - network/system monitoring</p>
+        <p><a href="http://192.168.130.2:${toString portWebDavNathan}">Nathan's files (${toString portWebDavNathan})</a> - rclone webdav storage folder</p>
+        <p><a href="http://192.168.130.2:${toString portWebDavSis}">Jackie's files (${toString portWebDavSis})</a> - rclone webdav storage folder</p>
+        <p><a href="http://192.168.130.2:${toString portWebDavMum}">Mum's files (${toString portWebDavMum})</a> - rclone webdav storage folder</p>
+        <p><a href="http://192.168.130.2:${toString portWebDavShared}">Shared files (${toString portWebDavShared})</a> - rclone webdav storage folder</p>
       </body>
     </html>
     '';
   };
 
-  # power.ups = {
-  #   enable = true;
-  #   mode = "netserver";
-  #   ups = {
-  #     usbups = {
-  #       driver = "usbhid-ups";
-  #       port = "auto";
-  #       description = "USB UPS";
-  #     };
-  #   };
-  # };
-   # environment.etc = {
-    #
-    # "nut/upsd.conf".source = pkgs.writeText "upsd.conf"
-    #   ''
-    #     LISTEN 127.0.0.1 3493
-    #   '';
-    # "nut/upsd.users".source = pkgs.writeText "upsd.users"
-    # ''
-    #   [upsmon]
-    #       password  = pass
-    #       upsmon primary
-    #       actions = set
-    #       actions = fsd
-    #       actions = test.panel.start
-    #       instcmds = ALL
-    # '';
-    #
-    # "nut/upsmon.conf".source = pkgs.writeText "upsmon.conf"
-    #   ''
-    #     MONITOR usbups@localhost 1 upsmon pass primary
-    #     MINSUPPLIES 1
-    #     SHUTDOWNCMD "${pkgs.systemd}/bin/systemctl poweroff"
-    #     POLLFREQ 5
-    #     POLLFREQALERT 5
-    #     HOSTSYNC 15
-    #     DEADTIME 15
-    #     POWERDOWNFLAG /etc/killpower
-    #     RBWARNTIME 43200
-    #     NOCOMMWARNTIME 300
-    #     FINALDELAY 5
-    #   '';
-    #
-    # };
-
   services.apcupsd.enable = true;
 
-  
   services.prometheus = {
     enable = true;
     port = 9001;
@@ -257,21 +231,6 @@
     };
 
     scrapeConfigs = [
-      # {
-      #   job_name = "nut";
-      #   metrics_path = "/ups_metrics";
-      #   params = {
-      #     ups = [ "usbups" ];
-      #   };
-      #   static_configs = [{
-      #     targets = [
-      #       "127.0.0.1:${toString config.services.prometheus.exporters.nut.port}"
-      #     ];
-      #     labels = {
-      #       ups = "usbups";
-      #     };
-      #   }];
-      # }
       {
         job_name = "apc";
         static_configs = [{
@@ -311,63 +270,21 @@
     ];
   };
 
+  systemd.services.kiwix = {
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" ];
+    requires = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "simple";
+      User = "dwl"; # change?
+      Group = "users"; # change?
+      Restart = "on-failure";
+      RestartSec = "30s";
+      Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
+      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.kiwix-tools}/bin/kiwix-serve -i 192.168.130.2 -p ${toString portKiwix} /home/dwl/zim/*'";
+    };
+  };
 
-  # services.nextcloud = {
-  #   enable = true;
-  #   package = pkgs.nextcloud27;
-  #   home = "/var/lib/nextcloud"; # default
-  #   datadir = "/var/lib/nextcloud"; # default
-  #
-  #   #hostName = "localhost";
-  #   hostName = "localhost";
-  #
-  #   config = {
-  #     dbtype = "pgsql";
-  #     dbuser = "nextcloud";
-  #     dbhost = "/run/postgresql";
-  #     dbname = "nextcloud";
-  #     dbpassFile = "/var/nextcloud-db-pass";
-  #   
-  #     adminpassFile = "/var/nextcloud-admin-pass";
-  #     adminuser = "admin";
-  #
-  #     extraTrustedDomains = [ "192.168.1.225" "therock" ];
-  #   };
-  #
-  #   maxUploadSize = "10G";
-  # };
-  #
-  #
-  # services.postgresql = {
-  #   enable = true;
-  #   ensureDatabases = [ "nextcloud" ];
-  #   ensureUsers = [
-  #     {
-  #       name = "nextcloud";
-  #       ensurePermissions."DATABASE nextcloud" = "ALL PRIVILEGES";
-  #     }
-  #   ];
-  #   # https://unix.stackexchange.com/questions/378711/how-do-i-configure-postgress-authorization-settings-in-nixos
-  #   authentication = lib.mkForce ''
-  #     # Generated file; do not edit!
-  #     # TYPE  DATABASE        USER            ADDRESS                 METHOD
-  #     local   all             all                                     trust
-  #     host    all             all             127.0.0.1/32            trust
-  #     host    all             all             ::1/128                 trust
-  #   '';
-  # };
-  #
-  #
-  #
-  #
-  # # ensure postgres is running before running the nextcloud setup
-  # systemd.services."nextcloud-setup" = {
-  #   requires = ["postgresql.service"];
-  #   after = ["postgresql.service"];
-  # };
-
-
-  
   systemd.services.rclone-webdav-nathan = {
     wantedBy = [ "multi-user.target" ];
     after = [ "network-online.target" ];
@@ -379,7 +296,7 @@
       Restart = "on-failure";
       RestartSec = "30s";
       Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
-      ExecStart = "${pkgs.rclone}/bin/rclone serve webdav --htpasswd /depository/htpasswd-nathan /depository/store --addr 192.168.130.2:7121 --no-modtime --log-level INFO --vfs-cache-mode full --vfs-disk-space-total-size 2000G --vfs-used-is-size";
+      ExecStart = "${pkgs.rclone}/bin/rclone serve webdav --htpasswd /depository/htpasswd-nathan /depository/store --addr 192.168.130.2:${toString portWebDavNathan} --no-modtime --log-level INFO --vfs-cache-mode full --vfs-disk-space-total-size 2000G --vfs-used-is-size";
     };
   };
   systemd.services.rclone-webdav-mum = {
@@ -393,7 +310,7 @@
       Restart = "on-failure";
       RestartSec = "30s";
       Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
-      ExecStart = "${pkgs.rclone}/bin/rclone serve webdav --htpasswd /depository/htpasswd-mum /depository/ext-webdav/karen --addr 192.168.130.2:7122 --no-modtime --log-level INFO";
+      ExecStart = "${pkgs.rclone}/bin/rclone serve webdav --htpasswd /depository/htpasswd-mum /depository/ext-webdav/karen --addr 192.168.130.2:${toString portWebDavMum} --no-modtime --log-level INFO";
     };
   };
   systemd.services.rclone-webdav-jackie = {
@@ -407,7 +324,7 @@
       Restart = "on-failure";
       RestartSec = "30s";
       Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
-      ExecStart = "${pkgs.rclone}/bin/rclone serve webdav --htpasswd /depository/htpasswd-jackie /depository/ext-webdav/jackie --addr 192.168.130.2:7123 --no-modtime --log-level INFO";
+      ExecStart = "${pkgs.rclone}/bin/rclone serve webdav --htpasswd /depository/htpasswd-jackie /depository/ext-webdav/jackie --addr 192.168.130.2:${toString portWebDavSis} --no-modtime --log-level INFO";
     };
   };
   systemd.services.rclone-webdav-shared = {
@@ -421,7 +338,7 @@
       Restart = "on-failure";
       RestartSec = "30s";
       Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
-      ExecStart = "${pkgs.rclone}/bin/rclone serve webdav /depository/ext-webdav/shared --addr 192.168.130.2:7124 --no-modtime --log-level INFO";
+      ExecStart = "${pkgs.rclone}/bin/rclone serve webdav /depository/ext-webdav/shared --addr 192.168.130.2:${toString portWebDavShared} --no-modtime --log-level INFO";
     };
   };
 
