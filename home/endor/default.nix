@@ -4,5 +4,5 @@
 {
   imports = [
     ../common/cli-core
-  ]
+  ];
 }

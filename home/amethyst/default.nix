@@ -258,9 +258,11 @@
     shellIntegration.mode = "disabled";
     #theme = "Everforest Dark Hard";
     settings = {
-      font_family = "Droid Sans Mono Slashed for Powerline";
-      font_size = "9.0";
+      # font_family = "Droid Sans Mono Slashed for Powerline";
+      # font_size = "9.0";
       #background = "#050505";
+      font_family = "DejaVus Sans Mono Slashed for Powerline";
+      font_size = "10.0";
       confirm_os_window_close = "0";
       color0 = "#151414"; # gruvbox's black is waaay too light
       remember_window_size = "no";
