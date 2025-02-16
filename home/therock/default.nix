@@ -11,6 +11,14 @@
     tcpdump
   ];
 
+  programs.git = {
+    signing.format = "openpgp";
+  };
+
+  programs.gpg = {
+    enable = true;
+  };
+
   home.sessionVariables = {
     EDITOR = "nvim";
   };
