@@ -53,6 +53,13 @@ in
     };
   };
 
+  # https://discourse.nixos.org/t/cant-get-gnupg-to-work-no-pinentry/15373
+  services.pcscd.enable = true;
+  programs.gnupg.agent = {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-curses;
+  };
+
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
@@ -88,6 +95,8 @@ in
     apacheHttpd
     usbutils
     kiwix-tools
+
+    pinentry-curses
   ];
 
   # display
