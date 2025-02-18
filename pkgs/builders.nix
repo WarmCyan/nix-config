@@ -168,8 +168,8 @@
     # "-t" "--testing"; option = false ] } }
     initColors ? false,
     parameterParser ? true,
-    runtimeInputs ? [ ]
-    
+    runtimeInputs ? [ ],
+    exitOnError ? true,
   }:
   let 
     resolved_params = expandParameters parameters version parameterParser;
@@ -197,7 +197,7 @@
       # License: MIT
       # ===============================================================
       
-      set -o errexit
+      ${if exitOnError then "set -o errexit" else ""}
       set -o nounset
       set -o pipefail
 

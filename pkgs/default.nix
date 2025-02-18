@@ -12,6 +12,7 @@
   mic-monitor = pkgs.callPackage ./mic-monitor.nix { inherit pkgs builders; };
   td-state = pkgs.callPackage ./td-state.nix { inherit builders; };
   engilog = pkgs.callPackage ./engilog.nix { inherit builders; };
+  cg = pkgs.callPackage ./cg.nix { inherit builders; };
 
   gifify = pkgs.callPackage ./gifify.nix { inherit builders; };
 
