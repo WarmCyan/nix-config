@@ -113,6 +113,9 @@
     # durden-wrapped
 
     pluto
+
+    cg
+    pandoc_3_5
   ];
 
   home.sessionVariables = {
