@@ -14,6 +14,10 @@
     ../common/beta
   ];
 
+  home.sessionVariables = {
+    MANPAGER = "nvim +Man!";
+  };
+
   # programs.neovim = {
   #   # package = pkgs.stable.neovim;
   #
@@ -46,6 +50,9 @@
     powerline-fonts
     (nerdfonts.override { fonts = [ "Iosevka" "Inconsolata" ]; })
     (config.lib.nixGL.wrap alacritty)
+
+
+    cg
   ];
 
   programs.vscode = {
