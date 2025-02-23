@@ -8,6 +8,7 @@ let
   portWebDavMum     = 7122;
   portWebDavSis     = 7123;
   portWebDavShared  = 7124;
+  portInternalWC    = 8000;
 in
 {
   imports = [
@@ -41,6 +42,7 @@ in
         portWebDavMum
         portWebDavSis
         portWebDavShared
+        portInternalWC
         # 4080 # kiwix
         # 7121 # webdav: me
         # 7122 # webdav: mum
@@ -63,7 +65,7 @@ in
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "nginx" "networkmanager" "wheel" ];
     packages = with pkgs; [
       firefox
       kate
@@ -97,6 +99,8 @@ in
     kiwix-tools
 
     pinentry-curses
+    pandoc_3_5
+    python3
   ];
 
   # display
@@ -155,6 +159,12 @@ in
           # alias = "/etc/services_index.html";
         };
       };
+      "internal-warmcyan" = {
+        listen = [{ port = portInternalWC; addr = "192.168.130.2"; }];
+        locations."/" = {
+          root = "/www/html";
+        };
+      };
     };
   };
 
@@ -178,12 +188,13 @@ in
       <body>
         <h1>DWLabs Wireguard Network</h1>
         <p>Services server on wireguard network is at 192.168.130.2</p>
-        <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - Local wikipedia/zim wikis</p>
         <p><a href="http://192.168.130.2:${toString portGrafana}">Grafana (${toString portGrafana})</a> - network/system monitoring</p>
+        <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - Local wikipedia/zim wikis</p>
         <p><a href="http://192.168.130.2:${toString portWebDavNathan}">Nathan's files (${toString portWebDavNathan})</a> - rclone webdav storage folder</p>
         <p><a href="http://192.168.130.2:${toString portWebDavSis}">Jackie's files (${toString portWebDavSis})</a> - rclone webdav storage folder</p>
         <p><a href="http://192.168.130.2:${toString portWebDavMum}">Mum's files (${toString portWebDavMum})</a> - rclone webdav storage folder</p>
         <p><a href="http://192.168.130.2:${toString portWebDavShared}">Shared files (${toString portWebDavShared})</a> - rclone webdav storage folder</p>
+        <p><a href="http://192.168.130.2:${toString portInternalWC}">Internal warmcyan.eco (${toString portInternalWC})</a> - local version of warmcyan.eco for testing</p>
       </body>
     </html>
     '';
