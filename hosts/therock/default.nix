@@ -2,6 +2,9 @@
 
 { pkgs, lib, inputs, hostname, config, ... }:
 let
+  portMiniflux      = 2000;
+  # portFreshRSS      = 2025;
+  portTTRSS         = 2030;
   portGrafana       = 3000;
   portKiwix         = 4080;
   portWebDavNathan  = 7121;
@@ -43,6 +46,9 @@ in
         portWebDavSis
         portWebDavShared
         portInternalWC
+        # portFreshRSS
+        portTTRSS
+        portMiniflux
         # 4080 # kiwix
         # 7121 # webdav: me
         # 7122 # webdav: mum
@@ -126,6 +132,49 @@ in
     };
   };
 
+  services.miniflux = {
+    enable = true;
+    adminCredentialsFile = "/etc/miniflux.env";
+    config = {
+      LISTEN_ADDR = "192.168.130.2:${toString portMiniflux}";
+      BASE_URL = "http://192.168.130.2:${toString portMiniflux}/";
+      METRICS_ALLOWED_NETWORKS = "127.0.0.1/8,192.168.130.1/8";
+      METRICS_COLLECTOR = "1";
+    };
+  };
+
+  services.tt-rss = {
+    enable = true;
+    virtualHost = "ttrss";
+    selfUrlPath = "http://192.168.130.2:${toString portTTRSS}";
+    themePackages = [ pkgs.tt-rss-theme-feedly ];
+    pluginPackages = [
+      # pkgs.tt-rss-plugin-feediron
+      pkgs.tt-rss-plugin-freshapi
+      pkgs.tt-rss-plugin-close-button
+    ];
+    plugins = [
+      "auth_internal"
+      "note"
+      "toggle_sidebar"
+      "close_button"
+    ];
+  };
+  #
+  # services.freshrss = {
+  #   enable = true;
+  #   baseUrl = "http://192.168.130.2:${toString portFreshRSS}";
+  #   # dataDir = "/depository/freshrss"
+  #   passwordFile = "/run/secrets/freshrss";
+  #   virtualHost = "freshrss";
+  #   database = {
+  #     type = "sqlite";
+  #   };
+  #   extensions = with pkgs.freshrss-extensions; [
+  #     youtube
+  #     title-wrap
+  #   ];
+  # };
 
   services.grafana = {
     enable = true;
@@ -144,6 +193,26 @@ in
   services.nginx = {
     enable = true;
     virtualHosts = {
+      "ttrss" = {
+        listen = [{ port = portTTRSS; addr="192.168.130.2"; }];
+
+        # this is necessary for freshapi
+        locations."~ /plugins\\.local/.*/api/.*\\.php(/|$)" = {
+        extraConfig = ''
+          fastcgi_split_path_info ^(.+\.php)(/.+)$;
+          try_files $fastcgi_script_name =404;
+          set $path_info $fastcgi_path_info;
+          fastcgi_param PATH_INFO $path_info;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          fastcgi_pass unix:/run/phpfpm/tt-rss.sock;
+          include ${config.services.nginx.package}/conf/fastcgi_params;
+          fastcgi_index index.php;
+          '';
+       };
+      };
+      # "freshrss" = {
+      #   listen = [{ port = portFreshRSS; addr="192.168.130.2"; }];
+      # };
       "grafana" = {
         listen = [{ port = portGrafana; addr="192.168.130.2"; }];
         locations."/" = {
@@ -188,8 +257,9 @@ in
       <body>
         <h1>DWLabs Wireguard Network</h1>
         <p>Services server on wireguard network is at 192.168.130.2</p>
+        <p><a href="http://192.168.130.2:${toString portTTRSS}">Tiny Tiny RSS (${toString portTTRSS})</a> - RSS/Feed reader</p>
         <p><a href="http://192.168.130.2:${toString portGrafana}">Grafana (${toString portGrafana})</a> - network/system monitoring</p>
-        <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - Local wikipedia/zim wikis</p>
+        <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - local wikipedia/zim wikis</p>
         <p><a href="http://192.168.130.2:${toString portWebDavNathan}">Nathan's files (${toString portWebDavNathan})</a> - rclone webdav storage folder</p>
         <p><a href="http://192.168.130.2:${toString portWebDavSis}">Jackie's files (${toString portWebDavSis})</a> - rclone webdav storage folder</p>
         <p><a href="http://192.168.130.2:${toString portWebDavMum}">Mum's files (${toString portWebDavMum})</a> - rclone webdav storage folder</p>
