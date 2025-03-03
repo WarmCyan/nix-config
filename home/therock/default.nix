@@ -64,6 +64,9 @@
   git pull
   rm -rf /home/dwl/lab/warmcyan.eco/*
   ./export.sh /home/dwl/lazuli /home/dwl/lab/warmcyan.eco
+  popd
+
+  pushd /home/dwl/lab/warmcyan.eco
   export GPG_TTY=$(tty)
   git add -A
   git commit -S
