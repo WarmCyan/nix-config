@@ -91,7 +91,7 @@ in
 
         "${win}+l" = "exec betterlockscreen --lock blur";
 
-        "${caps}+c" = "exec firefox";
+        "${caps}+c" = "exec librewolf";
 
         "${caps}+m" = "exec pcmanfm -n";
 

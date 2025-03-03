@@ -177,10 +177,7 @@
     isNormalUser = true;
     description = "Nathan";
     extraGroups = [ "networkmanager" "wheel" "docker" ];
-    packages = with pkgs; [
-      firefox
-      kate
-    ];
+    packages = with pkgs; [ ];
     shell = pkgs.zsh;
   };
 

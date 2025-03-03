@@ -21,4 +21,56 @@
   home.sessionVariables = {
     EDITOR = "nvim";
   };
+
+  home.file."generate-warmcyan.sh".text = /* bash */ ''
+  #!/usr/bin/env bash
+
+  if [[ ! -d /home/dwl/lazuli ]]; then
+    git clone git@github.com:WarmCyan/lazuli.git
+  fi
+
+  if [[ ! -d /home/dwl/lab/obsidian-web-exporter ]]; then
+    pushd /home/dwl/lab
+    git clone git@github.com:WarmCyan/obsidian-web-exporter.git
+    popd
+  fi
+
+  pushd /home/dwl/lazuli
+  git pull
+  popd
+
+  pushd /home/dwl/lab/obsidian-web-exporter
+  git pull
+  rm -rfd /www/html/*
+  ./export.sh /home/dwl/lazuli /www/html
+  chgrp -R nginx /www/html
+  popd
+  '';
+
+  home.file."publish-warmcyan.sh".text = /* bash */ ''
+  #!/usr/bin/env bash
+
+  if [[ ! -d /home/dwl/lab/warmcyan.eco ]]; then
+    pushd /home/dwl/lab
+    git clone git@github.com:WarmCyan/warmcyan.eco.git
+    popd
+  fi
+
+  pushd /home/dwl/lazuli
+  git pull
+  popd
+
+  pushd /home/dwl/lab/obsidian-web-exporter
+  git pull
+  rm -rf /home/dwl/lab/warmcyan.eco/*
+  ./export.sh /home/dwl/lazuli /home/dwl/lab/warmcyan.eco
+  popd
+
+  pushd /home/dwl/lab/warmcyan.eco
+  export GPG_TTY=$(tty)
+  git add -A
+  git commit -S
+  git push
+  popd
+  '';
 }
