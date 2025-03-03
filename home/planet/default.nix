@@ -47,6 +47,7 @@ in
     (nerdfonts.override { fonts = [ "DroidSansMono" "Iosevka" ]; })
 
     zeal
+    cg
   ];
 
   fonts.fontconfig.enable = true;
