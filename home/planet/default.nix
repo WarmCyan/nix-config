@@ -48,6 +48,8 @@ in
 
     zeal
     cg
+
+    # firefox
   ];
 
   fonts.fontconfig.enable = true;
@@ -80,9 +82,11 @@ in
     };
   };
   
-  programs.librewolf = {
+  # programs.librewolf = {
+  programs.firefox = {
     # https://nixos.wiki/wiki/Librewolf
     enable = true;
+    # package = pkgs.unstable.librewolf;
     policies = {
       DisableTelemetry = true;
       DisableFirefoxStudies = true;
@@ -214,7 +218,7 @@ in
 
         "${win}+l" = "exec betterlockscreen --lock blur";
 
-        "${caps}+c" = "exec librewolf";
+        "${caps}+c" = "exec ${pkgs.firefox}/bin/firefox";
 
         "${caps}+m" = "exec pcmanfm -n";
 
