@@ -118,6 +118,18 @@
     pandoc_3_5
   ];
 
+  xsession.windowManager.i3 = {
+    config = {
+      startup = [
+        {
+          command = "systemctl --user restart polybar.service";
+          always = true;
+          notification = false;
+        }
+      ];
+    };
+  };
+
   home.sessionVariables = {
     TERMINAL = "kitty";
     EDITOR = "nvim";

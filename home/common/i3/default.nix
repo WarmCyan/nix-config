@@ -1,6 +1,6 @@
 # NOTE: explore https://github.com/adi1090x/rofi for good rofi stuff!
 
-{ pkgs, lib, ... }:
+{ pkgs, lib, colorActive ? "FF9866", colorInactive ? "343332", ... }:
 let 
   #caps = "Mod5";
   caps = "Mod3";
@@ -13,7 +13,6 @@ in
   xsession.enable = true;
   xsession.windowManager.i3 = {
     enable = true;
-    #package = pkgs.i3-gaps;
 
     config = rec {
       modifier = caps;
@@ -40,25 +39,25 @@ in
 
       colors = {
         focused = {
-          border = "#FF9866FF";
-          background = "#FF9866FF";
+          border = "#${colorActive}FF";
+          background = "#${colorActive}FF";
           text = "#000000";
           indicator = "#FF000000";
-          childBorder = "#FF9866FF";
+          childBorder = "#${colorActive}FF";
         };
         unfocused = {
-          border = "#343332FF";
-          background = "#343332FF";
+          border = "#${colorInactive}FF";
+          background = "#${colorInactive}FF";
           text = "#FFFFFF";
           indicator = "#FF000000";
-          childBorder = "#343332FF";
+          childBorder = "#${colorInactive}FF";
         };
         focusedInactive = {
-          border = "#343332FF";
-          background = "#343332FF";
+          border = "#${colorInactive}FF";
+          background = "#${colorInactive}FF";
           text = "#FFFFFF";
           indicator = "#FF000000";
-          childBorder = "#343332FF";
+          childBorder = "#${colorInactive}FF";
         };
       };
 
@@ -67,6 +66,7 @@ in
       keybindings = lib.mkOptionDefault {
 
         "${caps}+Return" = "exec ${pkgs.kitty}/bin/kitty";
+        "${alt}+Return" = "exec i3-sensible-terminal";  # emergency broken-caps-lock
 
         # floating terminal (see float toggle in extraconfig)
         "${caps}+Shift+Return" = "exec --no-startup-id ${pkgs.kitty}/bin/kitty --class kitty-floating";
@@ -89,7 +89,7 @@ in
         
         "${caps}+q" = "kill";
 
-        "${win}+l" = "exec betterlockscreen --lock blur";
+        # "${win}+l" = "exec betterlockscreen --lock blur";
 
         "${caps}+c" = "exec librewolf";
 
@@ -111,48 +111,11 @@ in
       };
       
       startup = [
-        # {
-        #   command = "betterlockscreen -u ~/.background-image --fx blur --blur 1.0";
-        #   always = false;
-        #   notification = false;
-        # }
-        # 1, 3, 10, 1
-
-        # for some weird reason, it starts with an odd set of workspaces open
-        # (10 on the main one), so rejigger them a bit.
-        {
-          command = "exec i3-msg workspace 1";
-          always = true;
-          notification = false;
-        }
-        {
-          command = "exec i3-msg workspace 3";
-          always = true;
-          notification = false;
-        }
-        {
-          command = "exec i3-msg workspace 10";
-          always = true;
-          notification = false;
-        }
-        {
-          command = "exec i3-msg workspace 1";
-          always = true;
-          notification = false;
-        }
-        
-        {
-          command = "systemctl --user restart polybar.service";
-          always = true;
-          notification = false;
-        }
         {
           command = "${pkgs.feh}/bin/feh --bg-fill ~/.background-image";
           always = true;
           notification = false;
         }
-        # TODO: need a set-wallpaper command, that runs the betterlockscreen -u .background-image --fx blur
-        # cache thingy
       ];
     };
 
