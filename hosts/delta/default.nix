@@ -18,6 +18,7 @@
   # https://github.com/NixOS/nixpkgs/issues/106461 (will want to abstract some
   # of these into a module)
   boot.blacklistedKernelModules = [ "dvb_usb_rtl28xxu" ];
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   networking = {
     useDHCP = false; # I think networkmanager does this
@@ -88,6 +89,8 @@
     # necessary for sddm theme
     libsForQt5.qt5.qtquickcontrols
     libsForQt5.qt5.qtgraphicaleffects
+    xorg.xbacklight
+    brightnessctl
   ];
   
   programs.nix-ld.enable = true;

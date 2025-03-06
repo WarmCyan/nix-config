@@ -1,4 +1,4 @@
-{ pkgs, self, gitUsername, gitEmail, ... }: 
+{ pkgs, self, gitUsername, gitEmail, ... }:
 
 let
   inherit (builtins) readFile;

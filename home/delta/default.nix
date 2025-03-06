@@ -47,6 +47,8 @@
 
     julia-bin
     pluto
+    pandoc
+    jq
   ];
   
   home.sessionVariables = {
