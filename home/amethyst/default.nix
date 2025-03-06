@@ -92,7 +92,7 @@
 
     # -- other --
     unstable.anki-bin   # spaced repetition software
-    chromium            # for the times firefox doesn't cut it
+    # chromium            # for the times firefox doesn't cut it
     libreoffice-qt      # office suite
     calibre             # ebook library
     obsidian            # knowledge management
@@ -111,7 +111,24 @@
     # pipeworld-wrapped
     # durden
     # durden-wrapped
+
+    pluto
+
+    cg
+    pandoc_3_5
   ];
+
+  xsession.windowManager.i3 = {
+    config = {
+      startup = [
+        {
+          command = "systemctl --user restart polybar.service";
+          always = true;
+          notification = false;
+        }
+      ];
+    };
+  };
 
   home.sessionVariables = {
     TERMINAL = "kitty";
@@ -122,7 +139,7 @@
   gtk = {
     enable = true;
     theme = {
-      package = pkgs.gnome.gnome-themes-extra;
+      package = pkgs.gnome-themes-extra;
       name = "Adwaita-dark";
     };
   };
@@ -252,13 +269,15 @@
   programs.kitty = {
     # package = pkgs.stable.kitty;
     enable = true;
-    theme = "Gruvbox Material Dark Hard";
+    themeFile = "GruvboxMaterialDarkHard";
     shellIntegration.mode = "disabled";
     #theme = "Everforest Dark Hard";
     settings = {
-      font_family = "Droid Sans Mono Slashed for Powerline";
-      font_size = "9.0";
+      # font_family = "Droid Sans Mono Slashed for Powerline";
+      # font_size = "9.0";
       #background = "#050505";
+      font_family = "DejaVus Sans Mono Slashed for Powerline";
+      font_size = "10.0";
       confirm_os_window_close = "0";
       color0 = "#151414"; # gruvbox's black is waaay too light
       remember_window_size = "no";
@@ -280,6 +299,42 @@
     theme = "gruvbox-dark-hard";
     location = "top-left";
     yoffset = 25;
+  };
+
+  programs.librewolf = {
+    # https://nixos.wiki/wiki/Librewolf
+    enable = true;
+    policies = {
+      DisableTelemetry = true;
+      DisableFirefoxStudies = true;
+      DisplayBookmarksToolbar = "never";
+      Preferences = {
+        "privacy.resistFingerprinting.letterboxing" = true;
+        "browser.safebrowsing.downloads.enabled" = true;
+        "browser.compactmode.show" = true;
+        "cookiebanners.service.mode" = 2;
+        "privacy.donottrackheader.enabled" = true;
+      };
+      ExtensionSettings = {
+        # go to about:support to find extension IDs
+        "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
+          installation_mode = "force_installed";
+        };
+        "{d7742d87-e61d-4b78-b8a1-b469842139fa}" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-ff/latest.xpi";
+          installation_mode = "force_installed";
+        };
+        "search@kagi.com" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/kagi-search-for-firefox/latest.xpi";
+          installation_mode = "force_installed";
+        };
+        "addon@darkreader.org" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
+          installation_mode = "force_installed";
+        };
+      };
+    };
   };
 
   # https://github.com/nix-community/home-manager/issues/3113 (and psensor?)

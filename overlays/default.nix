@@ -104,6 +104,17 @@
       };
     };
 
+    tt-rss-theme-feedly = prev.tt-rss-theme-feedly.overrideAttrs
+      (_oldAttrs: rec {
+        src = prev.fetchFromGitHub {
+          owner = "levito";
+          repo = "tt-rss-feedly-theme";
+          rev = "9b50cee70e1ed77d27a273e267c2f50455a23e6f";
+          sha256 = "sha256-0U2APDh++U7qWwv9ky9nEZ8WvsSbWBTSUwqQqkIkaqU=";
+        };
+      });
+      
+
   };
   
   # don't need anymore because it's been updated

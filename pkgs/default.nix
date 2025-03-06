@@ -5,12 +5,17 @@
   builders = import ./builders.nix { inherit pkgs lib; };
 
   add-jupyter-env = pkgs.callPackage ./add-jupyter-env.nix { };
+  gpg-without-tty = pkgs.callPackage ./gpg-without-tty.nix { };
+
+  tt-rss-plugin-freshapi = pkgs.callPackage ./freshapi.nix { };
+  tt-rss-plugin-close-button = pkgs.callPackage ./tt-close-btn.nix { };
 
   iris = pkgs.callPackage ./iris.nix { inherit pkgs builders; };
   sri-hash = pkgs.callPackage ./sri-hash.nix { inherit builders; };
   mic-monitor = pkgs.callPackage ./mic-monitor.nix { inherit pkgs builders; };
   td-state = pkgs.callPackage ./td-state.nix { inherit builders; };
   engilog = pkgs.callPackage ./engilog.nix { inherit builders; };
+  cg = pkgs.callPackage ./cg.nix { inherit builders; };
 
   gifify = pkgs.callPackage ./gifify.nix { inherit builders; };
 
