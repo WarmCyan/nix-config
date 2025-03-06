@@ -10,6 +10,7 @@
     
     ../common/i3
     ../common/polybar
+    ../common/kitty
 
     ../common/music
   ];
@@ -50,6 +51,12 @@
     pandoc
     jq
   ];
+
+  desktop.i3 = {
+    enable = true;
+    colorActive = "667b59";
+    colorInactive = "323433";
+  };
   
   home.sessionVariables = {
     TERMINAL = "kitty";
@@ -70,30 +77,6 @@
     platformTheme = "gtk";
     style = {
       name = "adwaita-dark";
-    };
-  };
-
-  programs.kitty = {
-    enable = true;
-    theme = "Gruvbox Material Dark Hard";
-    #theme = "Everforest Dark Hard";
-    shellIntegration.mode = "disabled";
-    settings = {
-      font_family = "Droid Sans Mono Slashed for Powerline";
-      font_size = "9.0";
-      #background = "#050505";
-      confirm_os_window_close = "0";
-      color0 = "#151414"; # gruvbox's black is waaay too light
-      remember_window_size = "no";
-      initial_window_width = "100c";
-      initial_window_height = "25c";
-      cursor_shape = "block";
-      cursor_blink_interval = "0";
-
-      # https://beuke.org/terminal-latency/#fn:2
-      repaint_delay = "8";
-      input_delay = "0";
-      sync_to_monitor = "no";
     };
   };
 
