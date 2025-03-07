@@ -48,9 +48,11 @@
 	gd = "git pull";
 	gl = "git log --oneline -n 10";
 
-
-  mm = "micromamba";
+  # conda/micromamba
   conda = "micromamba";
+  mm = "micromamba";
+  mma = "micromamba activate";
+  mmi = "micromamba install";
 
   rgf = "rg --files | rg";
   ns = "nix-search --flake sys --no-pager";

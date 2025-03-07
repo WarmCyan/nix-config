@@ -83,6 +83,7 @@ in
         terminal = "${pkgs.kitty}/bin/kitty";
 
         keybindings = lib.mkOptionDefault {
+        # keybindings = {
 
           "${caps}+Return" = "exec ${pkgs.kitty}/bin/kitty";
           "${alt}+Return" = "exec i3-sensible-terminal";  # emergency broken-caps-lock

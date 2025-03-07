@@ -24,7 +24,21 @@ in
     ../common/vscode
     ../common/beta
     ../common/i3
+    ../common/kitty
   ];
+
+  programs.kitty = {
+    package = (config.lib.nixGL.wrap pkgs.kitty);
+    settings = {
+      shell = "zsh";
+    };
+  };
+
+  desktop.i3 = {
+    enable = true;
+    colorActive = colorActive;
+    colorInactive = colorInactive;
+  };
 
   xsession = {
     profileExtra = /* bash */ ''
@@ -52,8 +66,8 @@ in
         ];
         
         #terminal = "${pkgs.kitty}/bin/kitty";
-        keybindings = {
-          "${caps}+c" = "exec firefox";
+        keybindings = lib.mkOptionDefault {
+          "${caps}+c" = lib.mkForce "exec firefox";
 
           "${caps}+slash" = "exec ${pkgs.zeal}/bin/zeal";
           "${win}+l" = "exec i3lock -i /home/81n/.lock-background-image.png";
@@ -61,6 +75,11 @@ in
         startup = [
           {
             command = "${pkgs.kbd-capslock}/bin/kbd-capslock";
+            always = true;
+            notification = false;
+          }
+          {
+            command = "${pkgs.kitty}/bin/kitty";
             always = true;
             notification = false;
           }
@@ -117,6 +136,12 @@ in
     pcmanfm
     lxappearance
   ];
+
+  qt = {
+    enable = true;
+    platformTheme = "gtk";
+    style = { name = "adwaita-dark"; };
+  };
   
   # still no luck :(
   # programs.librewolf = {
@@ -163,34 +188,5 @@ in
   programs.wezterm = {
     enable = true;
     package = (config.lib.nixGL.wrap pkgs.wezterm);
-  };
-
-  programs.kitty = {
-    package = (config.lib.nixGL.wrap pkgs.kitty);
-    enable = true;
-    # theme = "Gruvbox Material Dark Hard";
-    themeFile = "GruvboxMaterialDarkHard";
-    shellIntegration.mode = "disabled";
-    #theme = "Everforest Dark Hard";
-    settings = {
-      shell = "zsh";
-      # font_family = "Droid Sans Mono Slashed for Powerline";
-      font_family = "DejaVus Sans Mono Slashed for Powerline";
-      font_size = "10.0";
-      #background = "#050505";
-      confirm_os_window_close = "0";
-      color0 = "#151414"; # gruvbox's black is waaay too light
-      remember_window_size = "no";
-      initial_window_width = "100c";
-      initial_window_height = "25c";
-      cursor_shape = "block";
-      cursor_blink_interval = "0";
-
-      # improve input latency
-      # https://beuke.org/terminal-latency/#fn:2
-      repaint_delay = "8";
-      input_delay = "0";
-      sync_to_monitor = "no";
-    };
   };
 }
