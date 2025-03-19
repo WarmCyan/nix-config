@@ -7,6 +7,8 @@
   add-jupyter-env = pkgs.callPackage ./add-jupyter-env.nix { };
   gpg-without-tty = pkgs.callPackage ./gpg-without-tty.nix { };
 
+  git-bak = pkgs.callPackage ./git-bak.nix { inherit builders; };
+
   tt-rss-plugin-freshapi = pkgs.callPackage ./freshapi.nix { };
   tt-rss-plugin-close-button = pkgs.callPackage ./tt-close-btn.nix { };
 

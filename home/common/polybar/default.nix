@@ -188,8 +188,8 @@ in {
       "module/mpd-controls" = {
         type = "internal/mpd";
 
-        format-online = "<icon-prev> <toggle> <icon-next> ";
-        format-offline = "<icon-prev> <toggle> <icon-next> ";
+        format-online = "<icon-prev> <toggle> <icon-next>  ";
+        format-offline = "(MPD offline)";
         
         format-online-background = "${cPrimary}";
         format-online-foreground = "${cBackground}";
@@ -254,7 +254,7 @@ in {
 
       "module/power" = {
         type = "custom/script";
-        label = " %output% ";
+        label = "  %output% ";
         exec = "${pkgs.batt}/bin/batt";
         interval = 30;
         format-foreground = "#FFFFFF";
