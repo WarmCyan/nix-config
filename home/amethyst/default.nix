@@ -136,8 +136,9 @@
     '';
   };
 
-  desktop.i3 = {
-    enable = true;
+  desktop = {
+    i3.enable = true;
+    polybar.enable = true;
   };
 
   home.sessionVariables = {
