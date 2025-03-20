@@ -68,6 +68,7 @@
       enable = true;
       colorActive = "667b59";
       colorInactive = "323433";
+      browser = "firefox";
     };
     polybar = {
       enable = true;
