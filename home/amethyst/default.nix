@@ -34,6 +34,7 @@
 
     ../common/i3
     ../common/polybar
+    ../common/kitty
 
     ../common/discord
 
@@ -128,6 +129,16 @@
         }
       ];
     };
+    extraConfig = ''
+        workspace 1 output DP-4
+        workspace 2 output DP-1
+        workspace 3 output DP-2
+    '';
+  };
+
+  desktop = {
+    i3.enable = true;
+    polybar.enable = true;
   };
 
   home.sessionVariables = {
@@ -264,34 +275,6 @@
     return config
     '';
     
-  };
-
-  programs.kitty = {
-    # package = pkgs.stable.kitty;
-    enable = true;
-    themeFile = "GruvboxMaterialDarkHard";
-    shellIntegration.mode = "disabled";
-    #theme = "Everforest Dark Hard";
-    settings = {
-      # font_family = "Droid Sans Mono Slashed for Powerline";
-      # font_size = "9.0";
-      #background = "#050505";
-      font_family = "DejaVus Sans Mono Slashed for Powerline";
-      font_size = "10.0";
-      confirm_os_window_close = "0";
-      color0 = "#151414"; # gruvbox's black is waaay too light
-      remember_window_size = "no";
-      initial_window_width = "100c";
-      initial_window_height = "25c";
-      cursor_shape = "block";
-      cursor_blink_interval = "0";
-
-      # improve input latency
-      # https://beuke.org/terminal-latency/#fn:2
-      repaint_delay = "8";
-      input_delay = "0";
-      sync_to_monitor = "no";
-    };
   };
 
   programs.rofi = {

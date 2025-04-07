@@ -24,6 +24,10 @@ in
       type = types.str;
       default = "343332";
     };
+    browser = mkOption {
+      type = types.str;
+      default = "librewolf";
+    };
   };
 
 
@@ -111,7 +115,7 @@ in
 
           # "${win}+l" = "exec betterlockscreen --lock blur";
 
-          "${caps}+c" = "exec librewolf";
+          "${caps}+c" = "exec ${cfg.browser}";
 
           "${caps}+m" = "exec pcmanfm -n";
 

@@ -52,10 +52,30 @@
     jq
   ];
 
-  desktop.i3 = {
-    enable = true;
-    colorActive = "667b59";
-    colorInactive = "323433";
+  xsession.windowManager.i3 = {
+    config = {
+      startup = [
+        {
+          command = "systemctl --user restart polybar.service";
+          always = true;
+          notification = false;
+        }
+      ];
+    };
+  };
+  desktop = {
+    i3 = {
+      enable = true;
+      colorActive = "667b59";
+      colorInactive = "323433";
+      browser = "firefox";
+    };
+    polybar = {
+      enable = true;
+      colorPrimary = "768b69";
+      colorSecondary = "333532";
+      colorBackground = "222322";
+    };
   };
   
   home.sessionVariables = {
