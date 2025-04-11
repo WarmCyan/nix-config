@@ -11,6 +11,10 @@ let
   colorInactive = "343332";
   
   inherit (builtins) readFile;
+
+  obsidian_wrapped = pkgs.writeShellScriptBin "obsidian-wrapped" ''
+    XDG_CURRENT_DESKTOP=GNOME ${pkgs.unstable.obsidian}/bin/obsidian
+  '';
 in
 {
   nixGL = {
@@ -34,10 +38,30 @@ in
     };
   };
 
+  xdg = {
+    desktopEntries = {
+      pcmanfm = {
+        name = "pcmanfm";
+        exec = "${pkgs.pcmanfm}/bin/pcmanfm";
+      };
+      # https://forum.obsidian.md/t/open-in-default-app-blocks-obsidian-until-app-is-closed/80268/10
+      obsidian = {
+        name = "Obsidian";
+        exec = "XDG_CURRENT_DESKTOP=GNOME ${pkgs.unstable.obsidian}/bin/obsidian %u";
+      };
+    };
+    
+    mimeApps.enable = true;
+    mimeApps.defaultApplications = {
+      "inode/directory" = [ "pcmanfm.desktop" ];
+    };
+  };
+
   desktop.i3 = {
     enable = true;
     colorActive = colorActive;
     colorInactive = colorInactive;
+    browser = "firefox";
   };
 
   xsession = {
@@ -124,6 +148,7 @@ in
 
     mystmd
     unstable.obsidian
+    obsidian_wrapped
 
     powerline-fonts
     (nerdfonts.override { fonts = [ "Iosevka" "Inconsolata" ]; })
@@ -135,6 +160,8 @@ in
 
     pcmanfm
     lxappearance
+
+    flameshot
   ];
 
   qt = {
