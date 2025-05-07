@@ -161,12 +161,12 @@ in
     pcmanfm
     lxappearance
 
-    flameshot
+    unstable.flameshot
   ];
 
   qt = {
     enable = true;
-    platformTheme = "gtk";
+    platformTheme.name = "gtk";
     style = { name = "adwaita-dark"; };
   };
   
