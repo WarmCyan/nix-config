@@ -113,6 +113,8 @@ in
     pinentry-curses
     pandoc_3_5
     python3
+
+    imagemagick
   ];
 
   # display
