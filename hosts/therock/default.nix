@@ -113,6 +113,8 @@ in
     pinentry-curses
     pandoc_3_5
     python3
+
+    imagemagick
   ];
 
   # display
@@ -240,12 +242,14 @@ in
       };
       # this is necessary because tt-rss won't download from non-80 ports. So,
       # added an address to /etc/hosts (networking.hosts) and proxy it here.
-      "rss-bridge-proxy" = {
-        listen = [{ port = 80; addr = "internal"; }];
-        locations."/" = {
-          proxyPass = "http://192.168.130.2:${toString portRSSBridge}";
-        };
-      };
+      # "rss-bridge-proxy" = {
+        # listen = [{ port = 80; addr = "internal"; }];  # didn't work
+        # listen = [{ port = 80; addr = "192.168.130.2"; }];
+        # locations."/rss-bridge/" = {
+        #   proxyPass = "http://192.168.130.2:${toString portRSSBridge}";
+        #   recommendedProxySettings = true;
+        # };
+      # };
       # "freshrss" = {
       #   listen = [{ port = portFreshRSS; addr="192.168.130.2"; }];
       # };
@@ -262,6 +266,10 @@ in
           root = "/etc/web";
           tryFiles = "/index.html =404";
           # alias = "/etc/services_index.html";
+        };
+        locations."/rss-bridge/" = {
+          proxyPass = "http://192.168.130.2:${toString portRSSBridge}/";
+          recommendedProxySettings = true;
         };
       };
       "internal-warmcyan" = {
@@ -294,7 +302,8 @@ in
         <h1>DWLabs Wireguard Network</h1>
         <p>Services server on wireguard network is at 192.168.130.2</p>
         <p><a href="http://192.168.130.2:${toString portTTRSS}">Tiny Tiny RSS (${toString portTTRSS})</a> - RSS/Feed reader</p>
-        <p><a href="http://192.168.130.2:${toString portRSSBridge}">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p>
+        <!-- <p><a href="http://192.168.130.2:${toString portRSSBridge}">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p> -->
+        <p><a href="http://192.168.130.2/rss-bridge">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p>
         <p><a href="http://192.168.130.2:${toString portGrafana}">Grafana (${toString portGrafana})</a> - network/system monitoring</p>
         <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - local wikipedia/zim wikis</p>
         <p><a href="http://192.168.130.2:${toString portWebDavNathan}">Nathan's files (${toString portWebDavNathan})</a> - rclone webdav storage folder</p>
