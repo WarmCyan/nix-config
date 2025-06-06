@@ -157,6 +157,7 @@ in
 
     cg
     kbd-capslock
+    tag
 
     pcmanfm
     lxappearance
