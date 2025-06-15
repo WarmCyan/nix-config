@@ -117,6 +117,10 @@
 
     cg
     pandoc_3_5
+
+    unrar
+
+    git-bak
   ];
 
   xsession.windowManager.i3 = {

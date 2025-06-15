@@ -11,11 +11,11 @@ builders.writeTemplatedShellApplication {
     };
     user = {
       flags = [ "-u" "--username" ];
-      description = "A username for which to download all repos. If a token file is included and this is your user it will also grab private repos.";
+      description = "A username for which to download all repos.";
     };
     token_file = {
       flags = [ "-t" "--token" ];
-      description = "Path to a file containing github API token to use for the provided username for getting private repos.";
+      description = "Path to a file containing github API token to use for the provided username for getting private repos. If specified without --username, will grab all of token's associated user's repos. Create token as fine grained token with metadata permissions.";
     };
   };
   runtimeInputs = [
@@ -28,6 +28,7 @@ builders.writeTemplatedShellApplication {
     repo_name=$(echo "''${repo_url}" | sed -e "s/.*\/\(.*\)$/\1/")
     echo "Collecting ''${repo_name} from ''${repo_url}..."
     git -C "''${output_dir}/''${repo_name}" pull || git clone "''${repo_url}" "''${output_dir}/''${repo_name}"
+    sleep .5  # don't spam api
   }
 
   if [[ $# -eq 0 ]]; then
@@ -36,7 +37,9 @@ builders.writeTemplatedShellApplication {
   else
     output_dir="$1"
   fi
-  
+
+  # echo "additional: ''${additional-}, user: ''${user-}, token: ''${token_file-}"
+
   if [[ "''${additional-}" != "" ]]; then
     # shellcheck disable=SC2013
     for url in $(cat "''${additional}"); do
@@ -49,12 +52,28 @@ builders.writeTemplatedShellApplication {
       echo "NOTE: specify a token file in order to get your own private repositories"
       auth_str=""
     else
-      # shellcheck disable=SC2086
-      auth_str="-H \"Authorization: Bearer $(cat ''${token_file})\""
+      # shellcheck disable=SC2086,SC2089
+      auth_str="Authorization: Bearer $(cat ''${token_file})"
     fi
-    echo "''${auth_str}"
 
-    curl ''${auth_str} https://api.github.com/search/repositories?q=user:''${user} | jq '.items.[].ssh_url'
+    # shellcheck disable=SC2090,2086
+    for repo in $(curl -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" -H "''${auth_str}" "https://api.github.com/users/''${user}/repos?per_page=100" | jq -r '.[].ssh_url'); do
+      collect_repo "''${repo}"
+    done
+    exit 0
+  fi
+  
+  # if only a token file is provided, assumed to want to retrieve personal
+  # private repos
+  if [[ "''${token_file-}" != "" ]]; then
+    # shellcheck disable=SC2086,SC2089
+    auth_str="Authorization: Bearer $(cat ''${token_file})"
+    
+    # shellcheck disable=SC2090,2086
+    for repo in $(curl -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" -H "''${auth_str}" "https://api.github.com/user/repos?per_page=100" | jq -r '.[].ssh_url'); do
+      collect_repo "''${repo}"
+    done
+    exit 0
   fi
   '';
 }
