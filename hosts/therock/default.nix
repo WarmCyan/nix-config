@@ -2,9 +2,10 @@
 
 { pkgs, lib, inputs, hostname, config, ... }:
 let
-  portMiniflux      = 2000;
+  # portMiniflux      = 2000;
   # portFreshRSS      = 2025;
   portTTRSS         = 2030;
+  portRSSBridge     = 2031;
   portGrafana       = 3000;
   portKiwix         = 4080;
   portWebDavNathan  = 7121;
@@ -32,6 +33,10 @@ in
     useDHCP = false; # networkmanager does this?
     networkmanager.enable = true;
     #networkmanager.enable = false;
+
+    hosts = {
+      "192.168.130.2" = [ "internal" ];
+    };
     
     firewall = {
       enable = true; # default
@@ -48,7 +53,8 @@ in
         portInternalWC
         # portFreshRSS
         portTTRSS
-        portMiniflux
+        portRSSBridge
+        # portMiniflux
         # 4080 # kiwix
         # 7121 # webdav: me
         # 7122 # webdav: mum
@@ -107,6 +113,8 @@ in
     pinentry-curses
     pandoc_3_5
     python3
+
+    imagemagick
   ];
 
   # display
@@ -132,17 +140,17 @@ in
     };
   };
 
-  services.miniflux = {
-    enable = true;
-    adminCredentialsFile = "/etc/miniflux.env";
-    config = {
-      LISTEN_ADDR = "192.168.130.2:${toString portMiniflux}";
-      BASE_URL = "http://192.168.130.2:${toString portMiniflux}/";
-      METRICS_ALLOWED_NETWORKS = "127.0.0.1/8,192.168.130.1/8";
-      METRICS_COLLECTOR = "1";
-    };
-  };
-
+  # services.miniflux = {
+  #   enable = true;
+  #   adminCredentialsFile = "/etc/miniflux.env";
+  #   config = {
+  #     LISTEN_ADDR = "192.168.130.2:${toString portMiniflux}";
+  #     BASE_URL = "http://192.168.130.2:${toString portMiniflux}/";
+  #     METRICS_ALLOWED_NETWORKS = "127.0.0.1/8,192.168.130.1/8";
+  #     METRICS_COLLECTOR = "1";
+  #   };
+  # };
+  #
   services.tt-rss = {
     enable = true;
     virtualHost = "ttrss";
@@ -160,6 +168,25 @@ in
       "close_button"
     ];
   };
+
+  services.rss-bridge = {
+    enable = true;
+    config = {
+      system.enabled_bridges = [ 
+        "XPathBridge" 
+        "CssSelectorBridge"
+        "CssSelectorComplexBridge"
+        "CSSSelectorFeedExpander"
+        "Filter"
+        "FeedMerge"
+        "FeedReducerBridge"
+        "Reddit"
+        "AssociatedPressNewsBridge"
+        "ReutersBridge"
+      ];
+    };
+  };
+  
   #
   # services.freshrss = {
   #   enable = true;
@@ -210,6 +237,19 @@ in
           '';
        };
       };
+      "rss-bridge" = {
+        listen = [{ port = portRSSBridge; addr = "192.168.130.2"; }];
+      };
+      # this is necessary because tt-rss won't download from non-80 ports. So,
+      # added an address to /etc/hosts (networking.hosts) and proxy it here.
+      # "rss-bridge-proxy" = {
+        # listen = [{ port = 80; addr = "internal"; }];  # didn't work
+        # listen = [{ port = 80; addr = "192.168.130.2"; }];
+        # locations."/rss-bridge/" = {
+        #   proxyPass = "http://192.168.130.2:${toString portRSSBridge}";
+        #   recommendedProxySettings = true;
+        # };
+      # };
       # "freshrss" = {
       #   listen = [{ port = portFreshRSS; addr="192.168.130.2"; }];
       # };
@@ -226,6 +266,10 @@ in
           root = "/etc/web";
           tryFiles = "/index.html =404";
           # alias = "/etc/services_index.html";
+        };
+        locations."/rss-bridge/" = {
+          proxyPass = "http://192.168.130.2:${toString portRSSBridge}/";
+          recommendedProxySettings = true;
         };
       };
       "internal-warmcyan" = {
@@ -258,6 +302,8 @@ in
         <h1>DWLabs Wireguard Network</h1>
         <p>Services server on wireguard network is at 192.168.130.2</p>
         <p><a href="http://192.168.130.2:${toString portTTRSS}">Tiny Tiny RSS (${toString portTTRSS})</a> - RSS/Feed reader</p>
+        <!-- <p><a href="http://192.168.130.2:${toString portRSSBridge}">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p> -->
+        <p><a href="http://192.168.130.2/rss-bridge">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p>
         <p><a href="http://192.168.130.2:${toString portGrafana}">Grafana (${toString portGrafana})</a> - network/system monitoring</p>
         <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - local wikipedia/zim wikis</p>
         <p><a href="http://192.168.130.2:${toString portWebDavNathan}">Nathan's files (${toString portWebDavNathan})</a> - rclone webdav storage folder</p>

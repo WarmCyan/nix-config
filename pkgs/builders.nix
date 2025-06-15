@@ -46,7 +46,7 @@
   parseParams = params:
   if params != null then /* bash */ ''
       parse_params "$@"
-      set -- "''${positional_args[@]}"
+      set -- ''${positional_args[@]+"''${positional_args[@]}"}
     ''
     else "";
 
