@@ -1,5 +1,8 @@
 # TODO: we need probably an exclusively unstable set of overlays and stable set?
 { inputs, outputs, ... }:
+let
+  cgit_theme_text = builtins.readFile ./gruvbox_theme.css;
+in
 {
   custom-pkgs = final: _prev: import ../pkgs { pkgs = final; lib = outputs.lib; };
 
@@ -115,6 +118,12 @@
       });
       
 
+    cgit-themed = prev.cgit.overrideAttrs
+      (_oldAttrs: {
+        postInstall = _oldAttrs.postInstall + ''
+          echo "${cgit_theme_text}" >> $out/cgit/cgit.css
+        '';
+      });
   };
   
   # don't need anymore because it's been updated
