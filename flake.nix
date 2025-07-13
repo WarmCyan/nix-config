@@ -144,11 +144,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    simple-git-server = {
+      url = "github:WarmCyan/simple-git-server";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # TODO: add in nix-colors! 
   };
 
   #outputs = inputs:
-  outputs = { self, nixpkgs, home-manager, nixgl, ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nixgl, simple-git-server ... } @ inputs:
   let
     inherit (self) outputs;
     
