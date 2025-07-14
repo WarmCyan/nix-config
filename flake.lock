@@ -94,7 +94,28 @@
         "home-manager": "home-manager",
         "nixgl": "nixgl",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "simple-git-server": "simple-git-server"
+      }
+    },
+    "simple-git-server": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1752455560,
+        "narHash": "sha256-HFPkSpa8QaXDYM1rniq4WWXjQrR1yGEfkdxs4pGeMgY=",
+        "owner": "WarmCyan",
+        "repo": "simple-git-server",
+        "rev": "89401bc6f9911d5a6d3d7539d40967a8dde9d5c2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "WarmCyan",
+        "repo": "simple-git-server",
+        "type": "github"
       }
     }
   },
