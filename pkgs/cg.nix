@@ -23,6 +23,35 @@ builders.writeTemplatedShellApplication {
   exitOnError = false;
   text = /* bash */ ''
 
+    function search_within_folder() {
+      folder_path="''${1}"
+      continue_search=1
+
+      folder_name="$(echo ''\"''${folder_path}''\" | sed -e 's/.*\/\([A-Za-z0-9\-\_]*\)$/\1/g')"
+      echo -e "\033]0;''${folder_name}\007"  # set terminal title
+    
+      while [ $continue_search -eq 1 ]; do
+        echo "''${folder_path}"
+
+        # shellcheck disable=SC2164
+        cd "''${folder_path}"
+        file_line="$(rg --column --color=always --line-number --no-heading --smart-case . | fzf --ansi --delimiter=: --preview='bat --color=always {1} --highlight-line {2}' --preview-window '+{2}-2,~3' --prompt=''\"''${folder_name}> ''\")"
+
+        # shellcheck disable=SC2181
+        if [ $? -ne 0 ]; then
+          continue_search=0
+        else
+          echo "''${file_line}"
+          
+          file_path="''${folder_path}/$(echo ''\"''${file_line}''\" | cut -d : -f 1)"
+          lineno="$(echo ''\"''${file_line}''\" | cut -d : -f 2)"
+          echo "''${file_path}"
+
+          nvim "''${file_path}" "+''${lineno}"
+        fi
+      done
+    }
+
     continue_env=1
     continue_lib=1
     continue_search=1
