@@ -8,13 +8,13 @@ builders.writeTemplatedShellApplication {
   version = "0.2.0";
   description = "code grep - tool to search micromamba env site package code.";
   usage = "cg [-t|--tmux] [-h|--help] [--version] [CODE_FOLDER_PATH]";
-  # parameters = {
-  #   tmux = {
-  #     flags = [ "-t" "--tmux" ];
-  #     description = "Entering on target line of code opens the file in a new tmux window instead of replacing current.";
-  #     option = true;
-  #   };
-  # };
+  parameters = {
+    tmux = {
+      flags = [ "-t" "--tmux" ];
+      description = "Entering on target line of code opens the file in a new tmux window instead of replacing current.";
+      option = true;
+    };
+  };
   runtimeInputs = [
     pkgs.ripgrep
     pkgs.fzf
@@ -48,7 +48,11 @@ builders.writeTemplatedShellApplication {
           lineno="$(echo ''\"''${file_line}''\" | cut -d : -f 2)"
           echo "Opening ''${file_path}"
 
-          nvim "''${file_path}" "+''${lineno}"
+          if [[ ''${tmux-false} == true ]]; then
+            tmux new-window -n "''${file_path}" "nvim \"''${file_path}\" \"+''${lineno}\""
+          else
+            nvim "''${file_path}" "+''${lineno}"
+          fi
         fi
         popd || exit
       done
