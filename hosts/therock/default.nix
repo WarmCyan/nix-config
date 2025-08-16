@@ -8,6 +8,7 @@ let
   portRSSBridge     = 2031;
   portGrafana       = 3000;
   portKiwix         = 4080;
+  portCGit          = 5080;
   portWebDavNathan  = 7121;
   portWebDavMum     = 7122;
   portWebDavSis     = 7123;
@@ -46,6 +47,7 @@ in
         443
         portGrafana
         portKiwix
+        portCGit
         portWebDavNathan
         portWebDavMum
         portWebDavSis
@@ -77,7 +79,7 @@ in
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
-    extraGroups = [ "nginx" "networkmanager" "wheel" ];
+    extraGroups = [ "nginx" "networkmanager" "wheel" "git" ];
     packages = with pkgs; [
       firefox
       kate
@@ -89,6 +91,26 @@ in
       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDYSifrofamgq1lnJhhl8C6brPPjAlhzwL8IzKtl4j+1Gbtxd7G244r+seE/Qsp1PJ5uK1ocTK9hMNEMZW3gIkeuhHMBl1IN/ldZtP2OvBu3bVEaaJmpdWwu00+FtyAXHTjUX8YlEpbU1ZHlRi+8PzMbaqd5Y9oq+sjUhqd22Gkc6rKXX3hznkdW4FJZLbbfSg7jvijZZiGdm+IOiS6+UjXnZP0SsT9Xzjn5SXQNobWXU5CbNIJyH7ObD2rL9CWcfRzCQ6U7F43wWGEcwikGe6RPCxAjTlie4J8XI+NvcjUmhQ2WRFWrMLnF44EROnwtxpwugenlNq8lB/vPVdN/X5Wc9YZX7Z4CBXplxO/Uxgb3ZPdbaCpr7xlu9WXXq0FmdIA4c0oUDGRAcirYFzbXfOuix88qEg32I6bxyw+sx6m43NPL1TzrZEK/NN79jUErxzAh+SjH2y2T+5GZ1EFUrDSgXp1XaIuBdFjiMcLBEDOjZ1lFwtoAm7vIq7m/7X7GQc= dwl@delta"
     ];
   };
+
+  users.users.git = {
+    isNormalUser = true;
+    isSystemUser = lib.mkForce false;
+    description = "Git repositories";
+    shell = "${pkgs.git}/bin/git-shell";
+
+    # https://serverfault.com/a/1023657
+    # 
+    # openssh.authorizedKeys.keys = builtins.map (x: "restrict,command=\"${pkgs.git}/bin/git-shell -c \\\"$SSH_ORIGINAL_COMMAND\\\"\" " + x) [
+    openssh.authorizedKeys.keys = [
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxO5tXpnUz8q/HixsxjLatz9VnV3uBWvm9Qbk4QLjZA2mKmTYhMRK0iH6DNwLVDmorgZwr0tXzV6gLvnTf3uT2PAQQ34Mhoj57eAg3wAXSrEeM8fLuKXucMXKsoSBxNZMUVt+fVAmAG3pB3AhkeCw1yHTTe9Zj+rXEStr90ewc9g3InDF8PpcTmJzsFgdRb5aQxb9LR04+D6malNQSksIlcmxEDYvn/l2az+/+N1b+ymMF1rfi1ipU7e9oQiWwwlMtEROlhHhZxwbLycBhEqYZtbzaRSwUV1BFQ9WIp0xwW11Rq7nmpmeNJ3TA/tU53lz52VGDW7ItkB1WxDBtrYXyS0FpYWE7UXxB013IA04tf7yraitkh/wr9bqXfYpMyctdMc90Jo2E5Xaz6K7EajzeSwbk3jP7MPqH58XIqtLQRvjimfhVk63NFxCCemn8wjtCUjPUAFu3zNVN+5pgywnqYGBhY5pLAWixC2AhVDzYBmlqOH/v1w5OL2Y1phQLmyE= u0_a508@localhost"
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZsSBtvLAK8s2pIlKK7psGRvk+h1z3jJ7nCLPr18xK1Wu657H2AcNv7QF230lGabIKXRabiEHu2OhrSG02lu/KVpuOk4IudKRkE2UtOIMyt9+1eGj+1jzPHHxu2L7uLgySBLfN6e7WCObcUv15Mm5VYIYCs1hYNJopBnNa8pfBbhX0Hbhs0naJGB8XhF93PqZJTpTKv9YgPHgXGrB0a4ck8i249eCyx3i0FEO6IsymvvZVONcLo9hn3IHRVq8v3Tm8C0rbM7T5khFrXJ8/jhL198GA9YHglPDde6a7azmAAWd6JZZZpLwPQQQ8NvEjWNjlxss5Y2OmlbDLXDIsCwgG0iUNhJ9FJnqJrz0CVm+qrFv+xUflqP0vb/TJnx9iH0CS8/S4ftmwbVJK0cdmmTFTHRAtKb5OL87pKPbAhrWbLW9APaR7pyYwCFEho5W088Fwrt7GHn3D+jKukjXnFjiZWB2v8+qIQBmzdALmVcfPkPioVPuMBzNfimifpXIj/r0= dwl@amethyst"
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDYSifrofamgq1lnJhhl8C6brPPjAlhzwL8IzKtl4j+1Gbtxd7G244r+seE/Qsp1PJ5uK1ocTK9hMNEMZW3gIkeuhHMBl1IN/ldZtP2OvBu3bVEaaJmpdWwu00+FtyAXHTjUX8YlEpbU1ZHlRi+8PzMbaqd5Y9oq+sjUhqd22Gkc6rKXX3hznkdW4FJZLbbfSg7jvijZZiGdm+IOiS6+UjXnZP0SsT9Xzjn5SXQNobWXU5CbNIJyH7ObD2rL9CWcfRzCQ6U7F43wWGEcwikGe6RPCxAjTlie4J8XI+NvcjUmhQ2WRFWrMLnF44EROnwtxpwugenlNq8lB/vPVdN/X5Wc9YZX7Z4CBXplxO/Uxgb3ZPdbaCpr7xlu9WXXq0FmdIA4c0oUDGRAcirYFzbXfOuix88qEg32I6bxyw+sx6m43NPL1TzrZEK/NN79jUErxzAh+SjH2y2T+5GZ1EFUrDSgXp1XaIuBdFjiMcLBEDOjZ1lFwtoAm7vIq7m/7X7GQc= dwl@delta"
+    ];
+  };
+
+  # users.users.cgit = {
+  #   extraGroups = [ "users" ];
+  # };
 
   environment.systemPackages = with pkgs; [
     vim
@@ -113,6 +135,8 @@ in
     pinentry-curses
     pandoc_3_5
     python3
+
+    imagemagick
   ];
 
   # display
@@ -184,6 +208,20 @@ in
       ];
     };
   };
+
+  services.cgit.local-git = {
+    package = pkgs.cgit-themed;
+    enable = true;
+    #nginx.location = "/git/";
+    user = "git";
+    scanPath = "/home/git/dwl";
+    settings = {
+      source-filter = "${pkgs.cgit}/lib/cgit/filters/syntax-highlighting.py";
+      about-filter = "${pkgs.cgit}/lib/cgit/filters/about-formatting.sh";
+      readme = "README.md";
+      enable-git-config = 1;
+    };
+  };
   
   #
   # services.freshrss = {
@@ -218,6 +256,9 @@ in
   services.nginx = {
     enable = true;
     virtualHosts = {
+      "local-git" = {
+        listen = [{ port = portCGit; addr = "192.168.130.2"; }];
+      };
       "ttrss" = {
         listen = [{ port = portTTRSS; addr="192.168.130.2"; }];
 
@@ -240,12 +281,14 @@ in
       };
       # this is necessary because tt-rss won't download from non-80 ports. So,
       # added an address to /etc/hosts (networking.hosts) and proxy it here.
-      "rss-bridge-proxy" = {
-        listen = [{ port = 80; addr = "internal"; }];
-        locations."/" = {
-          proxyPass = "http://192.168.130.2:${toString portRSSBridge}";
-        };
-      };
+      # "rss-bridge-proxy" = {
+        # listen = [{ port = 80; addr = "internal"; }];  # didn't work
+        # listen = [{ port = 80; addr = "192.168.130.2"; }];
+        # locations."/rss-bridge/" = {
+        #   proxyPass = "http://192.168.130.2:${toString portRSSBridge}";
+        #   recommendedProxySettings = true;
+        # };
+      # };
       # "freshrss" = {
       #   listen = [{ port = portFreshRSS; addr="192.168.130.2"; }];
       # };
@@ -262,6 +305,10 @@ in
           root = "/etc/web";
           tryFiles = "/index.html =404";
           # alias = "/etc/services_index.html";
+        };
+        locations."/rss-bridge/" = {
+          proxyPass = "http://192.168.130.2:${toString portRSSBridge}/";
+          recommendedProxySettings = true;
         };
       };
       "internal-warmcyan" = {
@@ -294,9 +341,11 @@ in
         <h1>DWLabs Wireguard Network</h1>
         <p>Services server on wireguard network is at 192.168.130.2</p>
         <p><a href="http://192.168.130.2:${toString portTTRSS}">Tiny Tiny RSS (${toString portTTRSS})</a> - RSS/Feed reader</p>
-        <p><a href="http://192.168.130.2:${toString portRSSBridge}">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p>
+        <!-- <p><a href="http://192.168.130.2:${toString portRSSBridge}">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p> -->
+        <p><a href="http://192.168.130.2/rss-bridge">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p>
         <p><a href="http://192.168.130.2:${toString portGrafana}">Grafana (${toString portGrafana})</a> - network/system monitoring</p>
         <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - local wikipedia/zim wikis</p>
+        <p><a href="http://192.168.130.2:${toString portCGit}">CGit (${toString portCGit})</a> - local git repo browser</p>
         <p><a href="http://192.168.130.2:${toString portWebDavNathan}">Nathan's files (${toString portWebDavNathan})</a> - rclone webdav storage folder</p>
         <p><a href="http://192.168.130.2:${toString portWebDavSis}">Jackie's files (${toString portWebDavSis})</a> - rclone webdav storage folder</p>
         <p><a href="http://192.168.130.2:${toString portWebDavMum}">Mum's files (${toString portWebDavMum})</a> - rclone webdav storage folder</p>
@@ -305,6 +354,8 @@ in
       </body>
     </html>
     '';
+
+    
   };
 
   services.apcupsd.enable = true;
@@ -355,6 +406,12 @@ in
         port = 9007;
         listenAddress = "127.0.0.1";
       };
+
+      # nginx = {
+      #   enable = true;
+      #   port = 9008;
+      #   listenAddress = "127.0.0.1";
+      # };
     };
 
     scrapeConfigs = [
@@ -551,12 +608,30 @@ in
   # };
   #
 
+  systemd.services."local-git-backup" = {
+    serviceConfig.Type = "oneshot";
+    path = with pkgs; [ bash rsync ];
+    script = /* bash */ ''
+    echo "Beginning local git backup..."
+    rsync --archive --delete /home/git/* /depository/git_bak
+    # chmod g+rw /depository/git_bak
+    echo "Backup complete!"
+    '';
+  };
+  systemd.timers."local-git-backup" = {
+    wantedBy = [ "timers.target" ];
+    partOf = [ "local-git-backup.service" ];
+    timerConfig = {
+      Unit = "local-git-backup.service";
+      OnCalendar = "*-*-* 00:00:00"; # daily at midnight
+    };
+  };
 
   systemd.services."depository-backup" = {
     serviceConfig.Type = "oneshot";
     path = with pkgs; [ bash sudo rsync mount umount ];
     script = /* bash */ ''
-      echo "Begining backup..."
+      echo "Begining depository backup..."
       sudo mount ID=usb-USB_3.0_HDD_Docking_Station_201710310028-0:0-part1 /backup_depository/
       rsync --archive --delete /depository /backup_depository
       sudo umount /backup_depository
@@ -568,7 +643,7 @@ in
     partOf = [ "depository-backup.service" ];
     timerConfig = {
       Unit = "depository-backup.service";
-      OnCalendar = "*-*-* 00:00:00"; # daily
+      OnCalendar = "*-*-* 01:00:00"; # daily at 1am
     };
   };
   

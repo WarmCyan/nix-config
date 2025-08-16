@@ -144,11 +144,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    simple-git-server = {
+      url = "github:WarmCyan/simple-git-server";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # TODO: add in nix-colors! 
   };
 
   #outputs = inputs:
-  outputs = { self, nixpkgs, home-manager, nixgl, ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nixgl, simple-git-server, ... } @ inputs:
   let
     inherit (self) outputs;
     
@@ -159,7 +164,10 @@
     forEachSystem = f: lib.genAttrs systems (system: f pkgsFor.${system});
     pkgsFor = lib.genAttrs systems (system: import nixpkgs {
       inherit system;
-      overlays = builtins.attrValues outputs.overlays ++ [ nixgl.overlay ];
+      overlays = builtins.attrValues outputs.overlays ++ [ 
+          nixgl.overlay 
+          # simple-git-server.overlays.default 
+        ];
       config.allowUnfree = true;
     });
   
@@ -203,7 +211,7 @@
       # };  
       amethyst = lib.nixosSystem {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./hosts ];
+        modules = [ ./hosts simple-git-server.nixosModules.git-server ];
         specialArgs = {
           inherit self inputs outputs;
           stable = true;

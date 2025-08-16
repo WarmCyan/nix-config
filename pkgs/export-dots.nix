@@ -275,7 +275,9 @@ EOF
   export_simple_fixed_tool "add-jupyter-env"
   export_simple_fixed_tool "sri-hash"
   export_simple_fixed_tool "engilog"
-  export_simple_fixed_tool "pluto"
+  #export_simple_fixed_tool "pluto"
+  export_simple_fixed_tool "cg"
+  export_simple_fixed_tool "tag"
   export_reference_tool "export-dots"
   export_reference_tool "iris"
   write_installer

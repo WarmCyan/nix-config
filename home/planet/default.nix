@@ -48,6 +48,8 @@ in
 
     zeal
     cg
+    tag
+    #pluto
 
     # firefox
   ];
