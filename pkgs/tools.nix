@@ -6,7 +6,7 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "tools";
-  version = "0.2.3";
+  version = "0.2.4";
   description = "Essentially a lister of my tools so I remember! And can quickly check which ones are installed";
   usage = "tools [-c|--check TOOL] [-q|--quiet]";
   initColors = true;
@@ -78,6 +78,7 @@ builders.writeTemplatedShellApplication {
   check_tool "td-state"
   check_tool "engilog"
   check_tool "pluto"
+  check_tool "cg"
   echo "------"
   # my desktop system specific tools
   check_tool "mic-monitor"
