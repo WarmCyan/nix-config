@@ -1,4 +1,4 @@
-# amethyst, home configuration for BEAST MAIN PC!
+# workbench/radio laptop
 
 # https://github.com/Th0rgal/horus-nix-home/blob/master/configs/i3.nix
 # https://github.com/WildfireXIII/iris-core/blob/master/de/i3/config
@@ -67,6 +67,8 @@
     gcc
 
     cg
+    chromium
+    screen
   ];
 
   xsession.windowManager.i3 = {
@@ -88,7 +90,9 @@
 
   desktop = {
     i3.enable = true;
+    i3.colorActive = "7daea3";
     polybar.enable = true;
+    polybar.colorPrimary = "7daea3";
   };
 
   home.sessionVariables = {
@@ -121,6 +125,11 @@
   # (usb automounting)
   services.udiskie = {
     enable=true;
+    settings = {
+      program_options = {
+        file_manager = "${pkgs.pcmanfm}/bin/pcmanfm";
+      };
+    };
   };
 
   programs.rofi = {
