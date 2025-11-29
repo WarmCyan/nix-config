@@ -59,43 +59,29 @@
   location.latitude = 35.964668;
   location.longitude = -83.926453;
   
-  services.small-git-server = {
-    enable = true;
-    userSSHKeys = {
-      dwl = [
-        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZsSBtvLAK8s2pIlKK7psGRvk+h1z3jJ7nCLPr18xK1Wu657H2AcNv7QF230lGabIKXRabiEHu2OhrSG02lu/KVpuOk4IudKRkE2UtOIMyt9+1eGj+1jzPHHxu2L7uLgySBLfN6e7WCObcUv15Mm5VYIYCs1hYNJopBnNa8pfBbhX0Hbhs0naJGB8XhF93PqZJTpTKv9YgPHgXGrB0a4ck8i249eCyx3i0FEO6IsymvvZVONcLo9hn3IHRVq8v3Tm8C0rbM7T5khFrXJ8/jhL198GA9YHglPDde6a7azmAAWd6JZZZpLwPQQQ8NvEjWNjlxss5Y2OmlbDLXDIsCwgG0iUNhJ9FJnqJrz0CVm+qrFv+xUflqP0vb/TJnx9iH0CS8/S4ftmwbVJK0cdmmTFTHRAtKb5OL87pKPbAhrWbLW9APaR7pyYwCFEho5W088Fwrt7GHn3D+jKukjXnFjiZWB2v8+qIQBmzdALmVcfPkPioVPuMBzNfimifpXIj/r0= dwl@amethyst"
-      ];
-    };
-    cgit.enable = true;
-    cgit.assets = ./cgit-assets;
-    cgit.cssFiles = [ ./anothertest.css ];
-    cgit.logo = ./cgit-assets/smiley.png;
-    cgit.extraHeadInclude = ''
-      <link rel="stylesheet" type="text/css" href="/git/assets/test.css" />
-    '';
-    cgit.css = ''
-      td.sub {
-        color: green !important;
-      }
-    '';
-    cgitAttrName = "testingg";
-  };
-  services.cgit.testingg.nginx.location = "/git/";
-  # services.cgit-themed.testing = {
+  # services.small-git-server = {
   #   enable = true;
-  #   logo = ./cgit-assets/smiley.png;
-  #   cssFiles = [ ./cgit-assets/test.css ];
-  #   aboutHTML = /* html */ ''
-  #     <h1>Hello there!</h1>
-  #     <p>This is just a test</p>
+  #   userSSHKeys = {
+  #     dwl = [
+  #       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZsSBtvLAK8s2pIlKK7psGRvk+h1z3jJ7nCLPr18xK1Wu657H2AcNv7QF230lGabIKXRabiEHu2OhrSG02lu/KVpuOk4IudKRkE2UtOIMyt9+1eGj+1jzPHHxu2L7uLgySBLfN6e7WCObcUv15Mm5VYIYCs1hYNJopBnNa8pfBbhX0Hbhs0naJGB8XhF93PqZJTpTKv9YgPHgXGrB0a4ck8i249eCyx3i0FEO6IsymvvZVONcLo9hn3IHRVq8v3Tm8C0rbM7T5khFrXJ8/jhL198GA9YHglPDde6a7azmAAWd6JZZZpLwPQQQ8NvEjWNjlxss5Y2OmlbDLXDIsCwgG0iUNhJ9FJnqJrz0CVm+qrFv+xUflqP0vb/TJnx9iH0CS8/S4ftmwbVJK0cdmmTFTHRAtKb5OL87pKPbAhrWbLW9APaR7pyYwCFEho5W088Fwrt7GHn3D+jKukjXnFjiZWB2v8+qIQBmzdALmVcfPkPioVPuMBzNfimifpXIj/r0= dwl@amethyst"
+  #     ];
+  #   };
+  #   cgit.enable = true;
+  #   cgit.assets = ./cgit-assets;
+  #   cgit.cssFiles = [ ./anothertest.css ];
+  #   cgit.logo = ./cgit-assets/smiley.png;
+  #   cgit.extraHeadInclude = ''
+  #     <link rel="stylesheet" type="text/css" href="/git/assets/test.css" />
   #   '';
-  #   # css = ""; # STRT: doesn't work when null
+  #   cgit.css = ''
+  #     td.sub {
+  #       color: green !important;
+  #     }
+  #   '';
+  #   cgitAttrName = "testingg";
   # };
-  # services.cgit.testing = {
-  #   scanPath = "/home/git/gitrepos";
-  #   user = "git";
-  # };
-  services.nginx.enable = true;
+  # services.cgit.testingg.nginx.location = "/git/";
+  # services.nginx.enable = true;
 
   # Enable bluetooth
   hardware.bluetooth.enable = true; 

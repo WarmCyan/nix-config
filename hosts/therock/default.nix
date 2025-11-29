@@ -16,6 +16,13 @@ let
   portWebDavSis     = 7123;
   portWebDavShared  = 7124;
   portInternalWC    = 8000;
+
+
+  dwlKeys = [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxO5tXpnUz8q/HixsxjLatz9VnV3uBWvm9Qbk4QLjZA2mKmTYhMRK0iH6DNwLVDmorgZwr0tXzV6gLvnTf3uT2PAQQ34Mhoj57eAg3wAXSrEeM8fLuKXucMXKsoSBxNZMUVt+fVAmAG3pB3AhkeCw1yHTTe9Zj+rXEStr90ewc9g3InDF8PpcTmJzsFgdRb5aQxb9LR04+D6malNQSksIlcmxEDYvn/l2az+/+N1b+ymMF1rfi1ipU7e9oQiWwwlMtEROlhHhZxwbLycBhEqYZtbzaRSwUV1BFQ9WIp0xwW11Rq7nmpmeNJ3TA/tU53lz52VGDW7ItkB1WxDBtrYXyS0FpYWE7UXxB013IA04tf7yraitkh/wr9bqXfYpMyctdMc90Jo2E5Xaz6K7EajzeSwbk3jP7MPqH58XIqtLQRvjimfhVk63NFxCCemn8wjtCUjPUAFu3zNVN+5pgywnqYGBhY5pLAWixC2AhVDzYBmlqOH/v1w5OL2Y1phQLmyE= u0_a508@localhost"
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZsSBtvLAK8s2pIlKK7psGRvk+h1z3jJ7nCLPr18xK1Wu657H2AcNv7QF230lGabIKXRabiEHu2OhrSG02lu/KVpuOk4IudKRkE2UtOIMyt9+1eGj+1jzPHHxu2L7uLgySBLfN6e7WCObcUv15Mm5VYIYCs1hYNJopBnNa8pfBbhX0Hbhs0naJGB8XhF93PqZJTpTKv9YgPHgXGrB0a4ck8i249eCyx3i0FEO6IsymvvZVONcLo9hn3IHRVq8v3Tm8C0rbM7T5khFrXJ8/jhL198GA9YHglPDde6a7azmAAWd6JZZZpLwPQQQ8NvEjWNjlxss5Y2OmlbDLXDIsCwgG0iUNhJ9FJnqJrz0CVm+qrFv+xUflqP0vb/TJnx9iH0CS8/S4ftmwbVJK0cdmmTFTHRAtKb5OL87pKPbAhrWbLW9APaR7pyYwCFEho5W088Fwrt7GHn3D+jKukjXnFjiZWB2v8+qIQBmzdALmVcfPkPioVPuMBzNfimifpXIj/r0= dwl@amethyst"
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDYSifrofamgq1lnJhhl8C6brPPjAlhzwL8IzKtl4j+1Gbtxd7G244r+seE/Qsp1PJ5uK1ocTK9hMNEMZW3gIkeuhHMBl1IN/ldZtP2OvBu3bVEaaJmpdWwu00+FtyAXHTjUX8YlEpbU1ZHlRi+8PzMbaqd5Y9oq+sjUhqd22Gkc6rKXX3hznkdW4FJZLbbfSg7jvijZZiGdm+IOiS6+UjXnZP0SsT9Xzjn5SXQNobWXU5CbNIJyH7ObD2rL9CWcfRzCQ6U7F43wWGEcwikGe6RPCxAjTlie4J8XI+NvcjUmhQ2WRFWrMLnF44EROnwtxpwugenlNq8lB/vPVdN/X5Wc9YZX7Z4CBXplxO/Uxgb3ZPdbaCpr7xlu9WXXq0FmdIA4c0oUDGRAcirYFzbXfOuix88qEg32I6bxyw+sx6m43NPL1TzrZEK/NN79jUErxzAh+SjH2y2T+5GZ1EFUrDSgXp1XaIuBdFjiMcLBEDOjZ1lFwtoAm7vIq7m/7X7GQc= dwl@delta"
+  ];
 in
 {
   imports = [
@@ -104,32 +111,8 @@ in
       kate
     ];
 
-    openssh.authorizedKeys.keys = [
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxO5tXpnUz8q/HixsxjLatz9VnV3uBWvm9Qbk4QLjZA2mKmTYhMRK0iH6DNwLVDmorgZwr0tXzV6gLvnTf3uT2PAQQ34Mhoj57eAg3wAXSrEeM8fLuKXucMXKsoSBxNZMUVt+fVAmAG3pB3AhkeCw1yHTTe9Zj+rXEStr90ewc9g3InDF8PpcTmJzsFgdRb5aQxb9LR04+D6malNQSksIlcmxEDYvn/l2az+/+N1b+ymMF1rfi1ipU7e9oQiWwwlMtEROlhHhZxwbLycBhEqYZtbzaRSwUV1BFQ9WIp0xwW11Rq7nmpmeNJ3TA/tU53lz52VGDW7ItkB1WxDBtrYXyS0FpYWE7UXxB013IA04tf7yraitkh/wr9bqXfYpMyctdMc90Jo2E5Xaz6K7EajzeSwbk3jP7MPqH58XIqtLQRvjimfhVk63NFxCCemn8wjtCUjPUAFu3zNVN+5pgywnqYGBhY5pLAWixC2AhVDzYBmlqOH/v1w5OL2Y1phQLmyE= u0_a508@localhost"
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZsSBtvLAK8s2pIlKK7psGRvk+h1z3jJ7nCLPr18xK1Wu657H2AcNv7QF230lGabIKXRabiEHu2OhrSG02lu/KVpuOk4IudKRkE2UtOIMyt9+1eGj+1jzPHHxu2L7uLgySBLfN6e7WCObcUv15Mm5VYIYCs1hYNJopBnNa8pfBbhX0Hbhs0naJGB8XhF93PqZJTpTKv9YgPHgXGrB0a4ck8i249eCyx3i0FEO6IsymvvZVONcLo9hn3IHRVq8v3Tm8C0rbM7T5khFrXJ8/jhL198GA9YHglPDde6a7azmAAWd6JZZZpLwPQQQ8NvEjWNjlxss5Y2OmlbDLXDIsCwgG0iUNhJ9FJnqJrz0CVm+qrFv+xUflqP0vb/TJnx9iH0CS8/S4ftmwbVJK0cdmmTFTHRAtKb5OL87pKPbAhrWbLW9APaR7pyYwCFEho5W088Fwrt7GHn3D+jKukjXnFjiZWB2v8+qIQBmzdALmVcfPkPioVPuMBzNfimifpXIj/r0= dwl@amethyst"
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDYSifrofamgq1lnJhhl8C6brPPjAlhzwL8IzKtl4j+1Gbtxd7G244r+seE/Qsp1PJ5uK1ocTK9hMNEMZW3gIkeuhHMBl1IN/ldZtP2OvBu3bVEaaJmpdWwu00+FtyAXHTjUX8YlEpbU1ZHlRi+8PzMbaqd5Y9oq+sjUhqd22Gkc6rKXX3hznkdW4FJZLbbfSg7jvijZZiGdm+IOiS6+UjXnZP0SsT9Xzjn5SXQNobWXU5CbNIJyH7ObD2rL9CWcfRzCQ6U7F43wWGEcwikGe6RPCxAjTlie4J8XI+NvcjUmhQ2WRFWrMLnF44EROnwtxpwugenlNq8lB/vPVdN/X5Wc9YZX7Z4CBXplxO/Uxgb3ZPdbaCpr7xlu9WXXq0FmdIA4c0oUDGRAcirYFzbXfOuix88qEg32I6bxyw+sx6m43NPL1TzrZEK/NN79jUErxzAh+SjH2y2T+5GZ1EFUrDSgXp1XaIuBdFjiMcLBEDOjZ1lFwtoAm7vIq7m/7X7GQc= dwl@delta"
-    ];
+    openssh.authorizedKeys.keys = dwlKeys;
   };
-
-  users.users.git = {
-    isNormalUser = true;
-    isSystemUser = lib.mkForce false;
-    description = "Git repositories";
-    shell = "${pkgs.git}/bin/git-shell";
-
-    # https://serverfault.com/a/1023657
-    # 
-    # openssh.authorizedKeys.keys = builtins.map (x: "restrict,command=\"${pkgs.git}/bin/git-shell -c \\\"$SSH_ORIGINAL_COMMAND\\\"\" " + x) [
-    openssh.authorizedKeys.keys = [
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxO5tXpnUz8q/HixsxjLatz9VnV3uBWvm9Qbk4QLjZA2mKmTYhMRK0iH6DNwLVDmorgZwr0tXzV6gLvnTf3uT2PAQQ34Mhoj57eAg3wAXSrEeM8fLuKXucMXKsoSBxNZMUVt+fVAmAG3pB3AhkeCw1yHTTe9Zj+rXEStr90ewc9g3InDF8PpcTmJzsFgdRb5aQxb9LR04+D6malNQSksIlcmxEDYvn/l2az+/+N1b+ymMF1rfi1ipU7e9oQiWwwlMtEROlhHhZxwbLycBhEqYZtbzaRSwUV1BFQ9WIp0xwW11Rq7nmpmeNJ3TA/tU53lz52VGDW7ItkB1WxDBtrYXyS0FpYWE7UXxB013IA04tf7yraitkh/wr9bqXfYpMyctdMc90Jo2E5Xaz6K7EajzeSwbk3jP7MPqH58XIqtLQRvjimfhVk63NFxCCemn8wjtCUjPUAFu3zNVN+5pgywnqYGBhY5pLAWixC2AhVDzYBmlqOH/v1w5OL2Y1phQLmyE= u0_a508@localhost"
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZsSBtvLAK8s2pIlKK7psGRvk+h1z3jJ7nCLPr18xK1Wu657H2AcNv7QF230lGabIKXRabiEHu2OhrSG02lu/KVpuOk4IudKRkE2UtOIMyt9+1eGj+1jzPHHxu2L7uLgySBLfN6e7WCObcUv15Mm5VYIYCs1hYNJopBnNa8pfBbhX0Hbhs0naJGB8XhF93PqZJTpTKv9YgPHgXGrB0a4ck8i249eCyx3i0FEO6IsymvvZVONcLo9hn3IHRVq8v3Tm8C0rbM7T5khFrXJ8/jhL198GA9YHglPDde6a7azmAAWd6JZZZpLwPQQQ8NvEjWNjlxss5Y2OmlbDLXDIsCwgG0iUNhJ9FJnqJrz0CVm+qrFv+xUflqP0vb/TJnx9iH0CS8/S4ftmwbVJK0cdmmTFTHRAtKb5OL87pKPbAhrWbLW9APaR7pyYwCFEho5W088Fwrt7GHn3D+jKukjXnFjiZWB2v8+qIQBmzdALmVcfPkPioVPuMBzNfimifpXIj/r0= dwl@amethyst"
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDYSifrofamgq1lnJhhl8C6brPPjAlhzwL8IzKtl4j+1Gbtxd7G244r+seE/Qsp1PJ5uK1ocTK9hMNEMZW3gIkeuhHMBl1IN/ldZtP2OvBu3bVEaaJmpdWwu00+FtyAXHTjUX8YlEpbU1ZHlRi+8PzMbaqd5Y9oq+sjUhqd22Gkc6rKXX3hznkdW4FJZLbbfSg7jvijZZiGdm+IOiS6+UjXnZP0SsT9Xzjn5SXQNobWXU5CbNIJyH7ObD2rL9CWcfRzCQ6U7F43wWGEcwikGe6RPCxAjTlie4J8XI+NvcjUmhQ2WRFWrMLnF44EROnwtxpwugenlNq8lB/vPVdN/X5Wc9YZX7Z4CBXplxO/Uxgb3ZPdbaCpr7xlu9WXXq0FmdIA4c0oUDGRAcirYFzbXfOuix88qEg32I6bxyw+sx6m43NPL1TzrZEK/NN79jUErxzAh+SjH2y2T+5GZ1EFUrDSgXp1XaIuBdFjiMcLBEDOjZ1lFwtoAm7vIq7m/7X7GQc= dwl@delta"
-    ];
-  };
-
-  # users.users.cgit = {
-  #   extraGroups = [ "users" ];
-  # };
 
   environment.systemPackages = with pkgs; [
     vim
@@ -229,19 +212,17 @@ in
     };
   };
 
-  services.cgit.local-git = {
-    package = pkgs.cgit-themed;
+  services.small-git-server = {
     enable = true;
-    #nginx.location = "/git/";
-    user = "git";
-    scanPath = "/home/git/dwl";
-    settings = {
-      source-filter = "${pkgs.cgit}/lib/cgit/filters/syntax-highlighting.py";
-      about-filter = "${pkgs.cgit}/lib/cgit/filters/about-formatting.sh";
-      readme = "README.md";
-      enable-git-config = 1;
+    userSSHKeys = {
+      dwl = dwlKeys;
     };
+    cgit.enable = true;
+    cgitAttrName = "local-git";
   };
+  # services.cgit.local-git = {
+  #   #nginx.location = "/git/";
+  # };
 
   services.immich = {
     enable = true;

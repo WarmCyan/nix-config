@@ -116,14 +116,14 @@ in
           sha256 = "sha256-0U2APDh++U7qWwv9ky9nEZ8WvsSbWBTSUwqQqkIkaqU=";
         };
       });
-      
-
-    cgit-themed = prev.cgit.overrideAttrs
-      (_oldAttrs: {
-        postInstall = _oldAttrs.postInstall + ''
-          echo "${cgit_theme_text}" >> $out/cgit/cgit.css
-        '';
-      });
+    #  
+    #
+    # cgit-themed = prev.cgit.overrideAttrs
+    #   (_oldAttrs: {
+    #     postInstall = _oldAttrs.postInstall + ''
+    #       echo "${cgit_theme_text}" >> $out/cgit/cgit.css
+    #     '';
+    #   });
   };
   
   # don't need anymore because it's been updated

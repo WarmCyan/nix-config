@@ -229,7 +229,7 @@
       };
       bench = lib.nixosSystem {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./hosts ];
+          modules = [ ./hosts ];
         specialArgs = {
           inherit self inputs outputs;
           stable = true;
@@ -241,7 +241,10 @@
       };
       therock = lib.nixosSystem {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./hosts ];
+          modules = [
+            ./hosts
+            small-git-server.nixosModules.small-git-server
+          ];
         specialArgs = {
           inherit self inputs outputs;
           stable = true;
