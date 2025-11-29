@@ -94,7 +94,7 @@
 
   qt = {
     enable = true;
-    platformTheme = "gtk";
+    platformTheme.name = "gtk";
     style = {
       name = "adwaita-dark";
     };
@@ -102,7 +102,8 @@
 
   programs.rofi = {
     enable = true;
-    theme = "gruvbox-dark-hard";
+    # theme = "gruvbox-dark-hard";
+    theme = "~/.local/share/rofi/themes/squared-everforest-upperleft.rasi";
     location = "top-left";
     yoffset = 25;
   };
