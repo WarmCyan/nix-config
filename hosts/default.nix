@@ -17,7 +17,7 @@ in
     wget
     curl
     iproute2
-    gnufdisk
+    # gnufdisk
     htop
     ncdu
 
@@ -34,7 +34,8 @@ in
 
   
   # internationalisation properties.
-  i18n.defaultLocale = lib.mkDefault "en_US.utf8";
+  # i18n.defaultLocale = lib.mkDefault "en_US.utf8";
+  i18n.defaultLocale = lib.mkDefault "en_US.UTF-8";
 
   # set timezone # TODO: no move this to the machine
   time.timeZone = timezone;

@@ -8,6 +8,8 @@
       ../common/fonts
       ../common/pipewire
     ];
+  
+  musnix.enable = true;
 
   # Bootloader.
   boot.loader = {
@@ -44,7 +46,20 @@
     };
   };
 
-  services.simple-git-server = {
+  services.redshift = {
+    enable = true;
+    temperature.day = 6500;
+    brightness.day = "1";
+    temperature.night = 2000;
+    brightness.night = "0.4";
+    extraOptions = [
+      "-v"
+    ];
+  };
+  location.latitude = 35.964668;
+  location.longitude = -83.926453;
+  
+  services.small-git-server = {
     enable = true;
     userSSHKeys = {
       dwl = [
@@ -52,7 +67,34 @@
       ];
     };
     cgit.enable = true;
+    cgit.assets = ./cgit-assets;
+    cgit.cssFiles = [ ./anothertest.css ];
+    cgit.logo = ./cgit-assets/smiley.png;
+    cgit.extraHeadInclude = ''
+      <link rel="stylesheet" type="text/css" href="/git/assets/test.css" />
+    '';
+    cgit.css = ''
+      td.sub {
+        color: green !important;
+      }
+    '';
+    cgitAttrName = "testingg";
   };
+  services.cgit.testingg.nginx.location = "/git/";
+  # services.cgit-themed.testing = {
+  #   enable = true;
+  #   logo = ./cgit-assets/smiley.png;
+  #   cssFiles = [ ./cgit-assets/test.css ];
+  #   aboutHTML = /* html */ ''
+  #     <h1>Hello there!</h1>
+  #     <p>This is just a test</p>
+  #   '';
+  #   # css = ""; # STRT: doesn't work when null
+  # };
+  # services.cgit.testing = {
+  #   scanPath = "/home/git/gitrepos";
+  #   user = "git";
+  # };
   services.nginx.enable = true;
 
   # Enable bluetooth
@@ -183,12 +225,26 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+  services.printing.drivers = [
+    pkgs.brlaser
+  ];
 
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
     extraGroups = [ "networkmanager" "wheel" "docker" ];
-    packages = with pkgs; [ ];
+    packages = with pkgs; [
+      # (unstable.yabridge.override { wine = unstable.wineWowPackages.yabridge; })
+      # (unstable.yabridgectl.override { wine = unstable.wineWowPackages.yabridge; })
+
+      unstable.yabridge
+      unstable.yabridgectl
+      unstable.wineWowPackages.yabridge
+
+      # wineWowPackages.full
+      # wineWowPackages.waylandFull
+
+    ];
     shell = pkgs.zsh;
   };
 

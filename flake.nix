@@ -119,7 +119,7 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     
     # keeping around so if I ever need a specific nixpkgs commit, use this
     # nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
@@ -133,7 +133,7 @@
       # TODO: is there a way to see a list of changes to options in HM modules
       # that I use?
       # TODO: look into using nixvim instead of doing neovim through HM
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs"; # unsure what this actually does. (It
       # makes it so that home-manager isn't downloading it's own set of nixpkgs,
       # we're "overriding" the nixpkgs input home-manager defines by default)
@@ -144,8 +144,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    simple-git-server = {
-      url = "github:WarmCyan/simple-git-server";
+    musnix.url = "github:musnix/musnix";
+
+    small-git-server = {
+      url = "github:WarmCyan/small-git-server";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -153,7 +155,7 @@
   };
 
   #outputs = inputs:
-  outputs = { self, nixpkgs, home-manager, nixgl, simple-git-server, ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nixgl, musnix, small-git-server, ... } @ inputs:
   let
     inherit (self) outputs;
     
@@ -211,7 +213,11 @@
       # };  
       amethyst = lib.nixosSystem {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./hosts simple-git-server.nixosModules.git-server ];
+        modules = [ 
+            ./hosts 
+            small-git-server.nixosModules.small-git-server
+            musnix.nixosModules.musnix
+          ];
         specialArgs = {
           inherit self inputs outputs;
           stable = true;

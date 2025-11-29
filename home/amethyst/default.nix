@@ -66,11 +66,33 @@
     unstable.reaper # DAW
     lmms            # my older DAW :')
     bespokesynth    # experimental DAW
-    surge-XT        # open source hybrid synthesizer
-    sfizz           # soundfont sampler?
+    unstable.surge-XT        # open source hybrid synthesizer
+    unstable.sfizz           # soundfont sampler?
+    zynaddsubfx
     carla           # windows vsts on linux
-    yabridge        # windows vsts on linux
-    yabridgectl
+    # https://github.com/robbert-vdh/yabridge/issues/370#issuecomment-2508960653
+    # (unstable.yabridge.override { wine = unstable.wineWowPackages.unstableFull; })       # windows vsts on linux
+    # (unstable.yabridgectl.override { wine = unstable.wineWowPackages.unstableFull; })
+    # https://github.com/NixOS/nixpkgs/issues/399465
+    # (yabridge.override { wine = wineWowPackages.full; })       # windows vsts on linux
+    # (yabridgectl.override { wine = wineWowPackages.full; })
+    
+    # (yabridge.override { wine = wineWowPackages.full; })
+    # (yabridgectl.override { wine = wineWowPackages.full; })
+
+    # wineWowPackages.yabridge
+    # # wineWowPackages.full
+    # wineWowPackages.unstableFull
+    # wineWowPackages.stagingFull
+    # wineWowPackages.waylandFull
+    # wineWow64Packages.unstableFull
+    # wineWow64Packages.stagingFull
+    # wineWow64Packages.full
+    # winePackages.full
+    # winePackages.unstableFull
+
+    unstable.winetricks
+
 
     # -- utils --
     flameshot         # screenshot tool
@@ -82,7 +104,7 @@
     xclip             # clipboard tool
     asunder           # CD ripper
     vlc               # video/audio player
-    wineWowPackages.unstableFull  # NOTE: necessary for several of the windows vst bridges
+    # wineWowPackages.stagingFull  # NOTE: necessary for several of the windows vst bridges
     ffmpeg            # video conversion/editing CLI
     imagemagick       # image conversion/editing CLI
     dnsutils          # includes nslookup
@@ -116,7 +138,7 @@
     pluto
 
     cg
-    pandoc_3_5
+    pandoc
 
     unrar
 
