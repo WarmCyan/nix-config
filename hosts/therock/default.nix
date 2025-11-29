@@ -646,6 +646,29 @@ in
   # };
   #
 
+  systemd.services."update-web-git-archive" = {
+    serviceConfig.Type = "oneshot";
+    path = with pkgs; [ bash git-bak ];
+    script = /* bash */ ''
+    echo "Beginning web git archive..."
+    
+    echo "Archiving work OSS..."
+    git-bak /home/git/gitrepos/archive/github/work \
+      https://github.com/ORNL/tx2.git \
+      https://github.com/ORNL/curifactory.git \
+      https://github.com/ORNL/ipyanchorviz.git \
+      https://github.com/ORNL/icat.git \
+      https://github.com/ORNL/ipyoverlay.git \
+      https://github.com/ORNL/reno.git \
+    echo "Archived work OSS!"
+    
+    # git-bak 
+    # rsync --archive --delete /home/git/* /depository/git_bak
+    # chmod g+rw /depository/git_bak
+    echo "Archive complete!"
+    '';
+  };
+
   systemd.services."local-git-backup" = {
     serviceConfig.Type = "oneshot";
     path = with pkgs; [ bash rsync ];

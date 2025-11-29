@@ -1,9 +1,9 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "git-bak";
-  version = "0.1.0";
+  version = "0.2.0";
   description = "Repository backup tool";
-  usage = "git-bak [-l additional_repos.txt] [-u username] [-t token_file] backup_dir";
+  usage = "git-bak [-l additional_repos.txt] [-u username] [-t token_file] backup_dir [additional_repo1] ... [additional_repoN]";
   parameters = {
     additional = {
       flags = [ "-l" "--list-file" ];
@@ -75,5 +75,13 @@ builders.writeTemplatedShellApplication {
     done
     exit 0
   fi
+
+  # any strings included after the output directory are treated same as raw
+  # lines from additional txt file
+  while [[ $# -gt 1 ]]
+  do
+    shift
+    collect_repo "$1"
+  done
   '';
 }
