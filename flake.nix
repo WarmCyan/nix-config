@@ -153,7 +153,7 @@
   };
 
   #outputs = inputs:
-  outputs = { self, nixpkgs, home-manager, nixgl, simple-git-server ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nixgl, simple-git-server, ... } @ inputs:
   let
     inherit (self) outputs;
     

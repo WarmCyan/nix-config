@@ -6,8 +6,10 @@ let
   # portFreshRSS      = 2025;
   portTTRSS         = 2030;
   portRSSBridge     = 2031;
+  portImmich        = 2283;
   portGrafana       = 3000;
   portKiwix         = 4080;
+  portEtherCalc     = 5032;
   portCGit          = 5080;
   portWebDavNathan  = 7121;
   portWebDavMum     = 7122;
@@ -29,6 +31,21 @@ in
     #kernelPackages = pkgs.linuxKernel.packages.linux_zen # TODO: use this for games
   };
 
+  
+  # Enable CUPS to print documents.
+  # NOTE: printer type is HL-L23800W
+  services.printing = {
+    enable = true;
+    drivers = [
+      pkgs.brlaser
+    ];
+    listenAddresses = [ "*:6031" ];
+    allowFrom = [ "all" ];
+    browsing = true;
+    defaultShared = true;
+    openFirewall = true;
+  };
+
   # networking
   networking = {
     useDHCP = false; # networkmanager does this?
@@ -46,7 +63,9 @@ in
         80
         443
         portGrafana
+        portImmich
         portKiwix
+        portEtherCalc
         portCGit
         portWebDavNathan
         portWebDavMum
@@ -136,6 +155,7 @@ in
     pandoc_3_5
     python3
 
+    uv
     imagemagick
   ];
 
@@ -222,6 +242,26 @@ in
       enable-git-config = 1;
     };
   };
+
+  services.immich = {
+    enable = true;
+    port = portImmich;
+    host = "192.168.1.3";
+  };
+
+  services.ethercalc = {
+    enable = true;
+    port = portEtherCalc;
+  };
+
+  # services.cryptpad = {
+  #   enable = true;
+  #   settings = {
+  #     httpPort = portEtherCalc;
+  #     httpAddress = "0.0.0.0";
+  #     httpSafeOrigin = null;
+  #   };
+  # };
   
   #
   # services.freshrss = {
@@ -278,6 +318,21 @@ in
       };
       "rss-bridge" = {
         listen = [{ port = portRSSBridge; addr = "192.168.130.2"; }];
+      };
+      "immich" = {
+        listen = [{ port = portImmich; addr = "192.168.130.2"; }];
+        locations."/" = {
+          # proxyPass = "http://[::1]:${toString config.services.immich.port}";
+          proxyPass = "http://192.168.1.3:${toString portImmich}/";
+          proxyWebsockets = true;
+          recommendedProxySettings = true;
+          extraConfig = ''
+            client_max_body_size 50000M;
+            proxy_read_timeout   600s;
+            proxy_send_timeout   600s;
+            send_timeout         600s;
+          '';
+        };
       };
       # this is necessary because tt-rss won't download from non-80 ports. So,
       # added an address to /etc/hosts (networking.hosts) and proxy it here.
@@ -343,8 +398,10 @@ in
         <p><a href="http://192.168.130.2:${toString portTTRSS}">Tiny Tiny RSS (${toString portTTRSS})</a> - RSS/Feed reader</p>
         <!-- <p><a href="http://192.168.130.2:${toString portRSSBridge}">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p> -->
         <p><a href="http://192.168.130.2/rss-bridge">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p>
+        <p><a href="http://192.168.130.2:${toString portImmich}">Immich (${toString portImmich})</a> - photo gallery</p>
         <p><a href="http://192.168.130.2:${toString portGrafana}">Grafana (${toString portGrafana})</a> - network/system monitoring</p>
         <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - local wikipedia/zim wikis</p>
+        <p><a href="http://192.168.130.2:${toString portEtherCalc}">EtherCalc (${toString portEtherCalc})</a> - collaborative spreadsheets</p>
         <p><a href="http://192.168.130.2:${toString portCGit}">CGit (${toString portCGit})</a> - local git repo browser</p>
         <p><a href="http://192.168.130.2:${toString portWebDavNathan}">Nathan's files (${toString portWebDavNathan})</a> - rclone webdav storage folder</p>
         <p><a href="http://192.168.130.2:${toString portWebDavSis}">Jackie's files (${toString portWebDavSis})</a> - rclone webdav storage folder</p>
