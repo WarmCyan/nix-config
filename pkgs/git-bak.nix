@@ -20,6 +20,7 @@ builders.writeTemplatedShellApplication {
   };
   runtimeInputs = [
     pkgs.jq
+    pkgs.git
   ];
   text = /* bash */ ''
 
