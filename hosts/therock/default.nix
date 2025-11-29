@@ -135,7 +135,7 @@ in
     kiwix-tools
 
     pinentry-curses
-    pandoc_3_5
+    pandoc
     python3
 
     uv
