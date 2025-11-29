@@ -158,6 +158,7 @@ in
 
 
     cg
+    tcg
     kbd-capslock
     tag
 

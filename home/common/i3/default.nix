@@ -163,6 +163,7 @@ in
     };
 
     home.file.".local/share/rofi/themes/squared-everforest.rasi".text = readFile ./squared-everforest.rasi;
+    home.file.".local/share/rofi/themes/squared-everforest-upperleft.rasi".text = readFile ./squared-everforest-upperleft.rasi;
   };
 }
 

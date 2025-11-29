@@ -227,6 +227,18 @@
           timezone = "America/New_York";
         };
       };
+      bench = lib.nixosSystem {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./hosts ];
+        specialArgs = {
+          inherit self inputs outputs;
+          stable = true;
+          configName = "bench";
+          hostname = "bench";
+          configLocation = "/home/dwl/lab/nix-config";
+          timezone = "America/New_York";
+        };
+      };
       therock = lib.nixosSystem {
         pkgs = pkgsFor.x86_64-linux;
         modules = [ ./hosts ];
@@ -274,6 +286,22 @@
           noNixos = false;
         };
       };
+
+	# workbench/radio laptop
+	bench = lib.homeManagerConfiguration {
+		pkgs = pkgsFor.x86_64-linux;
+		modules = [ ./home ];
+		extraSpecialArgs = {
+		  inherit self inputs outputs;
+		  hostname = "bench";
+		  username = "dwl";
+		  configName = "bench";
+		  gitUsername = "Martindale, Nathan";
+		  gitEmail = "nathanamartindale@gmail.com";
+		  configLocation = "/home/dwl/lab/nix-config";
+		  noNixos = false;
+		};
+	};
 	
       # primary laptop
       delta = lib.homeManagerConfiguration {
