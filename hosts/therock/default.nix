@@ -108,7 +108,7 @@ in
     extraGroups = [ "nginx" "networkmanager" "wheel" "git" ];
     packages = with pkgs; [
       firefox
-      kate
+      kdePackages.kate
     ];
 
     openssh.authorizedKeys.keys = dwlKeys;
