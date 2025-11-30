@@ -232,7 +232,8 @@ in
     #nginx.location = "/git/";
     settings = {
       section-from-path = 3;
-      clone-url = "http://192.168.130.2:${toString portCGit}/$CGIT_REPO_URL git@192.168.130.2:${toString portCGit}/$CGIT_REPO_URL";
+      # clone-url = "http://192.168.130.2:${toString portCGit}/$CGIT_REPO_URL git@192.168.130.2:${toString portCGit}/$CGIT_REPO_URL";
+      clone-url = "git@192.168.130.2:$CGIT_REPO_URL";
     };
   };
 
@@ -676,6 +677,9 @@ in
     echo "Archived work OSS!"
 
     echo "Archiving personal repos..."
+    # NOTE: in order for this to work, I add to copy dwl's id_rsa* into
+    # /root/.ssh, and then add a set of lines in /root/.ssh/config:
+    # https://stackoverflow.com/questions/4565700/how-to-specify-the-private-ssh-key-to-use-when-executing-shell-command-on-git
     if [[ -f "/root/githubtoken.txt" ]]; then
       echo "TOKEN FOUND."
       git-bak -b -u WarmCyan -t /root/githubtoken.txt /home/git/gitrepos/archive/github/WarmCyan
