@@ -225,7 +225,7 @@ in
     #nginx.location = "/git/";
     settings = {
       section-from-path = 3;
-      clone-url = "http://192.168.130.2:${toString portCGit}/$CGIT_REPO_URL git@192.168.130.2:$CGIT_REPO_URL";
+      clone-url = "http://192.168.130.2:${toString portCGit}/$CGIT_REPO_URL git@192.168.130.2:${toString portCGit}/$CGIT_REPO_URL";
     };
   };
 
