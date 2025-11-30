@@ -220,9 +220,13 @@ in
     cgit.enable = true;
     cgitAttrName = "local-git";
   };
-  # services.cgit.local-git = {
-  #   #nginx.location = "/git/";
-  # };
+  services.cgit.local-git = {
+    #nginx.location = "/git/";
+    settings = {
+      section-from-path = 3;
+      clone-url = "http://192.168.130.2:${toString portCGit}/$CGIT_REPO_URL git@192.168.130.2:$CGIT_REPO_URL";
+    };
+  };
 
   services.immich = {
     enable = true;
@@ -659,7 +663,7 @@ in
       https://github.com/ORNL/ipyanchorviz.git \
       https://github.com/ORNL/icat.git \
       https://github.com/ORNL/ipyoverlay.git \
-      https://github.com/ORNL/reno.git \
+      https://github.com/ORNL/reno.git
     echo "Archived work OSS!"
     
     # git-bak 
