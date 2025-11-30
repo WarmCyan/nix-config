@@ -27,6 +27,7 @@ builders.writeTemplatedShellApplication {
     pkgs.jq
     pkgs.git
     pkgs.curl
+    pkgs.openssh
   ];
   text = /* bash */ ''
 
