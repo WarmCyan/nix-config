@@ -19,7 +19,7 @@ builders.writeTemplatedShellApplication {
     };
     bare = {
       flags = [ "-b" "--bare" ];
-      description = "Clone as a bare repository (contents are the .git instead of the working dir.) Use this if backing a repo up into a place you'd want to clone elsewhere."
+      description = "Clone as a bare repository (contents are the .git instead of the working dir.) Use this if backing a repo up into a place you'd want to clone elsewhere.";
     };
   };
   runtimeInputs = [
