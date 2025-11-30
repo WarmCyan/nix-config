@@ -238,6 +238,7 @@ in
   };
 
   services.immich = {
+    package = pkgs.unstable.immich;
     enable = true;
     port = portImmich;
     host = "192.168.1.3";
@@ -318,7 +319,7 @@ in
         listen = [{ port = portImmich; addr = "192.168.130.2"; }];
         locations."/" = {
           # proxyPass = "http://[::1]:${toString config.services.immich.port}";
-          proxyPass = "http://192.168.1.3:${toString portImmich}/";
+          proxyPass = "http://192.168.1.3:${toString portImmich}";
           proxyWebsockets = true;
           recommendedProxySettings = true;
           extraConfig = ''
@@ -695,6 +696,15 @@ in
     echo "Archive complete!"
     '';
   };
+  systemd.timers."update-web-git-archive" = {
+    wantedBy = [ "timers.target" ];
+    partOf = [ "update-web-git-archive.service" ];
+    timerConfig = {
+      Unit = "update-web-git-archive.service";
+      OnCalendar = "*-*-* 00:00:00"; # daily at midnight
+    };
+  };
+
 
   systemd.services."local-git-backup" = {
     serviceConfig.Type = "oneshot";
@@ -711,7 +721,7 @@ in
     partOf = [ "local-git-backup.service" ];
     timerConfig = {
       Unit = "local-git-backup.service";
-      OnCalendar = "*-*-* 00:00:00"; # daily at midnight
+      OnCalendar = "*-*-* 01:00:00"; # daily at 1am
     };
   };
 
@@ -731,7 +741,7 @@ in
     partOf = [ "depository-backup.service" ];
     timerConfig = {
       Unit = "depository-backup.service";
-      OnCalendar = "*-*-* 01:00:00"; # daily at 1am
+      OnCalendar = "*-*-* 02:00:00"; # daily at 2am
     };
   };
   
