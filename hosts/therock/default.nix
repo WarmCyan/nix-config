@@ -218,6 +218,7 @@ in
       dwl = dwlKeys;
     };
     cgit.enable = true;
+    cgit.cssFiles = [ ./cgit_gruvbox_theme.css ];
     cgitAttrName = "local-git";
   };
   services.cgit.local-git = {
@@ -232,6 +233,7 @@ in
     enable = true;
     port = portImmich;
     host = "192.168.1.3";
+    machine-learning.enable = false;
   };
 
   services.ethercalc = {
@@ -657,7 +659,7 @@ in
     echo "Beginning web git archive..."
     
     echo "Archiving work OSS..."
-    git-bak /home/git/gitrepos/archive/github/work \
+    git-bak -b /home/git/gitrepos/archive/github/work \
       https://github.com/ORNL/tx2.git \
       https://github.com/ORNL/curifactory.git \
       https://github.com/ORNL/ipyanchorviz.git \
@@ -665,6 +667,16 @@ in
       https://github.com/ORNL/ipyoverlay.git \
       https://github.com/ORNL/reno.git
     echo "Archived work OSS!"
+
+    echo "Archiving personal repos..."
+    if [[ -f "/root/githubtoken.txt" ]]; then
+      echo "TOKEN FOUND."
+      git-bak -b -u WarmCyan -t /root/githubtoken.txt /home/git/gitrepos/archive/github/WarmCyan
+    else
+      echo "TOKEN NOT FOUND."
+      git-bak -b -u WarmCyan /home/git/gitrepos/archive/github/WarmCyan
+    fi
+    echo "Archived personal repos!"
     
     # git-bak 
     # rsync --archive --delete /home/git/* /depository/git_bak

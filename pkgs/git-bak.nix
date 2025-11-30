@@ -1,7 +1,7 @@
 { pkgs, builders }:
 builders.writeTemplatedShellApplication {
   name = "git-bak";
-  version = "0.2.0";
+  version = "0.3.0";
   description = "Repository backup tool";
   usage = "git-bak [-l additional_repos.txt] [-u username] [-t token_file] backup_dir [additional_repo1] ... [additional_repoN]";
   parameters = {
@@ -17,6 +17,10 @@ builders.writeTemplatedShellApplication {
       flags = [ "-t" "--token" ];
       description = "Path to a file containing github API token to use for the provided username for getting private repos. If specified without --username, will grab all of token's associated user's repos. Create token as fine grained token with metadata permissions.";
     };
+    bare = {
+      flags = [ "-b" "--bare" ];
+      description = "Clone as a bare repository (contents are the .git instead of the working dir.) Use this if backing a repo up into a place you'd want to clone elsewhere."
+    };
   };
   runtimeInputs = [
     pkgs.jq
@@ -28,7 +32,12 @@ builders.writeTemplatedShellApplication {
     repo_url="$1"
     repo_name=$(echo "''${repo_url}" | sed -e "s/.*\/\(.*\)$/\1/")
     echo "Collecting ''${repo_name} from ''${repo_url}..."
-    git -C "''${output_dir}/''${repo_name}" pull || git clone "''${repo_url}" "''${output_dir}/''${repo_name}"
+    if [[ "''${bare-false}" == true ]]; then
+      # https://stackoverflow.com/a/26172920
+      git -C "''${output_dir}/''${repo_name}" fetch origin +refs/heads/*:refs/heads/* --prune || git clone "''${repo_url}" "''${output_dir}/''${repo_name}" --bare
+    else
+      git -C "''${output_dir}/''${repo_name}" pull || git clone "''${repo_url}" "''${output_dir}/''${repo_name}"
+    fi
     sleep .5  # don't spam api
   }
 
