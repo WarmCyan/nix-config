@@ -219,6 +219,13 @@ in
     };
     cgit.enable = true;
     cgit.cssFiles = [ ./cgit_gruvbox_theme.css ];
+      cgit.css = /* css */ ''
+        code div.highlight pre span.sd,
+        code div.highlight pre span.s2,
+        code div.highlight pre span.si {
+          background-color: transparent;
+        };
+      '';
     cgitAttrName = "local-git";
   };
   services.cgit.local-git = {
