@@ -243,6 +243,7 @@ in
     port = portImmich;
     host = "192.168.1.3";
     machine-learning.enable = false;
+    database.enableVectors = false;
   };
 
   services.ethercalc = {

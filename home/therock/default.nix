@@ -10,6 +10,8 @@
   home.packages = with pkgs; [
     tcpdump
     gpg-without-tty
+
+    ranger
   ];
 
   # programs.git.signing.format = "openpgp"; # not a thing until 25.05
