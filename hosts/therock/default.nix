@@ -243,7 +243,10 @@ in
     port = portImmich;
     host = "192.168.1.3";
     machine-learning.enable = false;
-    database.enableVectors = false;
+    # database.enableVectors = false;
+    # Note that /depository/immich had to be manually created and owner/group
+    # both set to "immich"
+    mediaLocation = "/depository/immich";
   };
 
   services.ethercalc = {
