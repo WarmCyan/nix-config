@@ -380,10 +380,10 @@
     bgcolor=000000ff
   '';
   
-  programs.vscode = {
-    enable = true;
-    extensions = with pkgs.vscode-extensions; lib.mkForce [
-      vscodevim.vim
-    ];
-  };
+  # programs.vscode = {
+  #   enable = true;
+  #   extensions = with pkgs.vscode-extensions; lib.mkForce [
+  #     vscodevim.vim
+  #   ];
+  # };
 }
