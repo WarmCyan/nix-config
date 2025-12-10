@@ -375,7 +375,7 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 
 
-local lspconfig = require 'lspconfig'
+-- local lspconfig = require 'lspconfig'
 
 local opts = { noremap=true, silent=true }
 vim.keymap.set('n', '<LEADER>h', vim.diagnostic.setloclist, opts)
@@ -401,15 +401,15 @@ vim.lsp.set_log_level("debug")
 
 local servers = { 'bashls', 'vuels', 'vimls', 'svelte', 'ts_ls' }
 for _, lsp in pairs(servers) do
-    lspconfig[lsp].setup {
+    vim.lsp.config(lsp, {
         on_attach = on_attach,
         capabilities = capabilities
-    }
+    })
 end
 
 -- https://neovim.discourse.group/t/pylsp-config-is-not-used/2545
 -- https://neovim.discourse.group/t/pylsp-config-is-not-taken-into-account/1846
-lspconfig.pylsp.setup({
+vim.lsp.config("pylsp", {
     on_attach = on_attach,
     capabilities = capabilities,
     settings = {
@@ -433,7 +433,6 @@ lspconfig.pylsp.setup({
 
 local null_ls = require('null-ls')
 
-local util = require 'lspconfig/util'
 null_ls.setup({
     sources = {
         -- js

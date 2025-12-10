@@ -7,6 +7,7 @@
       ./hardware-configuration.nix
       ../common/fonts
       ../common/pipewire
+      ../common/sddm.nix
     ];
   
   musnix.enable = true;
@@ -103,17 +104,18 @@
       }
     ];
   };
-  services.displayManager = {
-    sddm = {
-      enable = true;
-      theme = "${(pkgs.fetchFromGitHub {
-        owner = "WildfireXIII";
-        repo = "sddm-chili";
-        rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
-        sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
-      })}";
-    };
-  };
+  # services.displayManager = {
+  #   sddm = {
+  #     enable = true;
+  #     theme = "sddm-chili";
+  #     # theme = "${(pkgs.fetchFromGitHub {
+  #     #   owner = "WildfireXIII";
+  #     #   repo = "sddm-chili";
+  #     #   rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
+  #     #   sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
+  #     # })}";
+  #   };
+  # };
   
   hardware.graphics = {
     enable = true;
@@ -147,12 +149,17 @@
     #   --output $CENTER --mode 2560x1440 --pos 1920x0 --rotate normal \
     #   --output $HDMI --off
       
-    ${pkgs.xorg.xrandr}/bin/xrandr \
-      --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right \
-      --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left \
-      --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary \
-      --output $HDMI --off
+    # ${pkgs.xorg.xrandr}/bin/xrandr \
+    #   --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right \
+    #   --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left \
+    #   --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary \
+    #   --output $HDMI --off
     
+    ${pkgs.xorg.xrandr}/bin/xrandr --output $HDMI --off --noprimary
+    ${pkgs.xorg.xrandr}/bin/xrandr --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right --noprimary
+    ${pkgs.xorg.xrandr}/bin/xrandr --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left --noprimary
+    ${pkgs.xorg.xrandr}/bin/xrandr --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary
+
     # set up my caps lock keyboard configuration
     ${pkgs.kbd-capslock}/bin/kbd-capslock
 
@@ -285,8 +292,8 @@
     i2c-tools
 
     # necessary for sddm theme
-    libsForQt5.qt5.qtquickcontrols
-    libsForQt5.qt5.qtgraphicaleffects
+    # libsForQt5.qt5.qtquickcontrols
+    # libsForQt5.qt5.qtgraphicaleffects
 
     kbd-capslock
 
@@ -310,6 +317,15 @@
 
 
     gparted
+
+
+    # (fetchFromGitHub {
+    #   owner = "WarmCyan";
+    #   repo = "sddm-chili";
+    #   rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
+    #   sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
+    # })
+    
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
