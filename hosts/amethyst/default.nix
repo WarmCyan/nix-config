@@ -118,7 +118,7 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true;  # recommended from https://linuxhint.com/how-to-instal-steam-on-nixos/
-  }
+  };
   services.xserver.videoDrivers = [ "nvidia" ];
   # (see https://nixos.wiki/wiki/Nvidia)
   hardware.nvidia = {

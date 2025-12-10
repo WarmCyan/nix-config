@@ -10,5 +10,5 @@
     jack.enable = true;
   };
 
-  services.pulseaudio.enable = false:
+  services.pulseaudio.enable = false;
 }
