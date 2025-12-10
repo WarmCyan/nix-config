@@ -29,7 +29,7 @@
   imports = [
     ../common/cli-core
     ../common/dev
-    ../common/vscode
+    # ../common/vscode
     ../common/beta
 
     ../common/i3

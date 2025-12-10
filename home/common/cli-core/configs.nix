@@ -7,9 +7,11 @@ in
 {
   programs.git = {
     enable = true;
-    userName = gitUsername;
-    userEmail = gitEmail;
-    extraConfig = {
+    settings = {
+      user = {
+        name = gitUsername;
+        email = gitEmail;
+      };
       init = { defaultBranch = "main"; }; # seems to be the new standard
       core = { pager = "cat"; }; # less pager is annoying since output won't persist in console
       diff = { colorMoved = "zebra"; }; # differentiates edited code from code that was simply moved
@@ -48,7 +50,7 @@ in
   programs.zsh = {
     enable = true;
     shellAliases = import ./shell-aliases.nix;
-    initExtra = concatFiles [ ./shell-common.sh ./shell-zsh-conf.sh ];
+    initContent = concatFiles [ ./shell-common.sh ./shell-zsh-conf.sh ];
     envExtra = ''
       # trying to get down ohmyzsh start times 
       # https://blog.patshead.com/2011/04/improve-your-oh-my-zsh-startup-time-maybe.html
