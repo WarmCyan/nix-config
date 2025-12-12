@@ -176,7 +176,7 @@ in
   #   };
   # };
   #
-  services.tt-rss = {
+  services.tt-rss-legacy = {
     enable = true;
     virtualHost = "ttrss";
     selfUrlPath = "http://192.168.130.2:${toString portTTRSS}";
