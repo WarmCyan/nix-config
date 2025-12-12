@@ -9,9 +9,6 @@
 
   git-bak = pkgs.callPackage ./git-bak.nix { inherit builders; };
 
-  tt-rss-plugin-freshapi = pkgs.callPackage ./freshapi.nix { };
-  tt-rss-plugin-close-button = pkgs.callPackage ./tt-close-btn.nix { };
-
   iris = pkgs.callPackage ./iris.nix { inherit pkgs builders; };
   sri-hash = pkgs.callPackage ./sri-hash.nix { inherit builders; };
   mic-monitor = pkgs.callPackage ./mic-monitor.nix { inherit pkgs builders; };

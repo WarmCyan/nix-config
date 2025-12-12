@@ -151,11 +151,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    tt-rss-nix = {
+      url = "github:WarmCyan/tt-rss-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # TODO: add in nix-colors! 
   };
 
   #outputs = inputs:
-  outputs = { self, nixpkgs, home-manager, nixgl, musnix, small-git-server, ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, nixgl, musnix, small-git-server, tt-rss-nix, ... } @ inputs:
   let
     inherit (self) outputs;
     
@@ -244,6 +249,7 @@
           modules = [
             ./hosts
             small-git-server.nixosModules.small-git-server
+            tt-rss-nix.nixosModules.tt-rss-nix
           ];
         specialArgs = {
           inherit self inputs outputs;
