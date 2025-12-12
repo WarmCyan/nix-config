@@ -249,7 +249,7 @@
           modules = [
             ./hosts
             small-git-server.nixosModules.small-git-server
-            tt-rss-nix.nixosModules.tt-rss-nix
+            tt-rss-nix.nixosModules.tt-rss
           ];
         specialArgs = {
           inherit self inputs outputs;
