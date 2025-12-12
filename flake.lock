@@ -133,7 +133,8 @@
         "nixgl": "nixgl",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-unstable": "nixpkgs-unstable",
-        "small-git-server": "small-git-server"
+        "small-git-server": "small-git-server",
+        "tt-rss-nix": "tt-rss-nix"
       }
     },
     "small-git-server": {
@@ -168,6 +169,26 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "tt-rss-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1765504899,
+        "narHash": "sha256-kpY9mv4Of9fv71q8FKnKh++YHiYF+dY7lMxfRp4Ir08=",
+        "owner": "WarmCyan",
+        "repo": "tt-rss-nix",
+        "rev": "a050c59e550ec8fa558a13cc0f80949802841050",
+        "type": "github"
+      },
+      "original": {
+        "owner": "WarmCyan",
+        "repo": "tt-rss-nix",
         "type": "github"
       }
     }
