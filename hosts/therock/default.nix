@@ -180,11 +180,11 @@ in
     enable = true;
     virtualHost = "ttrss";
     selfUrlPath = "http://192.168.130.2:${toString portTTRSS}";
-    themePackages = [ pkgs.tt-rss-theme-feedly-legacy ];
+    themePackages = [ tt-rss-nix.tt-rss-theme-feedly-legacy ];
     pluginPackages = [
       # pkgs.tt-rss-plugin-feediron
-      pkgs.tt-rss-plugin-freshapi-legacy
-      pkgs.tt-rss-plugin-close-button-legacy
+      tt-rss-nix.tt-rss-plugin-freshapi-legacy
+      tt-rss-nix.tt-rss-plugin-close-button-legacy
     ];
     plugins = [
       "auth_internal"
