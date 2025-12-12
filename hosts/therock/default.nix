@@ -183,7 +183,7 @@ in
     themePackages = [ pkgs.tt-rss-theme-feedly-legacy ];
     pluginPackages = [
       # pkgs.tt-rss-plugin-feediron
-      pkgs.tt-rss-plugin-freshapi-legacy
+      pkgs.tt-rss-plugin-fresh-api-legacy
       pkgs.tt-rss-plugin-close-button-legacy
     ];
     plugins = [
