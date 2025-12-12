@@ -234,7 +234,7 @@
       };
       bench = lib.nixosSystem {
         pkgs = pkgsFor.x86_64-linux;
-          modules = [ ./hosts ];
+        modules = [ ./hosts ];
         specialArgs = {
           inherit self inputs outputs;
           stable = true;
@@ -245,12 +245,12 @@
         };
       };
       therock = lib.nixosSystem {
-        pkgs = pkgsFor.x86_64-linux;
-          modules = [
-            ./hosts
-            small-git-server.nixosModules.small-git-server
-            tt-rss-nix.nixosModules.tt-rss
-          ];
+        pkgs = pkgsFor.x86_64-linux ++ tt-rss-nix.packages;
+        modules = [
+          ./hosts
+          small-git-server.nixosModules.small-git-server
+          tt-rss-nix.nixosModules.tt-rss
+        ];
         specialArgs = {
           inherit self inputs outputs;
           stable = true;
