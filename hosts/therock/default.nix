@@ -184,7 +184,7 @@ in
     pluginPackages = [
       # pkgs.tt-rss-plugin-feediron
       inputs.tt-rss-nix.packages.x86_64-linux.tt-rss-plugin-fresh-api-legacy
-      inputs.tt-rss-nix.packages.x86_64-linux.tt-rss-plugin-close-button-legacy
+      inputs.tt-rss-nix.packages.x86_64-linux.tt-rss-plugin-close-btn-legacy
       # pkgs.tt-rss-plugin-close-button-legacy
     ];
     plugins = [
