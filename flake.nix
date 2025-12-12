@@ -245,7 +245,7 @@
         };
       };
       therock = lib.nixosSystem {
-        pkgs = pkgsFor.x86_64-linux ++ tt-rss-nix.packages;
+        pkgs = pkgsFor.x86_64-linux // tt-rss-nix.packages;
         modules = [
           ./hosts
           small-git-server.nixosModules.small-git-server
