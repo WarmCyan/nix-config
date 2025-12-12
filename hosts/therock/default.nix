@@ -387,14 +387,15 @@ in
             color: white;
             font-family: arial;
           }
-          a {
-            color: #33AAFF;
+          a, h1 {
+            /* color: #33AAFF; */
+            color: #DD8855;
           }
         </style>
       </head>
       <body>
-        <h1>DWLabs Wireguard Network</h1>
-        <p>Services server on wireguard network is at 192.168.130.2</p>
+        <h1>Warm Network</h1>
+        <p>Services on internal wireguard network at 192.168.130.2</p>
         <p><a href="http://192.168.130.2:${toString portTTRSS}">Tiny Tiny RSS (${toString portTTRSS})</a> - RSS/Feed reader</p>
         <!-- <p><a href="http://192.168.130.2:${toString portRSSBridge}">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p> -->
         <p><a href="http://192.168.130.2/rss-bridge">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p>
