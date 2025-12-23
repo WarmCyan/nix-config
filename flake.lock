@@ -179,11 +179,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1765507565,
-        "narHash": "sha256-qDfsOc9CLDa0ZKVpeABed6EY2kmXhEv3RypIbyZ7L4U=",
+        "lastModified": 1765513742,
+        "narHash": "sha256-fyZPaGWkWbCEu4VrkJSqB4oqK+F3dNeN9mEIs0yPvvE=",
         "owner": "WarmCyan",
         "repo": "tt-rss-nix",
-        "rev": "e09be4c1f7cb4ac0aa83b62c38a54da97c63d8e1",
+        "rev": "ba653c6f1efcca49458977dd4e3c169aabed466b",
         "type": "github"
       },
       "original": {
