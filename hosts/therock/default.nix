@@ -36,7 +36,19 @@ in
     loader.efi.canTouchEfiVariables = true;
     loader.efi.efiSysMountPoint = "/boot/efi";
     #kernelPackages = pkgs.linuxKernel.packages.linux_zen # TODO: use this for games
+    enableContainers = true; # necessary for containers to work obv
   };
+
+  containers.cyan = {
+    autoStart = true;
+    config = (import ./cyan-network-config.nix);
+    privateNetwork = true;
+    hostAddress = "192.168.1.31";  # firewall machine should point to this? "external" ip?
+    localAddress = "192.168.1.30"; # address within the container?
+  };
+  networking.nat.enable = true;
+  networking.nat.internalInterfaces = [ "ve-cyan" ];
+  networking.nat.externalInterface = "eth0";
 
   
   # Enable CUPS to print documents.

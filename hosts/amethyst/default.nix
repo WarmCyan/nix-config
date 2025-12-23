@@ -12,6 +12,23 @@
   
   musnix.enable = true;
 
+
+  # ==== FASTER TESTING THAN SERVER
+  containers.cyan = {
+    autoStart = true;
+    config = (import ../therock/cyan-network-config.nix);
+    privateNetwork = true;
+    hostAddress = "192.168.1.31";  # firewall machine should point to this? "external" ip?
+    localAddress = "192.168.1.30"; # address within the container?
+  };
+  networking.nat.enable = true;
+  networking.nat.internalInterfaces = [ "ve-cyan" ];
+  networking.nat.externalInterface = "eth0";
+  # ==== /FASTER TESTING THAN SERVER
+
+
+  
+
   # Bootloader.
   boot.loader = {
     systemd-boot.enable = false;
