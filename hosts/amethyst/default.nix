@@ -30,7 +30,7 @@
   };
   networking.nat.enable = true;
   networking.nat.internalInterfaces = [ "ve-cyan" ]; # I assume this should be wg1 too?
-  networking.nat.externalInterface = "eth0";
+  networking.nat.externalInterface = "enp6s0";
   # ==== /FASTER TESTING THAN SERVER
 
 
