@@ -23,10 +23,14 @@
     allowedDevices = [
       { modifier = "rwm"; node = "/dev/net/tun"; }
     ];
+
+    forwardPorts = [
+      { containerPort = 51830; hostPort = 51830; protocol = "udp"; }
+    ];
   };
   networking.nat.enable = true;
   networking.nat.internalInterfaces = [ "ve-cyan" ]; # I assume this should be wg1 too?
-  networking.nat.externalInterface = "eth0";  
+  networking.nat.externalInterface = "eth0";
   # ==== /FASTER TESTING THAN SERVER
 
 
@@ -287,7 +291,7 @@
       PasswordAuthentication = true; # TODO: set this to false
       PermitRootLogin = "no";
     };
-  };
+};
 
   environment.variables = {
     #NIX_LD = builtins.readFile "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
@@ -345,6 +349,8 @@
     #   rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
     #   sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
     # })
+
+    unixtools.net-tools
     
   ];
 

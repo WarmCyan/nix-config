@@ -31,12 +31,16 @@
     settings = {
       https.enabled = false;
       dns.enabled = false;
-      vpn.allowedIPs = [ "192.168.200.1/24" ];
-      vpn.cidr = "192.168.200.1/24";
+      vpn.allowedIPs = [ "192.168.200.0/24" ];
+      vpn.cidr = "192.168.200.0/24";
       wireguard.port = 51830;
       wireguard.interface = "wg2";
       port = 8000;
       loglevel = "debug";
+      vpn.cidrv6 = 0;
+      vpn.nat66 = false;
+      externalHost = "192.168.1.31"; # eventually set to external ip
+      httpHost = "192.168.200.1";
     };
     secretsFile = "/etc/wg/wg-access-server-secrets";
   };
@@ -51,7 +55,9 @@
     enable = true;
     virtualHosts = {
       "services-index" = {
-        listen = [{ port = 80; addr = "192.168.1.30"; }]; # eventually should be wg ip
+        # listen = [{ port = 80; addr = "192.168.1.30"; }]; # eventually should be wg ip
+        # listen = [{ port = 80; addr = "192.168.1.30"; }]; # eventually should be wg ip
+        listen = [{ port = 80; addr = "192.168.200.1"; }]; # eventually should be wg ip
         locations."/" = {
           root = "/etc/web";
           tryFiles = "/index.html =404";
