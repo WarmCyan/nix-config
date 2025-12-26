@@ -20,10 +20,13 @@
     privateNetwork = true;
     hostAddress = "192.168.1.31";  # firewall machine should point to this? "external" ip?
     localAddress = "192.168.1.30"; # address within the container?
+    allowedDevices = [
+      { modifier = "rwm"; node = "/dev/net/tun"; }
+    ];
   };
   networking.nat.enable = true;
-  networking.nat.internalInterfaces = [ "ve-cyan" ];
-  networking.nat.externalInterface = "eth0";
+  networking.nat.internalInterfaces = [ "ve-cyan" ]; # I assume this should be wg1 too?
+  networking.nat.externalInterface = "eth0";  
   # ==== /FASTER TESTING THAN SERVER
 
 
