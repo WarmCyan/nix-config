@@ -1,8 +1,9 @@
 # external wireguard network container config
 
 { pkgs, lib, config, ... }:
-# let
-# in
+let
+  generator = import ./homepage_builder.nix { };
+in
 {
 
   networking.firewall.allowedTCPPorts = [ 
@@ -12,19 +13,19 @@
 
   networking.firewall.allowedUDPPorts = [ 51830 ];
 
-  networking.wireguard = {
-    enable = true;
-    interfaces = {
-      # wg1 = {
-      #   ips = [ "192.168.200.1/32" ];
-      #
-      #   listenPort = 51830;
-      #
-      #   privateKeyFile = "/etc/wg/private_key";
-      #   generatePrivateKeyFile = true;
-      # };
-    };
-  };
+  # networking.wireguard = {
+  #   enable = true;
+  #   interfaces = {
+  #     # wg1 = {
+  #     #   ips = [ "192.168.200.1/32" ];
+  #     #
+  #     #   listenPort = 51830;
+  #     #
+  #     #   privateKeyFile = "/etc/wg/private_key";
+  #     #   generatePrivateKeyFile = true;
+  #     # };
+  #   };
+  # };
 
   services.wg-access-server = {
     enable = true;
@@ -67,12 +68,59 @@
   };
 
   environment.etc = {
-    "web/index.html".source = pkgs.writeText "index.html" /* html */ ''
-      <html>
-        <body>
-          <h1>Hello world!</h1>
-        </body>
-      </html>
-    '';
+    "web/index.html".source = pkgs.writeText "index.html" (generator.generateHomepageHTML 
+      {
+        title = "Cyan Network";
+        services = [
+          {
+            name = "CGit";
+            port = 9000;
+          }
+          {
+            name = "Testing";
+            port = 8000;
+            url = "what";
+            icon = ''
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="34"
+                height="34"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 12l0 .01" />
+                <path d="M14.828 9.172a4 4 0 0 1 0 5.656" />
+                <path d="M17.657 6.343a8 8 0 0 1 0 11.314" />
+                <path d="M9.168 14.828a4 4 0 0 1 0 -5.656" />
+                <path d="M6.337 17.657a8 8 0 0 1 0 -11.314" />
+              </svg>
+              '';
+            desc = "This is a thing I do for testing";
+          }
+        ];
+        defaultAddr = "http://192.168.200.1";
+        css = /* css */ ''
+          body {
+            background-color: black;
+            color: white;
+            font-family: arial;
+          }
+          a {
+            color: #77AAFF;
+          }
+        '';
+      });
+      
+    # "web/index.html".source = pkgs.writeText "index.html" /* html */ ''
+    #   <html>
+    #     <body>
+    #       <h1>Hello world!</h1>
+    #     </body>
+    #   </html>
+    # '';
   };
 }
