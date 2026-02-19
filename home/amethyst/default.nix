@@ -143,6 +143,11 @@
     unrar
 
     git-bak
+
+    chromium
+    zoom-us
+
+    sshfs
   ];
 
   xsession.windowManager.i3 = {
