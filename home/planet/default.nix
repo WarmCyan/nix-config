@@ -44,7 +44,9 @@ in
     inkscape
 
     powerline-fonts
-    (nerdfonts.override { fonts = [ "DroidSansMono" "Iosevka" ]; })
+    # (nerdfonts.override { fonts = [ "DroidSansMono" "Iosevka" ]; })
+    nerd-fonts.droid-sans-mono
+    nerd-fonts.iosevka
 
     zeal
     cg

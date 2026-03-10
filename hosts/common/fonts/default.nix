@@ -5,7 +5,9 @@
   fonts.fontDir.enable = true;
   fonts.packages = with pkgs; [
     powerline-fonts
-    (nerdfonts.override { fonts = [ "Iosevka" "Inconsolata" ]; })
+    # (nerdfonts.override { fonts = [ "Iosevka" "Inconsolata" ]; })
     # nerdfonts
+    nerd-fonts.iosevka
+    nerd-fonts.inconsolata
   ];
 }

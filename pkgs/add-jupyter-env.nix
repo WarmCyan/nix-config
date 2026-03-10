@@ -1,7 +1,7 @@
 { writeShellApplication, pkgs }:
 writeShellApplication {
   name = "add-jupyter-env";
-  runtimeInputs = [ pkgs.micromamba ];
+  runtimeInputs = [ pkgs.unstable.micromamba ];
   text = /* bash */ ''
     micromamba install \
       jupyter \

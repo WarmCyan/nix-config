@@ -6,14 +6,23 @@ let
   # portFreshRSS      = 2025;
   portTTRSS         = 2030;
   portRSSBridge     = 2031;
+  portImmich        = 2283;
   portGrafana       = 3000;
   portKiwix         = 4080;
+  portEtherCalc     = 5032;
   portCGit          = 5080;
   portWebDavNathan  = 7121;
   portWebDavMum     = 7122;
   portWebDavSis     = 7123;
   portWebDavShared  = 7124;
   portInternalWC    = 8000;
+
+
+  dwlKeys = [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxO5tXpnUz8q/HixsxjLatz9VnV3uBWvm9Qbk4QLjZA2mKmTYhMRK0iH6DNwLVDmorgZwr0tXzV6gLvnTf3uT2PAQQ34Mhoj57eAg3wAXSrEeM8fLuKXucMXKsoSBxNZMUVt+fVAmAG3pB3AhkeCw1yHTTe9Zj+rXEStr90ewc9g3InDF8PpcTmJzsFgdRb5aQxb9LR04+D6malNQSksIlcmxEDYvn/l2az+/+N1b+ymMF1rfi1ipU7e9oQiWwwlMtEROlhHhZxwbLycBhEqYZtbzaRSwUV1BFQ9WIp0xwW11Rq7nmpmeNJ3TA/tU53lz52VGDW7ItkB1WxDBtrYXyS0FpYWE7UXxB013IA04tf7yraitkh/wr9bqXfYpMyctdMc90Jo2E5Xaz6K7EajzeSwbk3jP7MPqH58XIqtLQRvjimfhVk63NFxCCemn8wjtCUjPUAFu3zNVN+5pgywnqYGBhY5pLAWixC2AhVDzYBmlqOH/v1w5OL2Y1phQLmyE= u0_a508@localhost"
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZsSBtvLAK8s2pIlKK7psGRvk+h1z3jJ7nCLPr18xK1Wu657H2AcNv7QF230lGabIKXRabiEHu2OhrSG02lu/KVpuOk4IudKRkE2UtOIMyt9+1eGj+1jzPHHxu2L7uLgySBLfN6e7WCObcUv15Mm5VYIYCs1hYNJopBnNa8pfBbhX0Hbhs0naJGB8XhF93PqZJTpTKv9YgPHgXGrB0a4ck8i249eCyx3i0FEO6IsymvvZVONcLo9hn3IHRVq8v3Tm8C0rbM7T5khFrXJ8/jhL198GA9YHglPDde6a7azmAAWd6JZZZpLwPQQQ8NvEjWNjlxss5Y2OmlbDLXDIsCwgG0iUNhJ9FJnqJrz0CVm+qrFv+xUflqP0vb/TJnx9iH0CS8/S4ftmwbVJK0cdmmTFTHRAtKb5OL87pKPbAhrWbLW9APaR7pyYwCFEho5W088Fwrt7GHn3D+jKukjXnFjiZWB2v8+qIQBmzdALmVcfPkPioVPuMBzNfimifpXIj/r0= dwl@amethyst"
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDYSifrofamgq1lnJhhl8C6brPPjAlhzwL8IzKtl4j+1Gbtxd7G244r+seE/Qsp1PJ5uK1ocTK9hMNEMZW3gIkeuhHMBl1IN/ldZtP2OvBu3bVEaaJmpdWwu00+FtyAXHTjUX8YlEpbU1ZHlRi+8PzMbaqd5Y9oq+sjUhqd22Gkc6rKXX3hznkdW4FJZLbbfSg7jvijZZiGdm+IOiS6+UjXnZP0SsT9Xzjn5SXQNobWXU5CbNIJyH7ObD2rL9CWcfRzCQ6U7F43wWGEcwikGe6RPCxAjTlie4J8XI+NvcjUmhQ2WRFWrMLnF44EROnwtxpwugenlNq8lB/vPVdN/X5Wc9YZX7Z4CBXplxO/Uxgb3ZPdbaCpr7xlu9WXXq0FmdIA4c0oUDGRAcirYFzbXfOuix88qEg32I6bxyw+sx6m43NPL1TzrZEK/NN79jUErxzAh+SjH2y2T+5GZ1EFUrDSgXp1XaIuBdFjiMcLBEDOjZ1lFwtoAm7vIq7m/7X7GQc= dwl@delta"
+  ];
 in
 {
   imports = [
@@ -27,6 +36,33 @@ in
     loader.efi.canTouchEfiVariables = true;
     loader.efi.efiSysMountPoint = "/boot/efi";
     #kernelPackages = pkgs.linuxKernel.packages.linux_zen # TODO: use this for games
+    enableContainers = true; # necessary for containers to work obv
+  };
+
+  containers.cyan = {
+    autoStart = true;
+    config = (import ./cyan-network-config.nix);
+    privateNetwork = true;
+    hostAddress = "192.168.1.31";  # firewall machine should point to this? "external" ip?
+    localAddress = "192.168.1.30"; # address within the container?
+  };
+  networking.nat.enable = true;
+  networking.nat.internalInterfaces = [ "ve-cyan" ];
+  networking.nat.externalInterface = "eth0";
+
+  
+  # Enable CUPS to print documents.
+  # NOTE: printer type is HL-L23800W
+  services.printing = {
+    enable = true;
+    drivers = [
+      pkgs.brlaser
+    ];
+    listenAddresses = [ "*:6031" ];
+    allowFrom = [ "all" ];
+    browsing = true;
+    defaultShared = true;
+    openFirewall = true;
   };
 
   # networking
@@ -46,7 +82,9 @@ in
         80
         443
         portGrafana
+        portImmich
         portKiwix
+        portEtherCalc
         portCGit
         portWebDavNathan
         portWebDavMum
@@ -82,35 +120,11 @@ in
     extraGroups = [ "nginx" "networkmanager" "wheel" "git" ];
     packages = with pkgs; [
       firefox
-      kate
+      kdePackages.kate
     ];
 
-    openssh.authorizedKeys.keys = [
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxO5tXpnUz8q/HixsxjLatz9VnV3uBWvm9Qbk4QLjZA2mKmTYhMRK0iH6DNwLVDmorgZwr0tXzV6gLvnTf3uT2PAQQ34Mhoj57eAg3wAXSrEeM8fLuKXucMXKsoSBxNZMUVt+fVAmAG3pB3AhkeCw1yHTTe9Zj+rXEStr90ewc9g3InDF8PpcTmJzsFgdRb5aQxb9LR04+D6malNQSksIlcmxEDYvn/l2az+/+N1b+ymMF1rfi1ipU7e9oQiWwwlMtEROlhHhZxwbLycBhEqYZtbzaRSwUV1BFQ9WIp0xwW11Rq7nmpmeNJ3TA/tU53lz52VGDW7ItkB1WxDBtrYXyS0FpYWE7UXxB013IA04tf7yraitkh/wr9bqXfYpMyctdMc90Jo2E5Xaz6K7EajzeSwbk3jP7MPqH58XIqtLQRvjimfhVk63NFxCCemn8wjtCUjPUAFu3zNVN+5pgywnqYGBhY5pLAWixC2AhVDzYBmlqOH/v1w5OL2Y1phQLmyE= u0_a508@localhost"
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZsSBtvLAK8s2pIlKK7psGRvk+h1z3jJ7nCLPr18xK1Wu657H2AcNv7QF230lGabIKXRabiEHu2OhrSG02lu/KVpuOk4IudKRkE2UtOIMyt9+1eGj+1jzPHHxu2L7uLgySBLfN6e7WCObcUv15Mm5VYIYCs1hYNJopBnNa8pfBbhX0Hbhs0naJGB8XhF93PqZJTpTKv9YgPHgXGrB0a4ck8i249eCyx3i0FEO6IsymvvZVONcLo9hn3IHRVq8v3Tm8C0rbM7T5khFrXJ8/jhL198GA9YHglPDde6a7azmAAWd6JZZZpLwPQQQ8NvEjWNjlxss5Y2OmlbDLXDIsCwgG0iUNhJ9FJnqJrz0CVm+qrFv+xUflqP0vb/TJnx9iH0CS8/S4ftmwbVJK0cdmmTFTHRAtKb5OL87pKPbAhrWbLW9APaR7pyYwCFEho5W088Fwrt7GHn3D+jKukjXnFjiZWB2v8+qIQBmzdALmVcfPkPioVPuMBzNfimifpXIj/r0= dwl@amethyst"
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDYSifrofamgq1lnJhhl8C6brPPjAlhzwL8IzKtl4j+1Gbtxd7G244r+seE/Qsp1PJ5uK1ocTK9hMNEMZW3gIkeuhHMBl1IN/ldZtP2OvBu3bVEaaJmpdWwu00+FtyAXHTjUX8YlEpbU1ZHlRi+8PzMbaqd5Y9oq+sjUhqd22Gkc6rKXX3hznkdW4FJZLbbfSg7jvijZZiGdm+IOiS6+UjXnZP0SsT9Xzjn5SXQNobWXU5CbNIJyH7ObD2rL9CWcfRzCQ6U7F43wWGEcwikGe6RPCxAjTlie4J8XI+NvcjUmhQ2WRFWrMLnF44EROnwtxpwugenlNq8lB/vPVdN/X5Wc9YZX7Z4CBXplxO/Uxgb3ZPdbaCpr7xlu9WXXq0FmdIA4c0oUDGRAcirYFzbXfOuix88qEg32I6bxyw+sx6m43NPL1TzrZEK/NN79jUErxzAh+SjH2y2T+5GZ1EFUrDSgXp1XaIuBdFjiMcLBEDOjZ1lFwtoAm7vIq7m/7X7GQc= dwl@delta"
-    ];
+    openssh.authorizedKeys.keys = dwlKeys;
   };
-
-  users.users.git = {
-    isNormalUser = true;
-    isSystemUser = lib.mkForce false;
-    description = "Git repositories";
-    shell = "${pkgs.git}/bin/git-shell";
-
-    # https://serverfault.com/a/1023657
-    # 
-    # openssh.authorizedKeys.keys = builtins.map (x: "restrict,command=\"${pkgs.git}/bin/git-shell -c \\\"$SSH_ORIGINAL_COMMAND\\\"\" " + x) [
-    openssh.authorizedKeys.keys = [
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxO5tXpnUz8q/HixsxjLatz9VnV3uBWvm9Qbk4QLjZA2mKmTYhMRK0iH6DNwLVDmorgZwr0tXzV6gLvnTf3uT2PAQQ34Mhoj57eAg3wAXSrEeM8fLuKXucMXKsoSBxNZMUVt+fVAmAG3pB3AhkeCw1yHTTe9Zj+rXEStr90ewc9g3InDF8PpcTmJzsFgdRb5aQxb9LR04+D6malNQSksIlcmxEDYvn/l2az+/+N1b+ymMF1rfi1ipU7e9oQiWwwlMtEROlhHhZxwbLycBhEqYZtbzaRSwUV1BFQ9WIp0xwW11Rq7nmpmeNJ3TA/tU53lz52VGDW7ItkB1WxDBtrYXyS0FpYWE7UXxB013IA04tf7yraitkh/wr9bqXfYpMyctdMc90Jo2E5Xaz6K7EajzeSwbk3jP7MPqH58XIqtLQRvjimfhVk63NFxCCemn8wjtCUjPUAFu3zNVN+5pgywnqYGBhY5pLAWixC2AhVDzYBmlqOH/v1w5OL2Y1phQLmyE= u0_a508@localhost"
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZsSBtvLAK8s2pIlKK7psGRvk+h1z3jJ7nCLPr18xK1Wu657H2AcNv7QF230lGabIKXRabiEHu2OhrSG02lu/KVpuOk4IudKRkE2UtOIMyt9+1eGj+1jzPHHxu2L7uLgySBLfN6e7WCObcUv15Mm5VYIYCs1hYNJopBnNa8pfBbhX0Hbhs0naJGB8XhF93PqZJTpTKv9YgPHgXGrB0a4ck8i249eCyx3i0FEO6IsymvvZVONcLo9hn3IHRVq8v3Tm8C0rbM7T5khFrXJ8/jhL198GA9YHglPDde6a7azmAAWd6JZZZpLwPQQQ8NvEjWNjlxss5Y2OmlbDLXDIsCwgG0iUNhJ9FJnqJrz0CVm+qrFv+xUflqP0vb/TJnx9iH0CS8/S4ftmwbVJK0cdmmTFTHRAtKb5OL87pKPbAhrWbLW9APaR7pyYwCFEho5W088Fwrt7GHn3D+jKukjXnFjiZWB2v8+qIQBmzdALmVcfPkPioVPuMBzNfimifpXIj/r0= dwl@amethyst"
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDYSifrofamgq1lnJhhl8C6brPPjAlhzwL8IzKtl4j+1Gbtxd7G244r+seE/Qsp1PJ5uK1ocTK9hMNEMZW3gIkeuhHMBl1IN/ldZtP2OvBu3bVEaaJmpdWwu00+FtyAXHTjUX8YlEpbU1ZHlRi+8PzMbaqd5Y9oq+sjUhqd22Gkc6rKXX3hznkdW4FJZLbbfSg7jvijZZiGdm+IOiS6+UjXnZP0SsT9Xzjn5SXQNobWXU5CbNIJyH7ObD2rL9CWcfRzCQ6U7F43wWGEcwikGe6RPCxAjTlie4J8XI+NvcjUmhQ2WRFWrMLnF44EROnwtxpwugenlNq8lB/vPVdN/X5Wc9YZX7Z4CBXplxO/Uxgb3ZPdbaCpr7xlu9WXXq0FmdIA4c0oUDGRAcirYFzbXfOuix88qEg32I6bxyw+sx6m43NPL1TzrZEK/NN79jUErxzAh+SjH2y2T+5GZ1EFUrDSgXp1XaIuBdFjiMcLBEDOjZ1lFwtoAm7vIq7m/7X7GQc= dwl@delta"
-    ];
-  };
-
-  # users.users.cgit = {
-  #   extraGroups = [ "users" ];
-  # };
 
   environment.systemPackages = with pkgs; [
     vim
@@ -120,7 +134,7 @@ in
     curl
     ncdu
     iproute2  # ip link etc.
-    gnufdisk
+    # gnufdisk
     
     unstable.nix-output-monitor  # nix-output-monitor, maybe don't actually include this, just make it so my custom packages require it as a dependency.
     unstable.nvd
@@ -133,9 +147,10 @@ in
     kiwix-tools
 
     pinentry-curses
-    pandoc_3_5
+    pandoc
     python3
 
+    uv
     imagemagick
   ];
 
@@ -148,7 +163,7 @@ in
     };
     
     # KDE/plasma
-    desktopManager.plasma5.enable = true;
+    # desktopManager.plasma5.enable = true;
   };
   services.displayManager = {
     sddm.enable = true;
@@ -173,15 +188,16 @@ in
   #   };
   # };
   #
-  services.tt-rss = {
+  services.tt-rss-legacy = {
     enable = true;
     virtualHost = "ttrss";
     selfUrlPath = "http://192.168.130.2:${toString portTTRSS}";
-    themePackages = [ pkgs.tt-rss-theme-feedly ];
+    themePackages = [ inputs.tt-rss-nix.packages.x86_64-linux.tt-rss-plugin-theme-feedly-legacy ];
     pluginPackages = [
       # pkgs.tt-rss-plugin-feediron
-      pkgs.tt-rss-plugin-freshapi
-      pkgs.tt-rss-plugin-close-button
+      inputs.tt-rss-nix.packages.x86_64-linux.tt-rss-plugin-fresh-api-legacy
+      inputs.tt-rss-nix.packages.x86_64-linux.tt-rss-plugin-close-btn-legacy
+      # pkgs.tt-rss-plugin-close-button-legacy
     ];
     plugins = [
       "auth_internal"
@@ -209,19 +225,56 @@ in
     };
   };
 
-  services.cgit.local-git = {
-    package = pkgs.cgit-themed;
+  services.small-git-server = {
     enable = true;
+    userSSHKeys = {
+      dwl = dwlKeys;
+    };
+    cgit.enable = true;
+    cgit.cssFiles = [ ./cgit_gruvbox_theme.css ];
+      cgit.css = /* css */ ''
+        code div.highlight pre span.sd,
+        code div.highlight pre span.s2,
+        code div.highlight pre span.si {
+          background-color: transparent;
+        };
+      '';
+    cgitAttrName = "local-git";
+  };
+  services.cgit.local-git = {
     #nginx.location = "/git/";
-    user = "git";
-    scanPath = "/home/git/dwl";
     settings = {
-      source-filter = "${pkgs.cgit}/lib/cgit/filters/syntax-highlighting.py";
-      about-filter = "${pkgs.cgit}/lib/cgit/filters/about-formatting.sh";
-      readme = "README.md";
-      enable-git-config = 1;
+      section-from-path = 3;
+      # clone-url = "http://192.168.130.2:${toString portCGit}/$CGIT_REPO_URL git@192.168.130.2:${toString portCGit}/$CGIT_REPO_URL";
+      clone-url = "git@192.168.130.2:$CGIT_REPO_URL";
     };
   };
+
+  services.immich = {
+    package = pkgs.unstable.immich;
+    enable = true;
+    port = portImmich;
+    host = "192.168.1.3";
+    machine-learning.enable = false;
+    # database.enableVectors = false;
+    # Note that /depository/immich had to be manually created and owner/group
+    # both set to "immich"
+    mediaLocation = "/depository/immich";
+  };
+
+  services.ethercalc = {
+    enable = true;
+    port = portEtherCalc;
+  };
+
+  # services.cryptpad = {
+  #   enable = true;
+  #   settings = {
+  #     httpPort = portEtherCalc;
+  #     httpAddress = "0.0.0.0";
+  #     httpSafeOrigin = null;
+  #   };
+  # };
   
   #
   # services.freshrss = {
@@ -279,6 +332,21 @@ in
       "rss-bridge" = {
         listen = [{ port = portRSSBridge; addr = "192.168.130.2"; }];
       };
+      "immich" = {
+        listen = [{ port = portImmich; addr = "192.168.130.2"; }];
+        locations."/" = {
+          # proxyPass = "http://[::1]:${toString config.services.immich.port}";
+          proxyPass = "http://192.168.1.3:${toString portImmich}";
+          proxyWebsockets = true;
+          recommendedProxySettings = true;
+          extraConfig = ''
+            client_max_body_size 50000M;
+            proxy_read_timeout   600s;
+            proxy_send_timeout   600s;
+            send_timeout         600s;
+          '';
+        };
+      };
       # this is necessary because tt-rss won't download from non-80 ports. So,
       # added an address to /etc/hosts (networking.hosts) and proxy it here.
       # "rss-bridge-proxy" = {
@@ -332,19 +400,22 @@ in
             color: white;
             font-family: arial;
           }
-          a {
-            color: #33AAFF;
+          a, h1 {
+            /* color: #33AAFF; */
+            color: #DD8855;
           }
         </style>
       </head>
       <body>
-        <h1>DWLabs Wireguard Network</h1>
-        <p>Services server on wireguard network is at 192.168.130.2</p>
+        <h1>Warm Network</h1>
+        <p>Services on internal wireguard network at 192.168.130.2</p>
         <p><a href="http://192.168.130.2:${toString portTTRSS}">Tiny Tiny RSS (${toString portTTRSS})</a> - RSS/Feed reader</p>
         <!-- <p><a href="http://192.168.130.2:${toString portRSSBridge}">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p> -->
         <p><a href="http://192.168.130.2/rss-bridge">RSS Bridge (${toString portRSSBridge})</a> - RSS/Feed creator</p>
+        <p><a href="http://192.168.130.2:${toString portImmich}">Immich (${toString portImmich})</a> - photo gallery</p>
         <p><a href="http://192.168.130.2:${toString portGrafana}">Grafana (${toString portGrafana})</a> - network/system monitoring</p>
         <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - local wikipedia/zim wikis</p>
+        <p><a href="http://192.168.130.2:${toString portEtherCalc}">EtherCalc (${toString portEtherCalc})</a> - collaborative spreadsheets</p>
         <p><a href="http://192.168.130.2:${toString portCGit}">CGit (${toString portCGit})</a> - local git repo browser</p>
         <p><a href="http://192.168.130.2:${toString portWebDavNathan}">Nathan's files (${toString portWebDavNathan})</a> - rclone webdav storage folder</p>
         <p><a href="http://192.168.130.2:${toString portWebDavSis}">Jackie's files (${toString portWebDavSis})</a> - rclone webdav storage folder</p>
@@ -608,6 +679,51 @@ in
   # };
   #
 
+  systemd.services."update-web-git-archive" = {
+    serviceConfig.Type = "oneshot";
+    path = with pkgs; [ bash git-bak ];
+    script = /* bash */ ''
+    echo "Beginning web git archive..."
+    
+    echo "Archiving work OSS..."
+    git-bak -b /home/git/gitrepos/archive/github/work \
+      https://github.com/ORNL/tx2.git \
+      https://github.com/ORNL/curifactory.git \
+      https://github.com/ORNL/ipyanchorviz.git \
+      https://github.com/ORNL/icat.git \
+      https://github.com/ORNL/ipyoverlay.git \
+      https://github.com/ORNL/reno.git
+    echo "Archived work OSS!"
+
+    echo "Archiving personal repos..."
+    # NOTE: in order for this to work, I add to copy dwl's id_rsa* into
+    # /root/.ssh, and then add a set of lines in /root/.ssh/config:
+    # https://stackoverflow.com/questions/4565700/how-to-specify-the-private-ssh-key-to-use-when-executing-shell-command-on-git
+    if [[ -f "/root/githubtoken.txt" ]]; then
+      echo "TOKEN FOUND."
+      git-bak -b -u WarmCyan -t /root/githubtoken.txt /home/git/gitrepos/archive/github/WarmCyan
+    else
+      echo "TOKEN NOT FOUND."
+      git-bak -b -u WarmCyan /home/git/gitrepos/archive/github/WarmCyan
+    fi
+    echo "Archived personal repos!"
+    
+    # git-bak 
+    # rsync --archive --delete /home/git/* /depository/git_bak
+    # chmod g+rw /depository/git_bak
+    echo "Archive complete!"
+    '';
+  };
+  systemd.timers."update-web-git-archive" = {
+    wantedBy = [ "timers.target" ];
+    partOf = [ "update-web-git-archive.service" ];
+    timerConfig = {
+      Unit = "update-web-git-archive.service";
+      OnCalendar = "*-*-* 00:00:00"; # daily at midnight
+    };
+  };
+
+
   systemd.services."local-git-backup" = {
     serviceConfig.Type = "oneshot";
     path = with pkgs; [ bash rsync ];
@@ -623,7 +739,7 @@ in
     partOf = [ "local-git-backup.service" ];
     timerConfig = {
       Unit = "local-git-backup.service";
-      OnCalendar = "*-*-* 00:00:00"; # daily at midnight
+      OnCalendar = "*-*-* 01:00:00"; # daily at 1am
     };
   };
 
@@ -643,7 +759,7 @@ in
     partOf = [ "depository-backup.service" ];
     timerConfig = {
       Unit = "depository-backup.service";
-      OnCalendar = "*-*-* 01:00:00"; # daily at 1am
+      OnCalendar = "*-*-* 02:00:00"; # daily at 2am
     };
   };
   
