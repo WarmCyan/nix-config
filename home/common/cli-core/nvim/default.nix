@@ -131,6 +131,7 @@ in
       plenary-nvim # helper functions for many other plugins
       sibling-swap # allow easy swapping of sibling nodes e.g. function args
       nvim-surround # make it easier to change quotes/braces around a thing etc.
+      vim-slime # allow sending text to a nearby REPL
 
       # -- testing and debugging
       unstable.neotest # allow running unit tests within neovim

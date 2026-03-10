@@ -152,7 +152,8 @@ in
 
     powerline-fonts
     (nerdfonts.override { fonts = [ "Iosevka" "Inconsolata" ]; })
-    (config.lib.nixGL.wrap alacritty)
+    # (config.lib.nixGL.wrap alacritty)
+    
 
 
     cg
@@ -163,7 +164,8 @@ in
     pcmanfm
     lxappearance
 
-    unstable.flameshot
+    #unstable.flameshot
+    flameshot
   ];
 
   qt = {

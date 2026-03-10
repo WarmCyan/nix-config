@@ -683,3 +683,7 @@ nnoremap <leader>v :Vista<CR>
 " https://github.com/wellle/context.vim
 let g:context_enabled = 1
 let g:context_buftype_blacklist = ['terminal']
+
+" vim-slime config
+" https://github.com/jpalardy/vim-slime/blob/main/assets/doc/targets/neovim.md
+let g:slime_target = "neovim"
