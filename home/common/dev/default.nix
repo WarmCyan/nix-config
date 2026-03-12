@@ -124,9 +124,9 @@ in
 
   programs.zsh.initExtra = /* sh */ ''
     # >>> mamba initialize >>>
-    export MAMBA_EXE='${pkgs.micromamba}/bin/micromamba';
+    export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/micromamba';
     export MAMBA_ROOT_PREFIX="''${HOME}/micromamba";
-    __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell zsh --prefix "''${HOME}/micromamba" 2> /dev/null)"
+    __mamba_setup="$('${pkgs.unstable.micromamba}/bin/micromamba' shell hook --shell zsh --prefix "''${HOME}/micromamba" 2> /dev/null)"
     if [ $? -eq 0 ]; then 
         eval "$__mamba_setup"
     else
@@ -150,9 +150,9 @@ in
   
   programs.bash.initExtra = /* sh */ ''
     # >>> mamba initialize >>>
-    export MAMBA_EXE='${pkgs.micromamba}/bin/micromamba';
+    export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/micromamba';
     export MAMBA_ROOT_PREFIX="''${HOME}/micromamba";
-    __mamba_setup="$('${pkgs.micromamba}/bin/micromamba' shell hook --shell bash --prefix "''${HOME}/micromamba" 2> /dev/null)"
+    __mamba_setup="$('${pkgs.unstable.micromamba}/bin/micromamba' shell hook --shell bash --prefix "''${HOME}/micromamba" 2> /dev/null)"
     if [ $? -eq 0 ]; then 
         eval "$__mamba_setup"
     else

@@ -7,7 +7,37 @@
       ./hardware-configuration.nix
       ../common/fonts
       ../common/pipewire
+      ../common/sddm.nix
     ];
+  
+  musnix.enable = true;
+
+
+  # ==== FASTER TESTING THAN SERVER
+  containers.cyan = {
+    autoStart = true;
+    privateUsers = "pick";
+    config = (import ../therock/cyan-network-config.nix);
+    privateNetwork = true;
+    hostAddress = "192.168.1.31";  # firewall machine should point to this? "external" ip?
+    localAddress = "192.168.1.30"; # address within the container?
+
+    # TODO: just use enableTun?
+    allowedDevices = [
+      { modifier = "rwm"; node = "/dev/net/tun"; }
+    ];
+
+    forwardPorts = [
+      { containerPort = 51830; hostPort = 51830; protocol = "udp"; }
+    ];
+  };
+  networking.nat.enable = true;
+  networking.nat.internalInterfaces = [ "ve-cyan" ]; # I assume this should be wg1 too?
+  networking.nat.externalInterface = "enp6s0";
+  # ==== /FASTER TESTING THAN SERVER
+
+
+  
 
   # Bootloader.
   boot.loader = {
@@ -44,16 +74,42 @@
     };
   };
 
-  services.simple-git-server = {
+  services.redshift = {
     enable = true;
-    userSSHKeys = {
-      dwl = [
-        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZsSBtvLAK8s2pIlKK7psGRvk+h1z3jJ7nCLPr18xK1Wu657H2AcNv7QF230lGabIKXRabiEHu2OhrSG02lu/KVpuOk4IudKRkE2UtOIMyt9+1eGj+1jzPHHxu2L7uLgySBLfN6e7WCObcUv15Mm5VYIYCs1hYNJopBnNa8pfBbhX0Hbhs0naJGB8XhF93PqZJTpTKv9YgPHgXGrB0a4ck8i249eCyx3i0FEO6IsymvvZVONcLo9hn3IHRVq8v3Tm8C0rbM7T5khFrXJ8/jhL198GA9YHglPDde6a7azmAAWd6JZZZpLwPQQQ8NvEjWNjlxss5Y2OmlbDLXDIsCwgG0iUNhJ9FJnqJrz0CVm+qrFv+xUflqP0vb/TJnx9iH0CS8/S4ftmwbVJK0cdmmTFTHRAtKb5OL87pKPbAhrWbLW9APaR7pyYwCFEho5W088Fwrt7GHn3D+jKukjXnFjiZWB2v8+qIQBmzdALmVcfPkPioVPuMBzNfimifpXIj/r0= dwl@amethyst"
-      ];
-    };
-    cgit.enable = true;
+    temperature.day = 6500;
+    brightness.day = "1";
+    temperature.night = 2000;
+    brightness.night = "0.4";
+    extraOptions = [
+      "-v"
+    ];
   };
-  services.nginx.enable = true;
+  location.latitude = 35.964668;
+  location.longitude = -83.926453;
+  
+  # services.small-git-server = {
+  #   enable = true;
+  #   userSSHKeys = {
+  #     dwl = [
+  #       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCZsSBtvLAK8s2pIlKK7psGRvk+h1z3jJ7nCLPr18xK1Wu657H2AcNv7QF230lGabIKXRabiEHu2OhrSG02lu/KVpuOk4IudKRkE2UtOIMyt9+1eGj+1jzPHHxu2L7uLgySBLfN6e7WCObcUv15Mm5VYIYCs1hYNJopBnNa8pfBbhX0Hbhs0naJGB8XhF93PqZJTpTKv9YgPHgXGrB0a4ck8i249eCyx3i0FEO6IsymvvZVONcLo9hn3IHRVq8v3Tm8C0rbM7T5khFrXJ8/jhL198GA9YHglPDde6a7azmAAWd6JZZZpLwPQQQ8NvEjWNjlxss5Y2OmlbDLXDIsCwgG0iUNhJ9FJnqJrz0CVm+qrFv+xUflqP0vb/TJnx9iH0CS8/S4ftmwbVJK0cdmmTFTHRAtKb5OL87pKPbAhrWbLW9APaR7pyYwCFEho5W088Fwrt7GHn3D+jKukjXnFjiZWB2v8+qIQBmzdALmVcfPkPioVPuMBzNfimifpXIj/r0= dwl@amethyst"
+  #     ];
+  #   };
+  #   cgit.enable = true;
+  #   cgit.assets = ./cgit-assets;
+  #   cgit.cssFiles = [ ./anothertest.css ];
+  #   cgit.logo = ./cgit-assets/smiley.png;
+  #   cgit.extraHeadInclude = ''
+  #     <link rel="stylesheet" type="text/css" href="/git/assets/test.css" />
+  #   '';
+  #   cgit.css = ''
+  #     td.sub {
+  #       color: green !important;
+  #     }
+  #   '';
+  #   cgitAttrName = "testingg";
+  # };
+  # services.cgit.testingg.nginx.location = "/git/";
+  # services.nginx.enable = true;
 
   # Enable bluetooth
   hardware.bluetooth.enable = true; 
@@ -75,20 +131,23 @@
       }
     ];
   };
-  services.displayManager = {
-    sddm = {
-      enable = true;
-      theme = "${(pkgs.fetchFromGitHub {
-        owner = "WildfireXIII";
-        repo = "sddm-chili";
-        rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
-        sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
-      })}";
-    };
-  };
+  # services.displayManager = {
+  #   sddm = {
+  #     enable = true;
+  #     theme = "sddm-chili";
+  #     # theme = "${(pkgs.fetchFromGitHub {
+  #     #   owner = "WildfireXIII";
+  #     #   repo = "sddm-chili";
+  #     #   rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
+  #     #   sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
+  #     # })}";
+  #   };
+  # };
   
-  hardware.opengl.enable = true;
-  hardware.opengl.driSupport32Bit = true; # recommended from https://linuxhint.com/how-to-instal-steam-on-nixos/
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;  # recommended from https://linuxhint.com/how-to-instal-steam-on-nixos/
+  };
   services.xserver.videoDrivers = [ "nvidia" ];
   # (see https://nixos.wiki/wiki/Nvidia)
   hardware.nvidia = {
@@ -117,12 +176,17 @@
     #   --output $CENTER --mode 2560x1440 --pos 1920x0 --rotate normal \
     #   --output $HDMI --off
       
-    ${pkgs.xorg.xrandr}/bin/xrandr \
-      --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right \
-      --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left \
-      --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary \
-      --output $HDMI --off
+    # ${pkgs.xorg.xrandr}/bin/xrandr \
+    #   --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right \
+    #   --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left \
+    #   --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary \
+    #   --output $HDMI --off
     
+    ${pkgs.xorg.xrandr}/bin/xrandr --output $HDMI --off --noprimary
+    ${pkgs.xorg.xrandr}/bin/xrandr --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right --noprimary
+    ${pkgs.xorg.xrandr}/bin/xrandr --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left --noprimary
+    ${pkgs.xorg.xrandr}/bin/xrandr --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary
+
     # set up my caps lock keyboard configuration
     ${pkgs.kbd-capslock}/bin/kbd-capslock
 
@@ -183,12 +247,26 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+  services.printing.drivers = [
+    pkgs.brlaser
+  ];
 
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
     extraGroups = [ "networkmanager" "wheel" "docker" ];
-    packages = with pkgs; [ ];
+    packages = with pkgs; [
+      # (unstable.yabridge.override { wine = unstable.wineWowPackages.yabridge; })
+      # (unstable.yabridgectl.override { wine = unstable.wineWowPackages.yabridge; })
+
+      unstable.yabridge
+      unstable.yabridgectl
+      unstable.wineWowPackages.yabridge
+
+      # wineWowPackages.full
+      # wineWowPackages.waylandFull
+
+    ];
     shell = pkgs.zsh;
   };
 
@@ -216,7 +294,7 @@
       PasswordAuthentication = true; # TODO: set this to false
       PermitRootLogin = "no";
     };
-  };
+};
 
   environment.variables = {
     #NIX_LD = builtins.readFile "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
@@ -241,8 +319,8 @@
     i2c-tools
 
     # necessary for sddm theme
-    libsForQt5.qt5.qtquickcontrols
-    libsForQt5.qt5.qtgraphicaleffects
+    # libsForQt5.qt5.qtquickcontrols
+    # libsForQt5.qt5.qtgraphicaleffects
 
     kbd-capslock
 
@@ -266,6 +344,17 @@
 
 
     gparted
+
+
+    # (fetchFromGitHub {
+    #   owner = "WarmCyan";
+    #   repo = "sddm-chili";
+    #   rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
+    #   sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
+    # })
+
+    unixtools.net-tools
+    
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

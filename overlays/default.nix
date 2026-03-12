@@ -116,14 +116,31 @@ in
           sha256 = "sha256-0U2APDh++U7qWwv9ky9nEZ8WvsSbWBTSUwqQqkIkaqU=";
         };
       });
-      
 
-    cgit-themed = prev.cgit.overrideAttrs
-      (_oldAttrs: {
-        postInstall = _oldAttrs.postInstall + ''
-          echo "${cgit_theme_text}" >> $out/cgit/cgit.css
-        '';
-      });
+
+    # sddm-chili-theme = prev.sddm-chili-theme.overrideAttrs
+    #   (_oldAttrs: rec {
+    #     # src = prev.fetchFromGitHub {
+    #     #   owner = "WarmCyan";
+    #     #   repo = "sddm-chili";
+    #     #   rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
+    #     #   sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
+    #     # };
+    #     propagatedBuildInputs = [
+    #       prev.libsForQt5.qt5.qtquickcontrols
+    #       prev.libsForQt5.qt5.qtgraphicaleffects
+    #       # prev.kdePackages.qt5compat
+    #     ];
+    #   });
+    
+    #  
+    #
+    # cgit-themed = prev.cgit.overrideAttrs
+    #   (_oldAttrs: {
+    #     postInstall = _oldAttrs.postInstall + ''
+    #       echo "${cgit_theme_text}" >> $out/cgit/cgit.css
+    #     '';
+    #   });
   };
   
   # don't need anymore because it's been updated

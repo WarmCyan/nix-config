@@ -151,11 +151,14 @@ in
     obsidian_wrapped
 
     powerline-fonts
-    (nerdfonts.override { fonts = [ "Iosevka" "Inconsolata" ]; })
+    # (nerdfonts.override { fonts = [ "Iosevka" "Inconsolata" ]; })
+    nerd-fonts.iosevka
+    nerd-fonts.inconsolata
     (config.lib.nixGL.wrap alacritty)
 
 
     cg
+    tcg
     kbd-capslock
     tag
 
