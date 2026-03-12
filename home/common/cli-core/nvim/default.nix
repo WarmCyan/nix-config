@@ -96,6 +96,267 @@ in
 ;   ":" @punctuation.delimiter)
 ;   (#any-of? @TODO_strt "STRT"))
   '';
+
+
+  programs.nixvim = {
+    enable = false;
+    vimAlias = true;
+
+    keymaps = [
+      { mode = "n"; key = "<LEADER>e"; action=":NvimTreeToggle<cr>"; options = { silent = true; noremap = true; }; }
+    ];
+
+    lsp = {
+      keymaps = [
+        { key = "<C-f>"; lspBufAction = "format"; }
+        { key = "gd"; lspBufAction = "definition"; }
+        { key = "gi"; lspBufAction = "implementation"; }
+        { key = "gr"; lspBufAction = "references"; }
+        { key = "K"; lspBufAction = "hover"; }
+        { key = "<leader>lx"; action = "<CMD>LspStop<Enter>"; }
+        { key = "<leader>ls"; action = "<CMD>LspStart<Enter>"; }
+        { key = "<leader>lr"; action = "<CMD>LspRestart<Enter>"; }
+      ];
+      servers = {
+        autotools_ls.enable = true; # makefiles
+        bashls.enable = true; # bash
+        clangd.enable = true; # c/c++
+        html.enable = true;
+        nixd.enable = true; # nix
+        # ruff.enable = true; # python
+        ts_ls.enable = true; # typescript/javascript
+        vimls.enable = true; # vim!
+        
+        pylsp = {
+          enable = true;
+          config = {
+            plugins = {
+              pylint = { enabled = true; };
+              ruff = { enabled = true; formatEnabled = true; };
+            };
+          };
+        };
+      };
+    };
+
+    plugins = {
+      # ==============================
+      # LINTERS/LSP/LANG STUFF
+      # ==============================
+      nix.enable = true;
+
+      # the null-ls successor, lsp server wrapper for any cli utils that don't have dedicated server
+      none-ls = {
+        enable = true;
+        sources.diagnostics = {
+          pylint.enable = true;
+        };
+        sources.formatting = {
+          black.enable = true;
+          isort.enable = true;
+          # nix_flake_fmt vs nixfmt vs nixpkgs_fmt??
+        };
+        settings = {
+          diagnostics_format = "[#{c}] #{m} (#{s})";
+          on_attach = /* lua */ ''
+            function(client, bufnr)
+              -- Integrate lsp-format with none-ls
+              require('lsp-format').on_attach(client, bufnr)
+            end
+          '';
+        };
+      };
+
+      lspconfig.enable = true;
+      # lint.enable = true; # async linter spawner
+      # nvim-lspconfig
+      # lsp = {
+      #   enable = true;
+      # }
+
+      # noegen.enable = true;  # TODO: auto create docstring syntax
+
+      cmp = {
+        enable = true;
+        settings = {
+          sources = [
+            { name = "nvim_lsp"; }
+            { name = "buffer"; }
+            { name = "path"; }
+            { name = "treesitter"; }
+            { name = "luasnip"; }
+            { name = "nvim_lsp_signature_help"; }
+          ];
+          snippet = {
+            expand = "function(args) require('luasnip').lsp_expand(args.body) end";
+          };
+          mapping = {
+            "<C-Space>" = "cmp.mapping.complete()";
+            "<C-d>" = "cmp.mapping.scroll_docs(-4)";
+            "<C-e>" = "cmp.mapping.close()";
+            "<C-f>" = "cmp.mapping.scroll_docs(4)";
+            "<CR>" = "cmp.mapping.confirm({ select = true })";
+            "<Tab>" = "cmp.mapping(function(fallback)
+                  if cmp.visible() then
+                      cmp.select_next_item()
+                  elseif require('luasnip').expand_or_jumpable() then
+                      require('luasnip').expand_or_jump()
+                  else
+                      fallback()
+                  end
+              end, { 'i', 's' })";
+            "<S-Tab>" = "cmp.mapping(function(fallback)
+                  if cmp.visible() then
+                      cmp.select_prev_item()
+                  elseif require('luasnip').jumpable(-1) then
+                      require('luasnip').jump(-1)
+                  else
+                      fallback()
+                  end
+              end, { 'i', 's' })";
+          };
+        };
+      };
+
+      # ==============================
+      # UTILS
+      # ==============================
+
+      # snippet engine, using snippets saved into ~/.snippets at the top
+      luasnip = {
+        enable = true;
+        fromVscode = [
+          { }
+          { paths = [ ./snippets "~/.snippets" ]; }
+        ];
+        # settings.ext_opts = {
+        #   "types.insertNode" = {
+        #     active = {
+        #   };
+        # };
+      };
+
+      nvim-surround.enable = true; # make it easier to change quotes/braces around a thing etc.
+      tmux-navigator.enable = true;
+
+      # better highlighting, indentation etc.
+      treesitter = {
+        enable = true;
+        settings = {
+          highlight.enable = true;
+          highlight.disable = ["vim"];
+          indent.enable = true;
+        };
+      };
+
+      # treesj.enable? # more "correct" join/split for code blocks/arrays?
+
+      venv-selector.enable = true; # allow activating python environments from within nvim
+
+      vim-slime.enable = true; # allow sending snippets of text to nearby terminals/repls
+      vim-slime.settings.target = "neovim";
+
+      # ==============================
+      # TESTING/DEBUGGING
+      # ==============================
+
+      # interact with tests within neovim
+      neotest = {
+        enable = true;
+        adapters = {
+          python.enable = true;
+        };
+      };
+      # allow debugging tests
+      dap.enable = true;
+      dap-python.enable = true;
+      # dap-ui.enable = true;
+      # dap-virtual-text.enable = true;
+      # dap-view.enable = true;
+
+      # ==============================
+      # INTERFACE
+      # ==============================
+
+      # trouble.anble = true? # TODO: possible replacement for previous \r to
+      # find references etc?
+
+      # navbuddy.enable = true;  # TODO: neat little vista replacement?
+      # navic.enable = true; # TODO: better/more efficient version of context-nvim?
+      
+      # molten.enable = true; # ability to get jupyter-like notebook with image
+      # rendering etc. to work
+
+      # explore these more when get serious about using vim for obsidian
+      # image.enable = true; # render images in markdown files
+      # img-clip.enable = true; # make it easier to add images (e.g. from clipboard)
+      # obsidian.enable = true; # !!!
+
+      treesitter-context.enable = true; # a nicer/more performant version of context.vim
+
+      tiny-inline-diagnostic.enable = true; # a nicer inline (virtual line replacement) for diagnostic messages
+      
+      # highlight-colors.enable = true; # add background highlighting of color strings e.g. #99aa44
+      vim-css-color.enable = true;  # add background highlighting of color strings e.g. #99aa44 (possibly faster than highlight-colors?)
+      gitgutter.enable = true; # show git diff signs in the sign column
+      fzf-lua.enable = true; # Fuzzy finder integration # TODO: There's prob a lot more I can do with this
+      nvim-tree.enable = true; # nicer file explorer sidebar
+      web-devicons.enable = true;
+      
+      # better statusline written in lua
+      lualine = {
+        enable = true;
+        settings = {
+          options = {
+            theme = "everforest";
+            icons_enabled = true;
+          };
+          sections = {
+            lualine_a = ["mode"];
+            lualine_b = ["branch" "diff" "diagnostics"];
+            lualine_c = ["filename"];
+            lualine_x = ["encoding" "filesize" "filetype"];
+            lualine_y = ["lsp_status" "venv-selector"];
+            lualine_z = ["location"];
+          };
+          inactive_sections = {
+            lualine_b = ["diff" "diagnostics"];
+            lualine_c = ["filename"];
+            lualine_x = ["filetype"];
+            lualine_y = ["location"];
+          };
+        };
+      };
+
+      # better bufferline that works with both tabs and buffers
+      bufferline = {
+        enable = true;
+        settings = {
+          options = {
+            always_show_bufferline = true;
+            offsets = [
+              {
+                filetype = "NvimTree";
+                text = "File Explorer";
+                text_align = "center";
+                separator = true;
+              }
+            ];
+          };
+        };
+      };
+    };
+    extraPlugins = with pkgs.vimPlugins; [
+      everforest # theme!
+      indent-blankline-nvim # show indent line and current block highlight
+    ];
+
+    extraConfigVim = readFile ./vim-conf.vim;
+    extraConfigLua = /* lua */ ''
+      vim.o.updatetime = 250
+    '';
+  };
+  
   
   programs.neovim = {
     enable = true;
@@ -117,34 +378,34 @@ in
       julia-vim
 
       # -- Utils --
-      fzfWrapper # TODO: unclear on differences between this one and fzf-vim
-      fzf-vim
+      fzfWrapper # TODO: unclear on differences between this one and fzf-vim  # DONE:
+      fzf-vim # DONE:
       nvim-comment # shortcut to comment lines
-      vim-tmux-navigator # vim-side of navigating between tmux/vim panes
-      vimwiki # allow using alongside obsidian and still doing link nav
-      nvim-tree-lua # file explorer sidebar
-      bufferline-nvim # better bufferline that works with both tabs and buffers
+      vim-tmux-navigator # vim-side of navigating between tmux/vim panes  # DONE:
+      vimwiki # allow using alongside obsidian and still doing link nav  # CANC:
+      nvim-tree-lua # file explorer sidebar  # DONE:
+      bufferline-nvim # better bufferline that works with both tabs and buffers  # DONE:
       term-edit-nvim # allow editing cmdline text in nvim terminal
       flatten-nvim # opening file in terminal in neovim won't nest
       # rsync-nvim # allow auto syncing from a remote source via rsync
       # packer-nvim # some things are easier to install with the packer nvim package manager. # TODO: just using this to build rsync-nvim
       plenary-nvim # helper functions for many other plugins
       sibling-swap # allow easy swapping of sibling nodes e.g. function args
-      nvim-surround # make it easier to change quotes/braces around a thing etc.
+      nvim-surround # make it easier to change quotes/braces around a thing etc.  # DONE:
 
       # -- testing and debugging
-      unstable.neotest # allow running unit tests within neovim
-      neotest-python  # neotest plugin for pytest
-      nvim-dap  # debug adapter protocol
-      nvim-dap-python # easy config for python dap
+      unstable.neotest # allow running unit tests within neovim  # DONE:
+      neotest-python  # neotest plugin for pytest  # DONE:
+      nvim-dap  # debug adapter protocol  # DONE:
+      nvim-dap-python # easy config for python dap  # DONE:
 
       # -- Visual improvements --
       everforest # beautiful colorscheme
-      lualine-nvim # better statusline written in lua
+      lualine-nvim # better statusline written in lua  # DONE:
       nvim-web-devicons # TODO: unclear if this works w/o font-awesome?
       indent-blankline-nvim # show indent line and current block highlight
-      vista-vim # shows a "map" of all the symbols from lsp
-      context-vim # similar to the vscode experimental option that keeps the 
+      vista-vim # shows a "map" of all the symbols from lsp  # CANC:
+      context-vim # similar to the vscode experimental option that keeps the   # DONE:
                   # current scope line in view
 
       # -- Autocompletion --
@@ -155,17 +416,17 @@ in
 
       # -- Treesitter --
       # (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars)) # TODO: ??
-      nvim-treesitter.withAllGrammars
+      nvim-treesitter.withAllGrammars  # DONE:
       cmp-treesitter
       
       # -- LSP --
       nvim-lspconfig # easy configuration setups for a bunch of lsp's
-      null-ls-nvim # an lsp server wrapper for any cli utils that don't have dedicated server
+      null-ls-nvim # an lsp server wrapper for any cli utils that don't have dedicated server # DONE:
       cmp-nvim-lsp
       cmp-nvim-lsp-signature-help # continues to display signature info as you type
 
       # -- Snippets --
-      luasnip
+      luasnip  # DONE:
       cmp_luasnip
     ] ++ [
       # pkgs.unstable.vimPlugins.sibling-swap
