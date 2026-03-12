@@ -75,7 +75,7 @@
     extraGroups = [ "networkmanager" "wheel" "plugdev" "dialout" ];  # plugdev for rtl-sdr
     packages = with pkgs; [
       firefox
-      kate
+      # kate
       chirp
 
       arduino-ide
