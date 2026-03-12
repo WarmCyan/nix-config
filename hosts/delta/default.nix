@@ -72,10 +72,13 @@
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
-    extraGroups = [ "networkmanager" "wheel" "plugdev" ];  # plugdev for rtl-sdr
+    extraGroups = [ "networkmanager" "wheel" "plugdev" "dialout" ];  # plugdev for rtl-sdr
     packages = with pkgs; [
       firefox
       kate
+      chirp
+
+      arduino-ide
     ];
     shell = pkgs.zsh;
   };
