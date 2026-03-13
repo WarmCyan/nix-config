@@ -50,6 +50,10 @@
     pluto
     pandoc
     jq
+
+    # arduino-ide
+
+    wireguard-tools
   ];
 
   xsession.windowManager.i3 = {
