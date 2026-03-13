@@ -25,7 +25,7 @@ in
   imports = [
     ../common/cli-core
     ../common/dev
-    ../common/vscode
+    # ../common/vscode
     ../common/beta
     ../common/i3
     ../common/kitty
@@ -210,15 +210,15 @@ in
   # };
   #
 
-  programs.vscode = {
-    enable = true;
-    extensions = with pkgs.vscode-extensions; lib.mkForce [
-      vscodevim.vim
-    ];
-  };
-
-  programs.wezterm = {
-    enable = true;
-    package = (config.lib.nixGL.wrap pkgs.wezterm);
-  };
+  # programs.vscode = {
+  #   enable = true;
+  #   extensions = with pkgs.vscode-extensions; lib.mkForce [
+  #     vscodevim.vim
+  #   ];
+  # };
+  #
+  # programs.wezterm = {
+  #   enable = true;
+  #   package = (config.lib.nixGL.wrap pkgs.wezterm);
+  # };
 }
