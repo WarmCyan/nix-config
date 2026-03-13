@@ -256,17 +256,19 @@ highlight link pythonTodo TODO_todo
 highlight link javaScriptCommentTodo TODO_todo
 
 " link in custom treesitter captures
-highlight link @comment.todo TODO_todo
-highlight link @TODO_todo TODO_todo
-highlight link @TODO_strt TODO_strt
-highlight link @TODO_wait TODO_wait
-highlight link @TODO_done TODO_done
-highlight link @TODO_canc TODO_canc
-highlight link @NOTES_bug NOTES_bug
-highlight link @NOTES_fixd NOTES_fixd
-highlight link @NOTES_idea NOTES_idea
-highlight link @NOTES_note NOTES_note
-highlight link @comment.note NOTES_note
+if has('nvim')
+    highlight link @comment.todo TODO_todo
+    highlight link @TODO_todo TODO_todo
+    highlight link @TODO_strt TODO_strt
+    highlight link @TODO_wait TODO_wait
+    highlight link @TODO_done TODO_done
+    highlight link @TODO_canc TODO_canc
+    highlight link @NOTES_bug NOTES_bug
+    highlight link @NOTES_fixd NOTES_fixd
+    highlight link @NOTES_idea NOTES_idea
+    highlight link @NOTES_note NOTES_note
+    highlight link @comment.note NOTES_note
+endif
 
 
 " highlight bug/fixes/ideas

@@ -27,10 +27,10 @@ let
 in
 {
 
-  home.file.".snippets/package.json".text = readFile ./snippets/package.json;
-  home.file.".snippets/json.json".text = readFile ./snippets/json.json;
-  home.file.".snippets/python.json".text = readFile ./snippets/python.json;
-  home.file.".snippets/svelte.json".text = readFile ./snippets/svelte.json;
+  # home.file.".snippets/package.json".text = readFile ./snippets/package.json;
+  # home.file.".snippets/json.json".text = readFile ./snippets/json.json;
+  # home.file.".snippets/python.json".text = readFile ./snippets/python.json;
+  # home.file.".snippets/svelte.json".text = readFile ./snippets/svelte.json;
   
   home.file.".config/nvim/queries/comment/highlights.scm".text = ''
 ;; extends
@@ -97,57 +97,122 @@ in
 ;   (#any-of? @TODO_strt "STRT"))
   '';
 
+  # always have a fallback "vanilla" vim (still uses my non-plugin based conf)
+  programs.vim = {
+    enable = true;
+    extraConfig = readFile ./vim-conf.vim;
+    plugins = with pkgs.vimPlugins; [
+      everforest
+    ];
+  };
 
   programs.nixvim = {
-    enable = false;
-    vimAlias = true;
+    enable = true;
+    vimAlias = false;
 
     keymaps = [
       { mode = "n"; key = "<LEADER>e"; action=":NvimTreeToggle<cr>"; options = { silent = true; noremap = true; }; }
+      # { mode = ["n" "v"]; key="ga"; action="<cmd>lua require('actions-preview').code_actions<cr>"; }
     ];
 
-    lsp = {
-      keymaps = [
-        { key = "<C-f>"; lspBufAction = "format"; }
-        { key = "gd"; lspBufAction = "definition"; }
-        { key = "gi"; lspBufAction = "implementation"; }
-        { key = "gr"; lspBufAction = "references"; }
-        { key = "K"; lspBufAction = "hover"; }
-        { key = "<leader>lx"; action = "<CMD>LspStop<Enter>"; }
-        { key = "<leader>ls"; action = "<CMD>LspStart<Enter>"; }
-        { key = "<leader>lr"; action = "<CMD>LspRestart<Enter>"; }
-      ];
-      servers = {
-        autotools_ls.enable = true; # makefiles
-        bashls.enable = true; # bash
-        clangd.enable = true; # c/c++
-        html.enable = true;
-        nixd.enable = true; # nix
-        # ruff.enable = true; # python
-        ts_ls.enable = true; # typescript/javascript
-        vimls.enable = true; # vim!
-        
-        pylsp = {
-          enable = true;
-          config = {
-            plugins = {
-              pylint = { enabled = true; };
-              ruff = { enabled = true; formatEnabled = true; };
-            };
-          };
-        };
-      };
-    };
-
+    # lsp = {
+    #   keymaps = [
+    #     { key = "<C-f>"; lspBufAction = "format"; }
+    #     { key = "gd"; lspBufAction = "definition"; }
+    #     { key = "gi"; lspBufAction = "implementation"; }
+    #     { key = "gr"; lspBufAction = "references"; }
+    #     { key = "K"; lspBufAction = "hover"; }
+    #     { key = "<leader>lx"; action = "<CMD>LspStop<Enter>"; }
+    #     { key = "<leader>ls"; action = "<CMD>LspStart<Enter>"; }
+    #     { key = "<leader>lr"; action = "<CMD>LspRestart<Enter>"; }
+    #   ];
+    #   servers = {
+    #     autotools_ls.enable = true; # makefiles
+    #     bashls.enable = true; # bash
+    #     clangd.enable = true; # c/c++
+    #     html.enable = true;
+    #     nixd.enable = true; # nix
+    #     # ruff.enable = true; # python
+    #     ts_ls.enable = true; # typescript/javascript
+    #     vimls.enable = true; # vim!
+    #    
+    #     pylsp = {
+    #       enable = true;
+    #       config = {
+    #         plugins = {
+    #           pylint = { enabled = true; };
+    #           ruff = { enabled = true; formatEnabled = true; };
+    #         };
+    #       };
+    #     };
+    #   };
+    # };
+    #
     plugins = {
       # ==============================
       # LINTERS/LSP/LANG STUFF
       # ==============================
       nix.enable = true;
+      
+      lspkind.enable = true; # add pictograms to LSP completion items
+      lsp = {
+        enable = true;
+        keymaps.lspBuf = {
+          "<C-f>" = "format";
+          "gd" = "definition";
+          "gi" = "implementation";
+          "gr" = "references";
+          "K" = "hover";
+        };
+        keymaps.extra = [
+          { key = "<leader>lx"; action = "<CMD>LspStop<Enter>"; }
+          { key = "<leader>ls"; action = "<CMD>LspStart<Enter>"; }
+          { key = "<leader>lr"; action = "<CMD>LspRestart<Enter>"; }
+        ];
+        servers = {
+          autotools_ls.enable = true; # makefiles
+          bashls.enable = true; # bash
+          clangd.enable = true; # c/c++
+          html.enable = true;
+          nixd.enable = true; # nix
+          # ruff.enable = true; # python (diagnostics, code actions, and formatting)
+          pyright.enable = true; # (static typechecking, hopefully navigation and autocomplete?
+          ts_ls.enable = true; # typescript/javascript
+          vimls.enable = true; # vim!
+
+          # pylsp = {
+          #   enable = true;
+          #   settings = {
+          #     plugins = {
+          #       black.enabled = true;
+          #       ruff.enabled = true;
+          #       pylint.enabled = true;
+          #     };
+          #   };
+          #   # config = {
+          #   #   plugins = {
+          #   #     pylint = { enabled = true; };
+          #   #     ruff = { enabled = true; formatEnabled = true; };
+          #   #   };
+          #   # };
+          # };
+        };
+      };
+
+      # for code actions suggested by lsp's show previews and allow running
+      # actions-preview = {
+      #   enable = true;
+      #   # settings = {
+      #   # };
+      # };
+      # mini-pick.enable = true;  # (used by actions-preview, alternatives exist)
+
 
       # the null-ls successor, lsp server wrapper for any cli utils that don't have dedicated server
+      lsp-format.enable = true;
       none-ls = {
         enable = true;
+        enableLspFormat = true;
         sources.diagnostics = {
           pylint.enable = true;
         };
@@ -158,16 +223,17 @@ in
         };
         settings = {
           diagnostics_format = "[#{c}] #{m} (#{s})";
-          on_attach = /* lua */ ''
-            function(client, bufnr)
-              -- Integrate lsp-format with none-ls
-              require('lsp-format').on_attach(client, bufnr)
-            end
-          '';
+          # on_attach = /* lua */ ''
+          #   function(client, bufnr)
+          #     -- Integrate lsp-format with none-ls
+          #     require('lsp-format').on_attach(client, bufnr)
+          #   end
+          # '';
         };
       };
-
-      lspconfig.enable = true;
+      
+      #
+      # lspconfig.enable = true;
       # lint.enable = true; # async linter spawner
       # nvim-lspconfig
       # lsp = {
@@ -292,6 +358,37 @@ in
       # img-clip.enable = true; # make it easier to add images (e.g. from clipboard)
       # obsidian.enable = true; # !!!
 
+      # show indentation guides and current scope
+      indent-blankline = {
+        enable = true;
+        settings = {
+          exclude = {
+            buftypes = [
+              "terminal"
+              "quickfix"
+            ];
+            filetypes = [
+              ""
+              "checkhealth"
+              "help"
+              "lspinfo"
+              "packer"
+              "TelescopePrompt"
+              "TelescopeResults"
+              "yaml"
+            ];
+          };
+          indent = {
+            char = "│";
+          };
+          scope = {
+            show_end = false;
+            show_exact_scope = true;
+            show_start = false;
+          };
+        };
+      };
+
       treesitter-context.enable = true; # a nicer/more performant version of context.vim
 
       tiny-inline-diagnostic.enable = true; # a nicer inline (virtual line replacement) for diagnostic messages
@@ -359,7 +456,7 @@ in
   
   
   programs.neovim = {
-    enable = true;
+    enable = false;
     viAlias = true;
     vimAlias = true;
 
