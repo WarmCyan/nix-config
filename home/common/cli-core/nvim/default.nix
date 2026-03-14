@@ -3,7 +3,7 @@
 # unclear if I want to break up nvim configuration into two separate sections,
 # but it might make it cleaner here.
 # NOTE: that this is what misterio does, though it's just broken up into diff
-# files in the same folder, not completely separate directories. 
+# files in the same folder, not completely separate directories.
 
 # TODO: keep vim config separate, and minimal, (and don't set vimAlias) so if
 # you want simple/raw editing capability can just use vim instead of neovim.
@@ -31,70 +31,70 @@ in
   # home.file.".snippets/json.json".text = readFile ./snippets/json.json;
   # home.file.".snippets/python.json".text = readFile ./snippets/python.json;
   # home.file.".snippets/svelte.json".text = readFile ./snippets/svelte.json;
-  
+
   home.file.".config/nvim/queries/comment/highlights.scm".text = ''
-;; extends
-((tag
-  (name) @TODO_todo @nospell
-    ((user) @constant)?
-  ":" @punctuation.delimiter)
-  (#any-of? @TODO_todo "TODO"))
+    ;; extends
+    ((tag
+      (name) @TODO_todo @nospell
+        ((user) @constant)?
+      ":" @punctuation.delimiter)
+      (#any-of? @TODO_todo "TODO"))
 
-((tag
-  (name) @TODO_strt @nospell
-    ((user) @constant)?
-  ":" @punctuation.delimiter)
-  (#any-of? @TODO_strt "STRT"))
+    ((tag
+      (name) @TODO_strt @nospell
+        ((user) @constant)?
+      ":" @punctuation.delimiter)
+      (#any-of? @TODO_strt "STRT"))
 
-((tag
-  (name) @TODO_wait @nospell
-    ((user) @constant)?
-  ":" @punctuation.delimiter)
-  (#any-of? @TODO_wait "WAIT"))
+    ((tag
+      (name) @TODO_wait @nospell
+        ((user) @constant)?
+      ":" @punctuation.delimiter)
+      (#any-of? @TODO_wait "WAIT"))
 
-((tag
-  (name) @TODO_done @nospell
-    ((user) @constant)?
-  ":" @punctuation.delimiter)
-  (#any-of? @TODO_done "DONE"))
+    ((tag
+      (name) @TODO_done @nospell
+        ((user) @constant)?
+      ":" @punctuation.delimiter)
+      (#any-of? @TODO_done "DONE"))
 
-((tag
-  (name) @TODO_canc @nospell
-    ((user) @constant)?
-  ":" @punctuation.delimiter)
-  (#any-of? @TODO_canc "CANC"))
+    ((tag
+      (name) @TODO_canc @nospell
+        ((user) @constant)?
+      ":" @punctuation.delimiter)
+      (#any-of? @TODO_canc "CANC"))
 
-((tag
-  (name) @NOTES_bug @nospell
-    ((user) @constant)?
-  ":" @punctuation.delimiter)
-  (#any-of? @NOTES_bug "BUG"))
+    ((tag
+      (name) @NOTES_bug @nospell
+        ((user) @constant)?
+      ":" @punctuation.delimiter)
+      (#any-of? @NOTES_bug "BUG"))
 
-((tag
-  (name) @NOTES_fixd @nospell
-    ((user) @constant)?
-  ":" @punctuation.delimiter)
-  (#any-of? @NOTES_fixd "FIXD"))
+    ((tag
+      (name) @NOTES_fixd @nospell
+        ((user) @constant)?
+      ":" @punctuation.delimiter)
+      (#any-of? @NOTES_fixd "FIXD"))
 
-((tag
-  (name) @NOTES_idea @nospell
-    ((user) @constant)?
-  ":" @punctuation.delimiter)
-  (#any-of? @NOTES_idea "IDEA"))
+    ((tag
+      (name) @NOTES_idea @nospell
+        ((user) @constant)?
+      ":" @punctuation.delimiter)
+      (#any-of? @NOTES_idea "IDEA"))
 
-((tag
-  (name) @NOTES_note @nospell
-    ((user) @constant)?
-  ":" @punctuation.delimiter)
-  (#any-of? @NOTES_note "NOTE"))
+    ((tag
+      (name) @NOTES_note @nospell
+        ((user) @constant)?
+      ":" @punctuation.delimiter)
+      (#any-of? @NOTES_note "NOTE"))
 
-; ((tag
-;   (name) @TODO_strt @nospell
-;   ("(" @punctuation.bracket
-;     (user) @constant
-;     ")" @punctuation.bracket)?
-;   ":" @punctuation.delimiter)
-;   (#any-of? @TODO_strt "STRT"))
+    ; ((tag
+    ;   (name) @TODO_strt @nospell
+    ;   ("(" @punctuation.bracket
+    ;     (user) @constant
+    ;     ")" @punctuation.bracket)?
+    ;   ":" @punctuation.delimiter)
+    ;   (#any-of? @TODO_strt "STRT"))
   '';
 
   # always have a fallback "vanilla" vim (still uses my non-plugin based conf)
@@ -111,7 +111,33 @@ in
     vimAlias = false;
 
     keymaps = [
-      { mode = "n"; key = "<LEADER>e"; action=":NvimTreeToggle<cr>"; options = { silent = true; noremap = true; }; }
+      {
+        mode = "n";
+        key = "<LEADER>e";
+        action = ":NvimTreeToggle<cr>";
+        options = {
+          silent = true;
+          noremap = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "//";
+        action = ":FzfLua lsp_document_symbols<cr>";
+        options = {
+          silent = true;
+          noremap = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<LEADER>t";
+        action = ":Neotest summary<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+        };
+      }
       # { mode = ["n" "v"]; key="ga"; action="<cmd>lua require('actions-preview').code_actions<cr>"; }
     ];
 
@@ -135,7 +161,7 @@ in
     #     # ruff.enable = true; # python
     #     ts_ls.enable = true; # typescript/javascript
     #     vimls.enable = true; # vim!
-    #    
+    #
     #     pylsp = {
     #       enable = true;
     #       config = {
@@ -153,7 +179,7 @@ in
       # LINTERS/LSP/LANG STUFF
       # ==============================
       nix.enable = true;
-      
+
       lspkind.enable = true; # add pictograms to LSP completion items
       lsp = {
         enable = true;
@@ -165,9 +191,18 @@ in
           "K" = "hover";
         };
         keymaps.extra = [
-          { key = "<leader>lx"; action = "<CMD>LspStop<Enter>"; }
-          { key = "<leader>ls"; action = "<CMD>LspStart<Enter>"; }
-          { key = "<leader>lr"; action = "<CMD>LspRestart<Enter>"; }
+          {
+            key = "<leader>lx";
+            action = "<CMD>LspStop<Enter>";
+          }
+          {
+            key = "<leader>ls";
+            action = "<CMD>LspStart<Enter>";
+          }
+          {
+            key = "<leader>lr";
+            action = "<CMD>LspRestart<Enter>";
+          }
         ];
         servers = {
           autotools_ls.enable = true; # makefiles
@@ -207,12 +242,9 @@ in
       # };
       # mini-pick.enable = true;  # (used by actions-preview, alternatives exist)
 
-
       # the null-ls successor, lsp server wrapper for any cli utils that don't have dedicated server
-      lsp-format.enable = true;
       none-ls = {
         enable = true;
-        enableLspFormat = true;
         sources.diagnostics = {
           pylint.enable = true;
         };
@@ -231,7 +263,7 @@ in
           # '';
         };
       };
-      
+
       #
       # lspconfig.enable = true;
       # lint.enable = true; # async linter spawner
@@ -262,7 +294,8 @@ in
             "<C-e>" = "cmp.mapping.close()";
             "<C-f>" = "cmp.mapping.scroll_docs(4)";
             "<CR>" = "cmp.mapping.confirm({ select = true })";
-            "<Tab>" = "cmp.mapping(function(fallback)
+            "<Tab>" =
+              "cmp.mapping(function(fallback)
                   if cmp.visible() then
                       cmp.select_next_item()
                   elseif require('luasnip').expand_or_jumpable() then
@@ -271,7 +304,8 @@ in
                       fallback()
                   end
               end, { 'i', 's' })";
-            "<S-Tab>" = "cmp.mapping(function(fallback)
+            "<S-Tab>" =
+              "cmp.mapping(function(fallback)
                   if cmp.visible() then
                       cmp.select_prev_item()
                   elseif require('luasnip').jumpable(-1) then
@@ -293,7 +327,12 @@ in
         enable = true;
         fromVscode = [
           { }
-          { paths = [ ./snippets "~/.snippets" ]; }
+          {
+            paths = [
+              ./snippets
+              "~/.snippets"
+            ];
+          }
         ];
         # settings.ext_opts = {
         #   "types.insertNode" = {
@@ -310,7 +349,7 @@ in
         enable = true;
         settings = {
           highlight.enable = true;
-          highlight.disable = ["vim"];
+          highlight.disable = [ "vim" ];
           indent.enable = true;
         };
       };
@@ -349,7 +388,7 @@ in
 
       # navbuddy.enable = true;  # TODO: neat little vista replacement?
       # navic.enable = true; # TODO: better/more efficient version of context-nvim?
-      
+
       # molten.enable = true; # ability to get jupyter-like notebook with image
       # rendering etc. to work
 
@@ -392,14 +431,14 @@ in
       treesitter-context.enable = true; # a nicer/more performant version of context.vim
 
       tiny-inline-diagnostic.enable = true; # a nicer inline (virtual line replacement) for diagnostic messages
-      
+
       # highlight-colors.enable = true; # add background highlighting of color strings e.g. #99aa44
-      vim-css-color.enable = true;  # add background highlighting of color strings e.g. #99aa44 (possibly faster than highlight-colors?)
+      vim-css-color.enable = true; # add background highlighting of color strings e.g. #99aa44 (possibly faster than highlight-colors?)
       gitgutter.enable = true; # show git diff signs in the sign column
       fzf-lua.enable = true; # Fuzzy finder integration # TODO: There's prob a lot more I can do with this
       nvim-tree.enable = true; # nicer file explorer sidebar
       web-devicons.enable = true;
-      
+
       # better statusline written in lua
       lualine = {
         enable = true;
@@ -409,18 +448,32 @@ in
             icons_enabled = true;
           };
           sections = {
-            lualine_a = ["mode"];
-            lualine_b = ["branch" "diff" "diagnostics"];
-            lualine_c = ["filename"];
-            lualine_x = ["encoding" "filesize" "filetype"];
-            lualine_y = ["lsp_status" "venv-selector"];
-            lualine_z = ["location"];
+            lualine_a = [ "mode" ];
+            lualine_b = [
+              "branch"
+              "diff"
+              "diagnostics"
+            ];
+            lualine_c = [ "filename" ];
+            lualine_x = [
+              "encoding"
+              "filesize"
+              "filetype"
+            ];
+            lualine_y = [
+              "lsp_status"
+              "venv-selector"
+            ];
+            lualine_z = [ "location" ];
           };
           inactive_sections = {
-            lualine_b = ["diff" "diagnostics"];
-            lualine_c = ["filename"];
-            lualine_x = ["filetype"];
-            lualine_y = ["location"];
+            lualine_b = [
+              "diff"
+              "diagnostics"
+            ];
+            lualine_c = [ "filename" ];
+            lualine_x = [ "filetype" ];
+            lualine_y = [ "location" ];
           };
         };
       };
@@ -446,15 +499,54 @@ in
     extraPlugins = with pkgs.vimPlugins; [
       everforest # theme!
       indent-blankline-nvim # show indent line and current block highlight
+      term-edit-nvim # allow editing cmdline text in nvim terminal
+      flatten-nvim # opening file in terminal in neovim won't nest
+      sibling-swap # allow easy swapping of sibling nodes e.g. function args
     ];
 
     extraConfigVim = readFile ./vim-conf.vim;
     extraConfigLua = /* lua */ ''
       vim.o.updatetime = 250
+
+
+      require("sibling-swap").setup({
+        keymaps = {
+            ["<space>l"] = "swap_with_right",
+            ["<space>h"] = "swap_with_left",
+            ["<space>."] = "swap_with_right_with_opp",
+            ["<space>,"] = "swap_with_left_with_opp",
+        },
+      })
+
+      -- don't keep swapping out the current buffer if already open in another
+      local dap = require("dap")
+      dap.defaults.fallback.switchbuf = 'useopen,uselast'
+
+      -- nvim-dap mappings
+      vim.keymap.set('n', '<F5>', function() require('dap').continue() end)
+      vim.keymap.set('n', '<F9>', function() require('dap').terminate() end)
+      vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
+      vim.keymap.set('n', '<F11>', function() require('dap').step_into() end)
+      vim.keymap.set('n', '<F12>', function() require('dap').step_out() end)
+      vim.keymap.set('n', '<Leader>b', function() require('dap').toggle_breakpoint() end)
+      vim.keymap.set('n', '<Leader>df', function()
+          local widgets = require('dap.ui.widgets')
+          widgets.sidebar(widgets.frames).open()
+      end)
+      vim.keymap.set('n', '<Leader>ds', function()
+          local widgets = require('dap.ui.widgets')
+          widgets.sidebar(widgets.scopes).open()
+      end)
+      vim.keymap.set('n', '<Leader>dr', function() require('dap').repl.open() end)
+
+      require("term-edit").setup({
+          prompt_end = '%$ ',
+      })
+
+      require("flatten").setup({})
     '';
   };
-  
-  
+
   programs.neovim = {
     enable = false;
     viAlias = true;
@@ -462,73 +554,77 @@ in
 
     extraConfig = readFile ./vim-conf.vim;
 
-    plugins = with pkgs.vimPlugins; [
+    plugins =
+      with pkgs.vimPlugins;
+      [
 
-      # TODO: to try next:
-      # neotest
-      # notebooknavigator.nvim
-      # compter.nvim
-      # noedim
+        # TODO: to try next:
+        # neotest
+        # notebooknavigator.nvim
+        # compter.nvim
+        # noedim
 
-      # -- Langs --
-      vim-nix
-      julia-vim
+        # -- Langs --
+        vim-nix # DONE:
+        julia-vim # CANC:
 
-      # -- Utils --
-      fzfWrapper # TODO: unclear on differences between this one and fzf-vim  # DONE:
-      fzf-vim # DONE:
-      nvim-comment # shortcut to comment lines
-      vim-tmux-navigator # vim-side of navigating between tmux/vim panes  # DONE:
-      vimwiki # allow using alongside obsidian and still doing link nav  # CANC:
-      nvim-tree-lua # file explorer sidebar  # DONE:
-      bufferline-nvim # better bufferline that works with both tabs and buffers  # DONE:
-      term-edit-nvim # allow editing cmdline text in nvim terminal
-      flatten-nvim # opening file in terminal in neovim won't nest
-      # rsync-nvim # allow auto syncing from a remote source via rsync
-      # packer-nvim # some things are easier to install with the packer nvim package manager. # TODO: just using this to build rsync-nvim
-      plenary-nvim # helper functions for many other plugins
-      sibling-swap # allow easy swapping of sibling nodes e.g. function args
-      nvim-surround # make it easier to change quotes/braces around a thing etc.  # DONE:
+        # -- Utils --
+        fzfWrapper # TODO: unclear on differences between this one and fzf-vim  # DONE:
+        fzf-vim # DONE:
+        nvim-comment # shortcut to comment lines  # CANC: this apparently already exists??? how???
+        vim-tmux-navigator # vim-side of navigating between tmux/vim panes  # DONE:
+        vimwiki # allow using alongside obsidian and still doing link nav  # CANC:
+        nvim-tree-lua # file explorer sidebar  # DONE:
+        bufferline-nvim # better bufferline that works with both tabs and buffers  # DONE:
+        term-edit-nvim # allow editing cmdline text in nvim terminal
+        flatten-nvim # opening file in terminal in neovim won't nest
+        # rsync-nvim # allow auto syncing from a remote source via rsync
+        # packer-nvim # some things are easier to install with the packer nvim package manager. # TODO: just using this to build rsync-nvim
+        plenary-nvim # helper functions for many other plugins  # CANC:
+        sibling-swap # allow easy swapping of sibling nodes e.g. function args
+        nvim-surround # make it easier to change quotes/braces around a thing etc.  # DONE:
 
-      # -- testing and debugging
-      unstable.neotest # allow running unit tests within neovim  # DONE:
-      neotest-python  # neotest plugin for pytest  # DONE:
-      nvim-dap  # debug adapter protocol  # DONE:
-      nvim-dap-python # easy config for python dap  # DONE:
+        # -- testing and debugging
+        unstable.neotest # allow running unit tests within neovim  # DONE:
+        neotest-python # neotest plugin for pytest  # DONE:
+        nvim-dap # debug adapter protocol  # DONE:
+        nvim-dap-python # easy config for python dap  # DONE:
 
-      # -- Visual improvements --
-      everforest # beautiful colorscheme
-      lualine-nvim # better statusline written in lua  # DONE:
-      nvim-web-devicons # TODO: unclear if this works w/o font-awesome?
-      indent-blankline-nvim # show indent line and current block highlight
-      vista-vim # shows a "map" of all the symbols from lsp  # CANC:
-      context-vim # similar to the vscode experimental option that keeps the   # DONE:
-                  # current scope line in view
+        # -- Visual improvements --
+        everforest # beautiful colorscheme  # DONE:
+        lualine-nvim # better statusline written in lua  # DONE:
+        nvim-web-devicons # TODO: unclear if this works w/o font-awesome?  # DONE:
+        indent-blankline-nvim # show indent line and current block highlight  # DONE:
+        vista-vim # shows a "map" of all the symbols from lsp  # CANC:
+        context-vim # DONE:
+        # similar to the vscode experimental option that keeps the   # DONE:
+        # current scope line in view
 
-      # -- Autocompletion --
-      nvim-cmp
-      cmp-buffer
-      cmp-spell
-      cmp-path
+        # -- Autocompletion --
+        nvim-cmp # DONE:
+        cmp-buffer # DONE:
+        cmp-spell # DONE:
+        cmp-path # DONE:
 
-      # -- Treesitter --
-      # (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars)) # TODO: ??
-      nvim-treesitter.withAllGrammars  # DONE:
-      cmp-treesitter
-      
-      # -- LSP --
-      nvim-lspconfig # easy configuration setups for a bunch of lsp's
-      null-ls-nvim # an lsp server wrapper for any cli utils that don't have dedicated server # DONE:
-      cmp-nvim-lsp
-      cmp-nvim-lsp-signature-help # continues to display signature info as you type
+        # -- Treesitter --
+        # (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars)) # TODO: ??
+        nvim-treesitter.withAllGrammars # DONE:
+        cmp-treesitter # DONE:
 
-      # -- Snippets --
-      luasnip  # DONE:
-      cmp_luasnip
-    ] ++ [
-      # pkgs.unstable.vimPlugins.sibling-swap
-      # pkgs.unstable.vimPlugins.neotest
-    ];
+        # -- LSP --
+        nvim-lspconfig # easy configuration setups for a bunch of lsp's  # DONE:
+        null-ls-nvim # an lsp server wrapper for any cli utils that don't have dedicated server # DONE:
+        cmp-nvim-lsp # DONE:
+        cmp-nvim-lsp-signature-help # continues to display signature info as you type  # DONE:
+
+        # -- Snippets --
+        luasnip # DONE:
+        cmp_luasnip # DONE:
+      ]
+      ++ [
+        # pkgs.unstable.vimPlugins.sibling-swap
+        # pkgs.unstable.vimPlugins.neotest
+      ];
 
     extraPackages = with pkgs; [
       nodePackages.bash-language-server
@@ -555,21 +651,25 @@ in
       # python312Packages.flake8
       # python312Packages.debugpy # required for nvim-dap-python to work I think
 
-      (python3.withPackages (ps: with ps; [
-        python-lsp-server
-        pyls-isort
-        python-lsp-black
-        flake8
-        debugpy
-      ]))
-    
-      universal-ctags # important for vista-vim to work 
+      (python3.withPackages (
+        ps: with ps; [
+          python-lsp-server
+          pyls-isort
+          python-lsp-black
+          flake8
+          debugpy
+        ]
+      ))
+
+      universal-ctags # important for vista-vim to work
       fzf
     ];
 
-    extraPython3Packages = (ps: with ps; [
+    extraPython3Packages = (
+      ps: with ps; [
         jedi
         pynvim
-    ]);
+      ]
+    );
   };
 }

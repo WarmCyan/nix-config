@@ -317,7 +317,10 @@
       # primary laptop
       delta = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./home ];
+        modules = [
+          ./home
+          nixvim.homeModules.nixvim
+        ];
         extraSpecialArgs = {
           inherit self inputs outputs;
           hostname = "delta";
