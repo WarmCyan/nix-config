@@ -91,7 +91,8 @@
   gtk = {
     enable = true;
     theme = {
-      package = pkgs.gnome-themes-extra; name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
+      name = "Adwaita-dark";
     };
   };
 

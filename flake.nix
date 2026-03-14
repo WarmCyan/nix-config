@@ -139,6 +139,8 @@
       # we're "overriding" the nixpkgs input home-manager defines by default)
     };
 
+    nixvim.url = "github:nix-community/nixvim/nixos-25.11";
+
     nixgl = {
       url = "github:nix-community/nixGL";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -160,7 +162,7 @@
   };
 
   #outputs = inputs:
-  outputs = { self, nixpkgs, home-manager, nixgl, musnix, small-git-server, tt-rss-nix, ... } @ inputs:
+  outputs = { self, nixpkgs, nixvim, home-manager, nixgl, musnix, small-git-server, tt-rss-nix, ... } @ inputs:
   let
     inherit (self) outputs;
     
@@ -315,7 +317,10 @@
       # primary laptop
       delta = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./home ];
+        modules = [
+          ./home
+          nixvim.homeModules.nixvim
+        ];
         extraSpecialArgs = {
           inherit self inputs outputs;
           hostname = "delta";
@@ -352,7 +357,10 @@
       # work linux workstation 
       arcane = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./home ];
+        modules = [
+          ./home
+          nixvim.homeModules.nixvim
+        ];
         extraSpecialArgs = {
           inherit self inputs outputs nixgl;
           hostname = "arcane";
@@ -368,7 +376,10 @@
       # work linux laptop 
       planet = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./home ];
+        modules = [
+          ./home
+          nixvim.homeModules.nixvim
+        ];
         extraSpecialArgs = {
           inherit self inputs outputs nixgl;
           hostname = "planet";
