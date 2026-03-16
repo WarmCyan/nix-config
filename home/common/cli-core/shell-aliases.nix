@@ -56,4 +56,7 @@
 
   rgf = "rg --files | rg";
   ns = "nix-search --flake sys --no-pager";
+  # TODO: need to figure out way to exit if you ctrl+c
+  vf = "nvim \"$(fzf --ansi --preview='bat {} --color=always')\"";
+  vimf = "vim \"$(fzf --ansi --preview='bat {} --color=always')\"";
 }

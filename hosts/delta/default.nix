@@ -75,7 +75,7 @@
     extraGroups = [ "networkmanager" "wheel" "plugdev" "dialout" ];  # plugdev for rtl-sdr
     packages = with pkgs; [
       firefox
-      kate
+      # kate
       chirp
 
       arduino-ide
@@ -105,8 +105,7 @@
     enable = true;
     settings = {
       PasswordAuthentication = true; # TODO: set this to false
-      PermitRootLogin = "no";
-    };
+      PermitRootLogin = "no"; };
   };
 
   
@@ -118,6 +117,9 @@
     # displayManager.sx.enable = true; # lightweight startx alternative
     # displayManager.startx.enable = true;
     
+    # lightdm.enable = lib.mkForce false;
+    # autorun = false;
+    # displayManager.startx.enable = true;
     displayManager.sddm.enable = true;
     displayManager.sddm.theme = "${(pkgs.fetchFromGitHub {
       owner = "WildfireXIII";
