@@ -211,7 +211,18 @@ in
           html.enable = true;
           nixd.enable = true; # nix
           # ruff.enable = true; # python (diagnostics, code actions, and formatting)
-          pyright.enable = true; # (static typechecking, hopefully navigation and autocomplete?
+          # pyright.enable = true; # (static typechecking, hopefully navigation and autocomplete?
+          pyright = {
+            enable = true;
+            settings = {
+              python = {
+                analysis = {
+                    diagnosticMode = "off";
+                    typeCheckingMode = "off";
+                };
+              };
+            };
+          };
           ts_ls.enable = true; # typescript/javascript
           vimls.enable = true; # vim!
 
@@ -243,27 +254,28 @@ in
       # mini-pick.enable = true;  # (used by actions-preview, alternatives exist)
 
       # the null-ls successor, lsp server wrapper for any cli utils that don't have dedicated server
-      none-ls = {
-        enable = true;
-        sources.diagnostics = {
-          pylint.enable = true;
-        };
-        sources.formatting = {
-          black.enable = true;
-          isort.enable = true;
-          # nix_flake_fmt vs nixfmt vs nixpkgs_fmt??
-        };
-        settings = {
-          diagnostics_format = "[#{c}] #{m} (#{s})";
-          # on_attach = /* lua */ ''
-          #   function(client, bufnr)
-          #     -- Integrate lsp-format with none-ls
-          #     require('lsp-format').on_attach(client, bufnr)
-          #   end
-          # '';
-        };
-      };
-
+      # none-ls = {
+      #   enable = true;
+      #   # sources.diagnostics = {
+      #   #   pylint.enable = true;
+      #   # };
+      #   sources.formatting = {
+      #     black.enable = true;
+      #     isort.enable = true;
+      #     # nix_flake_fmt vs nixfmt vs nixpkgs_fmt??
+      #   };
+      #   settings = {
+      #     diagnostics_format = "[#{c}] #{m} (#{s})";
+      #     # debug = true;
+      #     # on_attach = /* lua */ ''
+      #     #   function(client, bufnr)
+      #     #     -- Integrate lsp-format with none-ls
+      #     #     require('lsp-format').on_attach(client, bufnr)
+      #     #   end
+      #     # '';
+      #   };
+      # };
+      #
       #
       # lspconfig.enable = true;
       # lint.enable = true; # async linter spawner
@@ -356,7 +368,10 @@ in
 
       # treesj.enable? # more "correct" join/split for code blocks/arrays?
 
-      venv-selector.enable = true; # allow activating python environments from within nvim
+      # venv-selector.enable = true; # allow activating python environments from within nvim
+      # venv-selector.settings.options.log_level = "DEBUG";
+      # venv-selector.settings.options.debug = true;
+      # venv-selector.settings.search.micromamba.command = "fd '/bin/python$' \"$HOME/micromamba/envs\" --no-ignore-vcs --full-path";
 
       vim-slime.enable = true; # allow sending snippets of text to nearby terminals/repls
       vim-slime.settings.target = "neovim";
@@ -398,37 +413,50 @@ in
       # obsidian.enable = true; # !!!
 
       # show indentation guides and current scope
-      indent-blankline = {
+      hlchunk = {
         enable = true;
         settings = {
-          exclude = {
-            buftypes = [
-              "terminal"
-              "quickfix"
-            ];
-            filetypes = [
-              ""
-              "checkhealth"
-              "help"
-              "lspinfo"
-              "packer"
-              "TelescopePrompt"
-              "TelescopeResults"
-              "yaml"
-            ];
-          };
+          # chunk = {
+          #   enable = true;
+          #   use_treesitter = false;
+          # };
           indent = {
-            char = "│";
-          };
-          scope = {
-            show_end = false;
-            show_exact_scope = true;
-            show_start = false;
+            enable = true;
+            use_treesitter = false;
           };
         };
       };
-
-      treesitter-context.enable = true; # a nicer/more performant version of context.vim
+      # indent-blankline = {
+      #   enable = true;
+      #   settings = {
+      #     exclude = {
+      #       buftypes = [
+      #         "terminal"
+      #         "quickfix"
+      #       ];
+      #       filetypes = [
+      #         ""
+      #         "checkhealth"
+      #         "help"
+      #         "lspinfo"
+      #         "packer"
+      #         "TelescopePrompt"
+      #         "TelescopeResults"
+      #         "yaml"
+      #       ];
+      #     };
+      #     indent = {
+      #       char = "│";
+      #     };
+      #     scope = {
+      #       show_end = false;
+      #       show_exact_scope = true;
+      #       show_start = false;
+      #     };
+      #   };
+      # };
+      #
+      # treesitter-context.enable = true; # a nicer/more performant version of context.vim
 
       tiny-inline-diagnostic.enable = true; # a nicer inline (virtual line replacement) for diagnostic messages
 
