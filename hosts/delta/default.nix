@@ -1,14 +1,20 @@
 # delta, system configuration for super awesome laptop!
 
-{ config, pkgs, hostname, lib, ... }:
+{
+  config,
+  pkgs,
+  hostname,
+  lib,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ../common/fonts
-      ../common/pipewire
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ../common/fonts
+    ../common/pipewire
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -72,7 +78,12 @@
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
-    extraGroups = [ "networkmanager" "wheel" "plugdev" "dialout" ];  # plugdev for rtl-sdr
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "plugdev"
+      "dialout"
+    ]; # plugdev for rtl-sdr
     packages = with pkgs; [
       firefox
       # kate
@@ -86,7 +97,7 @@
     shell = pkgs.zsh;
   };
   programs.zsh.enable = true;
-  users.groups.plugdev = {};
+  users.groups.plugdev = { };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -98,20 +109,26 @@
     xorg.xbacklight
     brightnessctl
   ];
-  
+
   programs.nix-ld.enable = true;
 
   # https://github.com/NixOS/nixpkgs/issues/106461 rtlsdr
   services.udev.packages = [ pkgs.rtl-sdr ];
-  
+
   services.openssh = {
     enable = true;
     settings = {
       PasswordAuthentication = true; # TODO: set this to false
-      PermitRootLogin = "no"; };
+      PermitRootLogin = "no";
+    };
+  };
+  
+  environment.etc = {
+    "issue".source = pkgs.writeText "issue" ''
+Hello there!
+    '';
   };
 
-  
   # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
   services.xserver = {
     enable = true;
@@ -119,29 +136,51 @@
     # https://discourse.nixos.org/t/how-to-start-i3-using-greetd/28028
     # displayManager.sx.enable = true; # lightweight startx alternative
     # displayManager.startx.enable = true;
-    
+
     # lightdm.enable = lib.mkForce false;
     # autorun = false;
-    # displayManager.startx.enable = true;
+    displayManager.startx.enable = true;
+    # displayManager.autoLogin.user = "dwl";
+    # desktopManager.session = [
+    #   {
+    #     name = "xession"  ;
+    #     start = ''
+    #       ${pkgs.runtimeShell} $HOME/.xsession &
+    #       waitPID=$!
+    #     '';
+    #   }
+    # ];
+    # desktopManager.runXdgAutostartIfNone = true;
+    # displayManager.defaultSession = "none+fake";
+    # displayManager.session =
+    #   let
+    #     fakeSession = {
+    #       manager = "window";
+    #       name = "fake";
+    #       start = "";
+    #     };
+    #   in
+      # [ fakeSession ];
     # displayManager.lightdm.enable = lib.mkForce false;
-    displayManager.sddm.enable = true;
+    # displayManager.sddm.enable = true;
     # displayManager.sddm.theme = "${(pkgs.fetchFromGitHub {
+    
     #   owner = "WildfireXIII";
     #   repo = "sddm-chili";
     #   rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
     #   sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
     # })}";
-    desktopManager.session = [
-      {
-        name = "xsession";
-        # manage = "desktop";
-        # start = '' '';
-        start = ''
-          ${pkgs.runtimeShell} $HOME/.xsession &
-          waitPID=$!
-        '';
-      }
-    ];
+    # desktopManager.session = [
+    #   {
+    #     name = "xsession";
+    #     # manage = "desktop";
+    #     # start = '' '';
+    #     start = ''
+    #       ${pkgs.runtimeShell} $HOME/.xsession &
+    #       waitPID=$!
+    #     '';
+    #   }
+    # ];
   };
 
   # services.greetd = {
@@ -161,13 +200,15 @@
   #     };
   #   };
   # };
+
   
-  
+
   # enable using the caps lock key has Mod5
-  services.xserver.displayManager.sessionCommands = /* bash */''
-    # set up my caps lock keyboard configuration
-    ${pkgs.kbd-capslock}/bin/kbd-capslock
-  '';
+  # NOTE: this got moved to xinitrc in home-manager
+  # services.xserver.displayManager.sessionCommands = /* bash */ ''
+  #   # set up my caps lock keyboard configuration
+  #   ${pkgs.kbd-capslock}/bin/kbd-capslock
+  # '';
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
