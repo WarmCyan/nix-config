@@ -79,6 +79,9 @@
       chirp
 
       arduino-ide
+
+      wineWow64Packages.staging
+      winetricks
     ];
     shell = pkgs.zsh;
   };
@@ -120,16 +123,19 @@
     # lightdm.enable = lib.mkForce false;
     # autorun = false;
     # displayManager.startx.enable = true;
+    # displayManager.lightdm.enable = lib.mkForce false;
     displayManager.sddm.enable = true;
-    displayManager.sddm.theme = "${(pkgs.fetchFromGitHub {
-      owner = "WildfireXIII";
-      repo = "sddm-chili";
-      rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
-      sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
-    })}";
+    # displayManager.sddm.theme = "${(pkgs.fetchFromGitHub {
+    #   owner = "WildfireXIII";
+    #   repo = "sddm-chili";
+    #   rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
+    #   sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
+    # })}";
     desktopManager.session = [
       {
         name = "xsession";
+        # manage = "desktop";
+        # start = '' '';
         start = ''
           ${pkgs.runtimeShell} $HOME/.xsession &
           waitPID=$!
