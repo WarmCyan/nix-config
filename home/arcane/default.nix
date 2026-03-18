@@ -55,6 +55,7 @@ in
     mimeApps.defaultApplications = {
       "inode/directory" = [ "pcmanfm.desktop" ];
     };
+    configFile."mimeapps.list".force = true;
   };
 
   desktop.i3 = {

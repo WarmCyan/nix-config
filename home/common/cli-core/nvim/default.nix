@@ -122,8 +122,8 @@ in
       }
       {
         mode = "n";
-        key = "//";
-        action = ":FzfLua lsp_document_symbols<cr>";
+        key = "<LEADER>t";
+        action = ":Neotest summary<CR>";
         options = {
           silent = true;
           noremap = true;
@@ -131,8 +131,17 @@ in
       }
       {
         mode = "n";
-        key = "<LEADER>t";
-        action = ":Neotest summary<CR>";
+        key = "//";
+        action = ":FzfLua lsp_document_symbols<CR>";
+        options = {
+          silent = true;
+          noremap = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<LEADER>a";
+        action = ":FzfLua lsp_code_actions<CR>";
         options = {
           silent = true;
           noremap = true;
@@ -203,6 +212,10 @@ in
             key = "<leader>lr";
             action = "<CMD>LspRestart<Enter>";
           }
+          {
+            key = "<leader>h";
+            action = "<CMD>lua vim.diagnostic.setloclist()<Enter>";
+          }
         ];
         servers = {
           autotools_ls.enable = true; # makefiles
@@ -210,15 +223,15 @@ in
           clangd.enable = true; # c/c++
           html.enable = true;
           nixd.enable = true; # nix
-          # ruff.enable = true; # python (diagnostics, code actions, and formatting)
+          ruff.enable = true; # python (diagnostics, code actions, and formatting)
           # pyright.enable = true; # (static typechecking, hopefully navigation and autocomplete?
           pyright = {
             enable = true;
             settings = {
               python = {
                 analysis = {
-                    diagnosticMode = "off";
-                    typeCheckingMode = "off";
+                  diagnosticMode = "off";
+                  typeCheckingMode = "off";
                 };
               };
             };
@@ -412,7 +425,20 @@ in
       # img-clip.enable = true; # make it easier to add images (e.g. from clipboard)
       # obsidian.enable = true; # !!!
 
+      # show lightbulb where code-actions are available
+      # nvim-lightbulb = {
+      #   enable = true;
+      #   settings = {
+      #     autocmd = {
+      #       enabled = true;
+      #       updatetime = 200;
+      #     };
+      #     number.enabled = true; # show the lightbulb in the number column
+      #   };
+      # };
+
       # show indentation guides and current scope
+      # (hlchunk much more performant than indent-blankline)
       hlchunk = {
         enable = true;
         settings = {
