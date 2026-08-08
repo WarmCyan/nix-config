@@ -48,6 +48,11 @@ in
     overlays = builtins.attrValues outputs.overlays;
     config = {
       allowUnfree = true;
+      permittedInsecurePackages = [
+      #   "librewolf-152.0.2-1" 
+      #   "librewolf-unwrapped-152.0.2-1" 
+        # "python3.13-beets-2.5.1" 
+      ];
     };
   };
 

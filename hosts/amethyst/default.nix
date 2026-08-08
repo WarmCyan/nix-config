@@ -14,26 +14,26 @@
 
 
   # ==== FASTER TESTING THAN SERVER
-  containers.cyan = {
-    autoStart = true;
-    privateUsers = "pick";
-    config = (import ../therock/cyan-network-config.nix);
-    privateNetwork = true;
-    hostAddress = "192.168.1.31";  # firewall machine should point to this? "external" ip?
-    localAddress = "192.168.1.30"; # address within the container?
-
-    # TODO: just use enableTun?
-    allowedDevices = [
-      { modifier = "rwm"; node = "/dev/net/tun"; }
-    ];
-
-    forwardPorts = [
-      { containerPort = 51830; hostPort = 51830; protocol = "udp"; }
-    ];
-  };
-  networking.nat.enable = true;
-  networking.nat.internalInterfaces = [ "ve-cyan" ]; # I assume this should be wg1 too?
-  networking.nat.externalInterface = "enp6s0";
+  # containers.cyan = {
+  #   autoStart = true;
+  #   privateUsers = "pick";
+  #   config = (import ../therock/cyan-network-config.nix);
+  #   privateNetwork = true;
+  #   hostAddress = "192.168.1.31";  # firewall machine should point to this? "external" ip?
+  #   localAddress = "192.168.1.30"; # address within the container?
+  #
+  #   # TODO: just use enableTun?
+  #   allowedDevices = [
+  #     { modifier = "rwm"; node = "/dev/net/tun"; }
+  #   ];
+  #
+  #   forwardPorts = [
+  #     { containerPort = 51830; hostPort = 51830; protocol = "udp"; }
+  #   ];
+  # };
+  # networking.nat.enable = true;
+  # networking.nat.internalInterfaces = [ "ve-cyan" ]; # I assume this should be wg1 too?
+  # networking.nat.externalInterface = "enp6s0";
   # ==== /FASTER TESTING THAN SERVER
 
 
@@ -78,8 +78,8 @@
     enable = true;
     temperature.day = 6500;
     brightness.day = "1";
-    temperature.night = 2000;
-    brightness.night = "0.4";
+    temperature.night = 4000;
+    brightness.night = "0.8";
     extraOptions = [
       "-v"
     ];
@@ -254,14 +254,16 @@
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "adbusers" "dialout" ];
     packages = with pkgs; [
-      # (unstable.yabridge.override { wine = unstable.wineWowPackages.yabridge; })
-      # (unstable.yabridgectl.override { wine = unstable.wineWowPackages.yabridge; })
 
-      unstable.yabridge
-      unstable.yabridgectl
-      unstable.wineWowPackages.yabridge
+      # unstable.yabridge
+      # unstable.yabridgectl
+      # unstable.wineWowPackages.yabridge
+      
+      yabridge
+      yabridgectl
+      wineWowPackages.yabridge
 
       # wineWowPackages.full
       # wineWowPackages.waylandFull
@@ -355,6 +357,7 @@
 
     unixtools.net-tools
     
+    rkflashtool
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

@@ -431,30 +431,30 @@ vim.lsp.config("pylsp", {
     }
 })
 
-local null_ls = require('null-ls')
-
-null_ls.setup({
-    sources = {
-        -- js
-        null_ls.builtins.code_actions.eslint.with({
-            only_local = "node_modules/.bin"
-        }),
-        null_ls.builtins.diagnostics.eslint.with({
-            only_local = "node_modules/.bin"
-        }),
-        null_ls.builtins.formatting.eslint.with({
-            only_local = "node_modules/.bin"
-        }),
-
-        -- null_ls.builtins.diagnostics.vint
-
-        -- python (these don't seem to work with pylsp, unclear why)
-        null_ls.builtins.formatting.black,
-        null_ls.builtins.formatting.isort
-    },
-    on_attach = on_attach,
-    capabilities = capabilities
-})
+-- local null_ls = require('null-ls')
+-- 
+-- null_ls.setup({
+--     sources = {
+--         -- js
+--         null_ls.builtins.code_actions.eslint.with({
+--             only_local = "node_modules/.bin"
+--         }),
+--         null_ls.builtins.diagnostics.eslint.with({
+--             only_local = "node_modules/.bin"
+--         }),
+--         null_ls.builtins.formatting.eslint.with({
+--             only_local = "node_modules/.bin"
+--         }),
+-- 
+--         -- null_ls.builtins.diagnostics.vint
+-- 
+--         -- python (these don't seem to work with pylsp, unclear why)
+--         null_ls.builtins.formatting.black,
+--         null_ls.builtins.formatting.isort
+--     },
+--     on_attach = on_attach,
+--     capabilities = capabilities
+-- })
 
 
 --lspconfig.tsserver.setup({

@@ -117,7 +117,7 @@ in
       julia-vim
 
       # -- Utils --
-      fzfWrapper # TODO: unclear on differences between this one and fzf-vim
+      fzf-wrapper
       fzf-vim
       nvim-comment # shortcut to comment lines
       vim-tmux-navigator # vim-side of navigating between tmux/vim panes
@@ -133,7 +133,7 @@ in
       nvim-surround # make it easier to change quotes/braces around a thing etc.
 
       # -- testing and debugging
-      unstable.neotest # allow running unit tests within neovim
+      neotest # allow running unit tests within neovim
       neotest-python  # neotest plugin for pytest
       nvim-dap  # debug adapter protocol
       nvim-dap-python # easy config for python dap
@@ -160,7 +160,7 @@ in
       
       # -- LSP --
       nvim-lspconfig # easy configuration setups for a bunch of lsp's
-      null-ls-nvim # an lsp server wrapper for any cli utils that don't have dedicated server
+      # null-ls-nvim # an lsp server wrapper for any cli utils that don't have dedicated server
       cmp-nvim-lsp
       cmp-nvim-lsp-signature-help # continues to display signature info as you type
 
@@ -173,8 +173,8 @@ in
     ];
 
     extraPackages = with pkgs; [
-      nodePackages.bash-language-server
-      nodePackages.vim-language-server
+      bash-language-server
+      vim-language-server
       # nodePackages.vls
 
       # -- Python language server stuff --
