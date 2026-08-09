@@ -13,6 +13,8 @@
     ../common/kitty
 
     ../common/music
+
+    ../common/minimal-desktop
   ];
   
   home.packages = with pkgs; [
@@ -65,33 +67,33 @@
   #     exec startx
   #   fi
   # '';
-  programs.bash.profileExtra = ''
-    if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" -le 3 ]; then
-      exec startx
-    fi
-  '';
-  programs.zsh.profileExtra = ''
-    if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" -le 3 ]; then
-      exec startx
-    fi
-  '';
-
-  home.file.".xinitrc".text = ''
-    if test -z "$DBUS_SESSION_BUS_ADDRESS"; then
-      eval $(dbus-launch --exit-with-session --sh-syntax)
-    fi
-    systemctl --user import-environment DISPLAY XAUTHORITY
-
-    if command -v dbus-update-activation-environment >/dev/null 2>&1; then
-            dbus-update-activation-environment DISPLAY XAUTHORITY
-    fi
-
-    ${pkgs.kbd-capslock}/bin/kbd-capslock
-
-    exec $HOME/.xsession
-  '';
-    
-
+  # programs.bash.profileExtra = ''
+  #   if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ] && [[ "$(tty)" == *"/dev/tty"* ]]; then
+  #     exec startx
+  #   fi
+  # '';
+  # programs.zsh.profileExtra = ''
+  #   if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ] && [[ "$(tty)" == *"/dev/tty"* ]]; then
+  #     exec startx
+  #   fi
+  # '';
+  #
+  # home.file.".xinitrc".text = ''
+  #   if test -z "$DBUS_SESSION_BUS_ADDRESS"; then
+  #     eval $(dbus-launch --exit-with-session --sh-syntax)
+  #   fi
+  #   systemctl --user import-environment DISPLAY XAUTHORITY
+  #
+  #   if command -v dbus-update-activation-environment >/dev/null 2>&1; then
+  #           dbus-update-activation-environment DISPLAY XAUTHORITY
+  #   fi
+  #
+  #   ${pkgs.kbd-capslock}/bin/kbd-capslock
+  #
+  #   exec $HOME/.xsession
+  # '';
+  #
+  #
   xsession.windowManager.i3 = {
     config = {
       startup = [
@@ -104,6 +106,7 @@
     };
   };
   desktop = {
+    minimalX.enable = true;
     i3 = {
       enable = true;
       colorActive = "667b59";
@@ -193,33 +196,4 @@
 
   # NOTE: to generate the lockscreen image you need to separately run
   # betterlockscreen -u .background-image -l blur
-
-  home.file.".config/betterlockscreenrc".text = ''
-    fx_list=(blur)
-    wallpaper_cmd=""
-    blur_level=1
-
-    locktext="Hi Nathan!"
-    
-    loginbox=FFFFFF22
-    loginshadow=FFFFFF11
-    font="sans-serif"
-    ringcolor=ffffffff
-    insidecolor=00000000
-    separatorcolor=00000000
-    ringvercolor=ffffff99
-    insidevercolor=00000000
-    ringwrongcolor=ffffff99
-    insidewrongcolor=d28c3dee
-    timecolor=ffffffff
-    time_format="%H:%M"
-    greetercolor=ffffffff
-    layoutcolor=ffffffff
-    keyhlcolor=d28c3dee
-    bshlcolor=d28c3dee
-    verifcolor=ffffffff
-    wrongcolor=d28c3dee
-    modifcolor=d28c3dee
-    bgcolor=000000ff
-  '';
 }

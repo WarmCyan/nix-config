@@ -16,6 +16,7 @@
     ./hardware-configuration.nix
     ../common/fonts
     ../common/pipewire
+    ../common/minimal-desktop
   ];
 
   # Bootloader.
@@ -109,7 +110,7 @@
     libsForQt5.qt5.qtquickcontrols
     libsForQt5.qt5.qtgraphicaleffects
     xbacklight
-   brightnessctl
+    brightnessctl
   ];
 
   programs.nix-ld.enable = true;
@@ -124,87 +125,113 @@
       PermitRootLogin = "no";
     };
   };
-  
-  console = {
-    earlySetup = true;
-    font = "${pkgs.terminus_font}/share/consolefonts/ter-128n.psf.gz";
-    packages = with pkgs; [ terminus_font ];
-    keyMap = "us";
-  };
-  
-  # https://unix.stackexchange.com/questions/16255/how-can-i-change-whats-displayed-at-a-login-shell
-  # (ansi colors don't appear to work)
-  # figlet -f cyberlarge [name]
-  
- # ______  _______        _______ _______
- # |     \\ |______ |         |    |_____|
- # |_____/ |______ |_____    |    |     |
-  
-  environment.etc = {
-    "issue".source = pkgs.writeText "issue" ''
 
-=============================================================
-${lib.replaceStrings ["\\"] ["\\\\"] (lib.readFile "${pkgs.runCommandWith { name="gen_name"; derivationArgs.nativeBuildInputs = [ pkgs.figlet ]; } "figlet -f cyberlarge ${hostname} > $out"}")}=============================================================
-
-${configName}:${builtins.substring 0 4 self.lastModifiedDate}-${builtins.substring 4 2 self.lastModifiedDate}-${builtins.substring 6 2 self.lastModifiedDate}:${builtins.substring 8 100 self.lastModifiedDate} - (\s \m \r)
-
-'';
-  };
-
-  # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
-  services.xserver = {
+  desktop.minimalX = {
     enable = true;
-
-    # https://discourse.nixos.org/t/how-to-start-i3-using-greetd/28028
-    # displayManager.sx.enable = true; # lightweight startx alternative
-    # displayManager.startx.enable = true;
-
-    # lightdm.enable = lib.mkForce false;
-    # autorun = false;
-    displayManager.startx.enable = true;
-    # displayManager.autoLogin.user = "dwl";
-    # desktopManager.session = [
-    #   {
-    #     name = "xession"  ;
-    #     start = ''
-    #       ${pkgs.runtimeShell} $HOME/.xsession &
-    #       waitPID=$!
-    #     '';
-    #   }
-    # ];
-    # desktopManager.runXdgAutostartIfNone = true;
-    # displayManager.defaultSession = "none+fake";
-    # displayManager.session =
-    #   let
-    #     fakeSession = {
-    #       manager = "window";
-    #       name = "fake";
-    #       start = "";
-    #     };
-    #   in
-      # [ fakeSession ];
-    # displayManager.lightdm.enable = lib.mkForce false;
-    # displayManager.sddm.enable = true;
-    # displayManager.sddm.theme = "${(pkgs.fetchFromGitHub {
-    
-    #   owner = "WildfireXIII";
-    #   repo = "sddm-chili";
-    #   rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
-    #   sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
-    # })}";
-    # desktopManager.session = [
-    #   {
-    #     name = "xsession";
-    #     # manage = "desktop";
-    #     # start = '' '';
-    #     start = ''
-    #       ${pkgs.runtimeShell} $HOME/.xsession &
-    #       waitPID=$!
-    #     '';
-    #   }
-    # ];
+    figletNameColor = "1;35";
   };
-
+  
+#   console = {
+#     earlySetup = true;
+#     # font = "${pkgs.terminus_font}/share/consolefonts/ter-128n.psf.gz";
+#     font = "${pkgs.terminus_font}/share/consolefonts/ter-128b.psf.gz";
+#     packages = with pkgs; [ terminus_font ];
+#     keyMap = "us";
+#     # (gruvbox colors)
+#     colors = [
+#       "282828"
+#       "cc241d"
+#       "98971a"
+#       "d79921"
+#       "458588"
+#       "b16286"
+#       "689d6a"
+#       "a89984"
+#       "928374"
+#       "fb4934"
+#       "b8bb26"
+#       "fabd2f"
+#       "83a598"
+#       "d3869b"
+#       "8ec07c"
+#       "ebdbb2"
+#     ];
+#   };
+#
+#   # https://unix.stackexchange.com/questions/16257/how-can-i-change-whats-displayed-at-a-login-shell
+#   # (ansi colors don't appear to work)
+#   # figlet -f cyberlarge [name]
+#
+#  # ______  _______        _______ _______
+#  # |     \\ |______ |         |    |_____|
+#  # |_____/ |______ |_____    |    |     |
+#
+#   # https://discourse.nixos.org/t/how-to-create-a-timestamp-in-a-nix-expression/30329
+#   environment.etc = {
+#     "issue".source = pkgs.writeText "issue" ''
+#
+# =============================================================${lib.readFile "${pkgs.runCommand "colorecho" {} "echo -en \"\\033[1;36m\" > $out" }"}
+# ${lib.replaceStrings ["\\"] ["\\\\"] (lib.readFile "${pkgs.runCommandWith { name="gen_name"; derivationArgs.nativeBuildInputs = [ pkgs.figlet ]; } "figlet -f cyberlarge ${hostname} > $out"}")}${lib.readFile "${pkgs.runCommand "colorecho" {} "echo -en \"\\033[0m\" > $out" }"}=============================================================
+#
+# ${configName}:${builtins.substring 0 4 self.lastModifiedDate}-${builtins.substring 4 2 self.lastModifiedDate}-${builtins.substring 6 2 self.lastModifiedDate}:${builtins.substring 8 100 self.lastModifiedDate} - (\s \m \r) \l
+#
+# '';
+#   };
+#
+#   # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
+#   services.xserver = {
+#     enable = true;
+#
+#     # https://discourse.nixos.org/t/how-to-start-i3-using-greetd/28028
+#     # displayManager.sx.enable = true; # lightweight startx alternative
+#     # displayManager.startx.enable = true;
+#
+#     # lightdm.enable = lib.mkForce false;
+#     # autorun = false;
+#     displayManager.startx.enable = true;
+#     # displayManager.autoLogin.user = "dwl";
+#     # desktopManager.session = [
+#     #   {
+#     #     name = "xession"  ;
+#     #     start = ''
+#     #       ${pkgs.runtimeShell} $HOME/.xsession &
+#     #       waitPID=$!
+#     #     '';
+#     #   }
+#     # ];
+#     # desktopManager.runXdgAutostartIfNone = true;
+#     # displayManager.defaultSession = "none+fake";
+#     # displayManager.session =
+#     #   let
+#     #     fakeSession = {
+#     #       manager = "window";
+#     #       name = "fake";
+#     #       start = "";
+#     #     };
+#     #   in
+#       # [ fakeSession ];
+#     # displayManager.lightdm.enable = lib.mkForce false;
+#     # displayManager.sddm.enable = true;
+#     # displayManager.sddm.theme = "${(pkgs.fetchFromGitHub {
+#
+#     #   owner = "WildfireXIII";
+#     #   repo = "sddm-chili";
+#     #   rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
+#     #   sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
+#     # })}";
+#     # desktopManager.session = [
+#     #   {
+#     #     name = "xsession";
+#     #     # manage = "desktop";
+#     #     # start = '' '';
+#     #     start = ''
+#     #       ${pkgs.runtimeShell} $HOME/.xsession &
+#     #       waitPID=$!
+#     #     '';
+#     #   }
+#     # ];
+#   };
+#
   # services.greetd = {
   #   enable = true;
   #   # vt = config.services.xserver.tty;
