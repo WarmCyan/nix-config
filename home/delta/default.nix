@@ -130,6 +130,7 @@
       package = pkgs.gnome-themes-extra;
       name = "Adwaita-dark";
     };
+    gtk4.theme = config.gtk.theme;
   };
 
   qt = {
@@ -221,11 +222,4 @@
     modifcolor=d28c3dee
     bgcolor=000000ff
   '';
-  
-  programs.vscode = {
-    enable = true;
-    extensions = with pkgs.vscode-extensions; lib.mkForce [
-      vscodevim.vim
-    ];
-  };
 }

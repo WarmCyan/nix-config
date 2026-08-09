@@ -1,4 +1,4 @@
-{ pkgs, self, gitUsername, gitEmail, ... }:
+{ config, pkgs, self, gitUsername, gitEmail, ... }:
 
 let
   inherit (builtins) readFile;
@@ -61,5 +61,6 @@ in
       theme = "agnoster";
       plugins = [ "git" "pip" ];
     };
+    dotDir = config.home.homeDirectory;
   };
 }

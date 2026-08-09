@@ -57,23 +57,23 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  services.libinput = {
+    enable = true;
+
+    touchpad = {
+      disableWhileTyping = true;
+      additionalOptions = ''
+        Option "PalmDetection" "on"
+      '';
+    };
+  };
+
   # Configure keymap in X11
   services.xserver = {
-    layout = "us";
-    xkbVariant = "";
-    #synaptics.enable = true; # can't use both synaptics and libinput
-    libinput = {
-      enable = true;
-
-      touchpad = {
-        disableWhileTyping = true;
-        additionalOptions = ''
-          Option "PalmDetection" "on"
-        '';
-      };
-
+    xkb = {
+      layout = "us";
+      variant = "";
     };
-    #libinput.touchpad.naturalScrolling = true;
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -108,7 +108,7 @@
     # necessary for sddm theme
     libsForQt5.qt5.qtquickcontrols
     libsForQt5.qt5.qtgraphicaleffects
-    xorg.xbacklight
+    xbacklight
    brightnessctl
   ];
 
@@ -127,7 +127,7 @@
   
   console = {
     earlySetup = true;
-    font = "${pkgs.terminus_font}/share/consolefonts/ter-124n.psf.gz";
+    font = "${pkgs.terminus_font}/share/consolefonts/ter-128n.psf.gz";
     packages = with pkgs; [ terminus_font ];
     keyMap = "us";
   };
