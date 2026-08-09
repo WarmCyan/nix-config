@@ -1,5 +1,5 @@
 # see ../../../hosts/common/minimal-desktop/default.nix for nixos-side
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 with lib;
 let
   cfg = config.desktop.minimalX;

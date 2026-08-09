@@ -1,5 +1,5 @@
 # see ../../../home/common/minimal-desktop/default.nix for hm-side
-{ config, lib, hostname, pkgs, ... }:
+{ self, config, configName, lib, hostname, pkgs, ... }:
 with lib;
 let
   cfg = config.desktop.minimalX;
@@ -23,7 +23,7 @@ in
 
     console = {
       earlySetup = true;
-      font = "${pkgs.terminus_font}/share/consolefonts/ter-1${cfg.termFontsize}b.psf.gz";
+      font = "${pkgs.terminus_font}/share/consolefonts/ter-1${toString cfg.termFontsize}b.psf.gz";
       packages = with pkgs; [ terminus_font ];
       keyMap = "us";
       colors = [
