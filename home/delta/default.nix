@@ -54,6 +54,9 @@
     # arduino-ide
 
     wireguard-tools
+
+    zoom-us
+    chromium
   ];
 
   # programs.bash.initExtra = ''
