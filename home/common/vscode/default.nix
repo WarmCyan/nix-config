@@ -22,7 +22,7 @@ in {
     mutableExtensionsDir = true; # allows vscode to install/update extensions without going thru nix
     #mutable = true;
 
-    extensions = with pkgs.vscode-extensions; [
+    profiles.default.extensions = with pkgs.vscode-extensions; [
       vscodevim.vim
       ms-vscode-remote.remote-ssh
       ms-python.python
@@ -33,7 +33,7 @@ in {
       #sainnhe.everforest
     ];
 
-    userSettings = {
+    profiles.default.userSettings = {
       "vim.cursorStylePerMode.normal" = "block";
       "vim.cursorStylePerMode.insert" = "line";
       "vim.insertModeKeyBindingsNonRecursive" = [
@@ -101,7 +101,7 @@ in {
       '';
       
       overwriteVSCodeSymlink = let
-        userSettings = config.programs.vscode.userSettings;
+        userSettings = config.programs.vscode.profiles.default.userSettings;
         jsonSettings = pkgs.writeText "tmp_vscode_settings" (builtins.toJSON userSettings);
       in lib.hm.dag.entryAfter [ "linkGeneration" ] ''
         rm -rf "${userFilePath}"

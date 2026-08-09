@@ -1,14 +1,23 @@
 # delta, system configuration for super awesome laptop!
 
-{ config, pkgs, hostname, lib, ... }:
+{
+  self,
+  config,
+  configName,
+  pkgs,
+  hostname,
+  lib,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ../common/fonts
-      ../common/pipewire
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ../common/fonts
+    ../common/pipewire
+    ../common/minimal-desktop
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -49,38 +58,49 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  services.libinput = {
+    enable = true;
+
+    touchpad = {
+      disableWhileTyping = true;
+      additionalOptions = ''
+        Option "PalmDetection" "on"
+      '';
+    };
+  };
+
   # Configure keymap in X11
   services.xserver = {
-    layout = "us";
-    xkbVariant = "";
-    #synaptics.enable = true; # can't use both synaptics and libinput
-    libinput = {
-      enable = true;
-
-      touchpad = {
-        disableWhileTyping = true;
-        additionalOptions = ''
-          Option "PalmDetection" "on"
-        '';
-      };
-
+    xkb = {
+      layout = "us";
+      variant = "";
     };
-    #libinput.touchpad.naturalScrolling = true;
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
-    extraGroups = [ "networkmanager" "wheel" "plugdev" ];  # plugdev for rtl-sdr
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "plugdev"
+      "dialout"
+    ]; # plugdev for rtl-sdr
     packages = with pkgs; [
       firefox
-      kate
+      # kate
+      chirp
+
+      arduino-ide
+
+      wineWow64Packages.staging
+      winetricks
     ];
     shell = pkgs.zsh;
   };
   programs.zsh.enable = true;
-  users.groups.plugdev = {};
+  users.groups.plugdev = { };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -89,15 +109,15 @@
     # necessary for sddm theme
     libsForQt5.qt5.qtquickcontrols
     libsForQt5.qt5.qtgraphicaleffects
-    xorg.xbacklight
+    xbacklight
     brightnessctl
   ];
-  
+
   programs.nix-ld.enable = true;
 
   # https://github.com/NixOS/nixpkgs/issues/106461 rtlsdr
   services.udev.packages = [ pkgs.rtl-sdr ];
-  
+
   services.openssh = {
     enable = true;
     settings = {
@@ -106,57 +126,17 @@
     };
   };
 
-  
-  # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
-  services.xserver = {
+  desktop.minimalX = {
     enable = true;
-
-    # https://discourse.nixos.org/t/how-to-start-i3-using-greetd/28028
-    # displayManager.sx.enable = true; # lightweight startx alternative
-    # displayManager.startx.enable = true;
-    
-    displayManager.sddm.enable = true;
-    displayManager.sddm.theme = "${(pkgs.fetchFromGitHub {
-      owner = "WildfireXIII";
-      repo = "sddm-chili";
-      rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
-      sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
-    })}";
-    desktopManager.session = [
-      {
-        name = "xsession";
-        start = ''
-          ${pkgs.runtimeShell} $HOME/.xsession &
-          waitPID=$!
-        '';
-      }
-    ];
+    figletNameColor = "1;35";
   };
 
-  # services.greetd = {
-  #   enable = true;
-  #   # vt = config.services.xserver.tty;
-  #   restart = false; # should be disabled when using autologin
-  #   settings = {
-  #     default_session = {
-  #       command = lib.concatStringsSep " " [
-  #         "${pkgs.greetd.tuigreet}/bin/tuigreet"
-  #         "--remember"
-  #         "--asterisks"
-  #         "--time"
-  #         "--cmd ${pkgs.runtimeShell} $HOME/.xsession &"
-  #       ];
-  #       user = "greeter";
-  #     };
-  #   };
-  # };
-  
-  
   # enable using the caps lock key has Mod5
-  services.xserver.displayManager.sessionCommands = /* bash */''
-    # set up my caps lock keyboard configuration
-    ${pkgs.kbd-capslock}/bin/kbd-capslock
-  '';
+  # NOTE: this got moved to xinitrc in home-manager
+  # services.xserver.displayManager.sessionCommands = /* bash */ ''
+  #   # set up my caps lock keyboard configuration
+  #   ${pkgs.kbd-capslock}/bin/kbd-capslock
+  # '';
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

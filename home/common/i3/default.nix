@@ -114,6 +114,7 @@ in
           "${caps}+q" = "kill";
 
           # "${win}+l" = "exec betterlockscreen --lock blur";
+          "${win}+l" = "exec ${pkgs.xlockmore}/bin/xlock";
 
           "${caps}+c" = "exec ${cfg.browser}";
 

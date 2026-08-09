@@ -25,7 +25,7 @@ in
   imports = [
     ../common/cli-core
     ../common/dev
-    ../common/vscode
+    # ../common/vscode
     ../common/beta
     ../common/i3
     ../common/kitty
@@ -55,6 +55,7 @@ in
     mimeApps.defaultApplications = {
       "inode/directory" = [ "pcmanfm.desktop" ];
     };
+    configFile."mimeapps.list".force = true;
   };
 
   desktop.i3 = {
@@ -154,7 +155,7 @@ in
     # (nerdfonts.override { fonts = [ "Iosevka" "Inconsolata" ]; })
     nerd-fonts.iosevka
     nerd-fonts.inconsolata
-    (config.lib.nixGL.wrap alacritty)
+    # (config.lib.nixGL.wrap alacritty)
 
 
     cg
@@ -165,7 +166,8 @@ in
     pcmanfm
     lxappearance
 
-    unstable.flameshot
+    #unstable.flameshot
+    flameshot
   ];
 
   qt = {
@@ -209,15 +211,15 @@ in
   # };
   #
 
-  programs.vscode = {
-    enable = true;
-    extensions = with pkgs.vscode-extensions; lib.mkForce [
-      vscodevim.vim
-    ];
-  };
-
-  programs.wezterm = {
-    enable = true;
-    package = (config.lib.nixGL.wrap pkgs.wezterm);
-  };
+  # programs.vscode = {
+  #   enable = true;
+  #   extensions = with pkgs.vscode-extensions; lib.mkForce [
+  #     vscodevim.vim
+  #   ];
+  # };
+  #
+  # programs.wezterm = {
+  #   enable = true;
+  #   package = (config.lib.nixGL.wrap pkgs.wezterm);
+  # };
 }
