@@ -124,7 +124,8 @@ in
 
   programs.zsh.initContent = /* sh */ ''
     # >>> mamba initialize >>>
-    export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/micromamba';
+    # export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/micromamba';
+    export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/.mamba-wrapped';
     export MAMBA_ROOT_PREFIX="''${HOME}/micromamba";
     __mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
     if [ $? -eq 0 ]; then 

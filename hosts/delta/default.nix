@@ -1,7 +1,9 @@
 # delta, system configuration for super awesome laptop!
 
 {
+  self,
   config,
+  configName,
   pkgs,
   hostname,
   lib,
@@ -107,7 +109,7 @@
     libsForQt5.qt5.qtquickcontrols
     libsForQt5.qt5.qtgraphicaleffects
     xorg.xbacklight
-    brightnessctl
+   brightnessctl
   ];
 
   programs.nix-ld.enable = true;
@@ -123,10 +125,30 @@
     };
   };
   
+  console = {
+    earlySetup = true;
+    font = "${pkgs.terminus_font}/share/consolefonts/ter-124n.psf.gz";
+    packages = with pkgs; [ terminus_font ];
+    keyMap = "us";
+  };
+  
+  # https://unix.stackexchange.com/questions/16255/how-can-i-change-whats-displayed-at-a-login-shell
+  # (ansi colors don't appear to work)
+  # figlet -f cyberlarge [name]
+  
+ # ______  _______        _______ _______
+ # |     \\ |______ |         |    |_____|
+ # |_____/ |______ |_____    |    |     |
+  
   environment.etc = {
     "issue".source = pkgs.writeText "issue" ''
-Hello there!
-    '';
+
+=============================================================
+${lib.replaceStrings ["\\"] ["\\\\"] (lib.readFile "${pkgs.runCommandWith { name="gen_name"; derivationArgs.nativeBuildInputs = [ pkgs.figlet ]; } "figlet -f cyberlarge ${hostname} > $out"}")}=============================================================
+
+${configName}:${builtins.substring 0 4 self.lastModifiedDate}-${builtins.substring 4 2 self.lastModifiedDate}-${builtins.substring 6 2 self.lastModifiedDate}:${builtins.substring 8 100 self.lastModifiedDate} - (\s \m \r)
+
+'';
   };
 
   # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13

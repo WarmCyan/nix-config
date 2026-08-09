@@ -372,9 +372,9 @@ in
       # better highlighting, indentation etc.
       treesitter = {
         enable = true;
+        highlight.enable = true;
+        highlight.disable = [ "vim" ];
         settings = {
-          highlight.enable = true;
-          highlight.disable = [ "vim" ];
           indent.enable = true;
         };
       };
