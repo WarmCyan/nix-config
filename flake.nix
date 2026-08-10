@@ -285,7 +285,10 @@
       # };
       amethyst = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./home ];
+        modules = [
+          ./home
+          nixvim.homeModules.nixvim
+        ];
         extraSpecialArgs = {
           inherit self inputs outputs;
           hostname = "amethyst";
@@ -298,22 +301,22 @@
         };
       };
 
-	# workbench/radio laptop
-	bench = lib.homeManagerConfiguration {
-		pkgs = pkgsFor.x86_64-linux;
-		modules = [ ./home ];
-		extraSpecialArgs = {
-		  inherit self inputs outputs;
-		  hostname = "bench";
-		  username = "dwl";
-		  configName = "bench";
-		  gitUsername = "Martindale, Nathan";
-		  gitEmail = "nathanamartindale@gmail.com";
-		  configLocation = "/home/dwl/lab/nix-config";
-		  noNixos = false;
-		};
-	};
-	
+      # workbench/radio laptop
+      bench = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "bench";
+          username = "dwl";
+          configName = "bench";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "nathanamartindale@gmail.com";
+          configLocation = "/home/dwl/lab/nix-config";
+          noNixos = false;
+        };
+      };
+
       # primary laptop
       delta = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;

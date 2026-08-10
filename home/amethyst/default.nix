@@ -24,7 +24,7 @@
 # Another good config set to pay attention to for audio stuff:
 # https://github.com/dnordstrom/dotfiles
 
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 {
   imports = [
     ../common/cli-core
@@ -39,6 +39,7 @@
     ../common/discord
 
     ../common/music
+    ../common/minimal-desktop
   ];
 
   home.packages = with pkgs; [
@@ -173,10 +174,23 @@
         workspace 3 output DP-2
     '';
   };
+  xsession.numlock.enable = true;
+  xsession.initExtra = /* bash */ ''
+    LEFT="DP-1"
+    CENTER="DP-4"
+    RIGHT="DP-2"
+    HDMI="HDMI"
+    
+    ${pkgs.xrandr}/bin/xrandr --output $HDMI --off --noprimary
+    ${pkgs.xrandr}/bin/xrandr --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right --noprimary
+    ${pkgs.xrandr}/bin/xrandr --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left --noprimary
+    ${pkgs.xrandr}/bin/xrandr --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary
+  '';
 
   desktop = {
+    minimalX.enable = true;
     i3.enable = true;
-    i3.browser = "firefox";
+    i3.browser = "librewolf";
     polybar.enable = true;
   };
 
@@ -192,6 +206,7 @@
       package = pkgs.gnome-themes-extra;
       name = "Adwaita-dark";
     };
+    gtk4.theme = config.gtk.theme;
   };
 
   qt = {
@@ -399,35 +414,35 @@
   #programs.dconf.enable = true; # required for easyeffects to work?
   # https://github.com/NixOS/nixpkgs/issues/158476
 
-
-  home.file.".config/betterlockscreenrc".text = ''
-    fx_list=(blur)
-    wallpaper_cmd=""
-    blur_level=1
-
-    locktext="Hi Nathan!"
-    
-    loginbox=FFFFFF22
-    loginshadow=FFFFFF11
-    font="sans-serif"
-    ringcolor=ffffffff
-    insidecolor=00000000
-    separatorcolor=00000000
-    ringvercolor=ffffff99
-    insidevercolor=00000000
-    ringwrongcolor=ffffff99
-    insidewrongcolor=d28c3dee
-    timecolor=ffffffff
-    time_format="%H:%M"
-    greetercolor=ffffffff
-    layoutcolor=ffffffff
-    keyhlcolor=d28c3dee
-    bshlcolor=d28c3dee
-    verifcolor=ffffffff
-    wrongcolor=d28c3dee
-    modifcolor=d28c3dee
-    bgcolor=000000ff
-  '';
+  #
+  # home.file.".config/betterlockscreenrc".text = ''
+  #   fx_list=(blur)
+  #   wallpaper_cmd=""
+  #   blur_level=1
+  #
+  #   locktext="Hi Nathan!"
+  #  
+  #   loginbox=FFFFFF22
+  #   loginshadow=FFFFFF11
+  #   font="sans-serif"
+  #   ringcolor=ffffffff
+  #   insidecolor=00000000
+  #   separatorcolor=00000000
+  #   ringvercolor=ffffff99
+  #   insidevercolor=00000000
+  #   ringwrongcolor=ffffff99
+  #   insidewrongcolor=d28c3dee
+  #   timecolor=ffffffff
+  #   time_format="%H:%M"
+  #   greetercolor=ffffffff
+  #   layoutcolor=ffffffff
+  #   keyhlcolor=d28c3dee
+  #   bshlcolor=d28c3dee
+  #   verifcolor=ffffffff
+  #   wrongcolor=d28c3dee
+  #   modifcolor=d28c3dee
+  #   bgcolor=000000ff
+  # '';
   
   # programs.vscode = {
   #   enable = true;

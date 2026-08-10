@@ -7,7 +7,8 @@
       ./hardware-configuration.nix
       ../common/fonts
       ../common/pipewire
-      ../common/sddm.nix
+     # ../common/sddm.nix
+      ../common/minimal-desktop
     ];
   
   musnix.enable = true;
@@ -118,19 +119,24 @@
   # Set your time zone.
   time.timeZone = "America/New_York";
 
-  # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
-  services.xserver = {
+  desktop.minimalX = {
     enable = true;
-    desktopManager.session = [
-      {
-        name = "xsession";
-        start = ''
-          ${pkgs.runtimeShell} $HOME/.xsession &
-          waitPID=$!
-        '';
-      }
-    ];
+    figletNameColor = "1;34";
   };
+
+  # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
+  # services.xserver = {
+  #   enable = true;
+  #   desktopManager.session = [
+  #     {
+  #       name = "xsession";
+  #       start = ''
+  #         ${pkgs.runtimeShell} $HOME/.xsession &
+  #         waitPID=$!
+  #       '';
+  #     }
+  #   ];
+  # };
   # services.displayManager = {
   #   sddm = {
   #     enable = true;
@@ -162,77 +168,80 @@
   # https://discourse.nixos.org/t/xmodmap-keyboard-layout-customization-question/11522
   # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
   # enable using the caps lock key has Mod5
-  services.xserver.displayManager.sessionCommands = /* bash */''
-    # set up the monitors
-    LEFT="DP-1"
-    CENTER="DP-4"
-    RIGHT="DP-2"
-    HDMI="HDMI"
-    
-    # old 3 side by side normal orientations
-    # ${pkgs.xorg.xrandr}/bin/xrandr \
-    #   --output $LEFT --mode 1920x1080 --pos 0x10 --rotate normal \
-    #   --output $RIGHT --mode 1920x1080 --pos 4480x10 --rotate normal \
-    #   --output $CENTER --mode 2560x1440 --pos 1920x0 --rotate normal \
-    #   --output $HDMI --off
-      
-    # ${pkgs.xorg.xrandr}/bin/xrandr \
-    #   --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right \
-    #   --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left \
-    #   --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary \
-    #   --output $HDMI --off
-    
-    ${pkgs.xorg.xrandr}/bin/xrandr --output $HDMI --off --noprimary
-    ${pkgs.xorg.xrandr}/bin/xrandr --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right --noprimary
-    ${pkgs.xorg.xrandr}/bin/xrandr --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left --noprimary
-    ${pkgs.xorg.xrandr}/bin/xrandr --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary
-
-    # set up my caps lock keyboard configuration
-    ${pkgs.kbd-capslock}/bin/kbd-capslock
-
-    # allow keyring authentication, apparently fails without this
-    ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
-
-    # give a decent theme in case I need to use xterm (modified variant of
-    # kitty's 'gruvbox material dark hard')
-    ${pkgs.xorg.xrdb}/bin/xrdb -merge <<EOF
-      ! Black
-      *color0: #151414
-      *color8: #928374
-
-      ! Red
-      *color1: #ea6962
-      *color9: #ea6962
-
-      ! Green
-      *color2:  #a9b665
-      *color10: #a9b665
-
-      ! Yellow
-      *color3:  #e78a4e
-      *color11: #d8a657
-
-      ! Blue
-      *color4:  #7daea3
-      *color12: #7daea3
-
-      ! Magenta
-      *color5:  #d3869b
-      *color13: #d3869b
-
-      ! Cyan
-      *color6:  #89b482
-      *color14: #89b482
-
-      ! White
-      *color7:  #d4be98
-      *color15: #d4be98
-
-      *background: #1d2021
-      *foreground: #d4be98
-    EOF
-  '';
-
+  # services.xserver.displayManager.sessionCommands = /* bash */''
+  #   # set up the monitors
+  #   LEFT="DP-1"
+  #   CENTER="DP-4"
+  #   RIGHT="DP-2"
+  #   HDMI="HDMI"
+  #
+  #   # old 3 side by side normal orientations
+  #   # ${pkgs.xrandr}/bin/xrandr \
+  #   #   --output $LEFT --mode 1920x1080 --pos 0x10 --rotate normal \
+  #   #   --output $RIGHT --mode 1920x1080 --pos 4480x10 --rotate normal \
+  #   #   --output $CENTER --mode 2560x1440 --pos 1920x0 --rotate normal \
+  #   #   --output $HDMI --off
+  #
+  #   # ${pkgs.xrandr}/bin/xrandr \
+  #   #   --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right \
+  #   #   --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left \
+  #   #   --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary \
+  #   #   --output $HDMI --off
+  #
+  #   ${pkgs.xrandr}/bin/xrandr --output $HDMI --off --noprimary
+  #   ${pkgs.xrandr}/bin/xrandr --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right --noprimary
+  #   ${pkgs.xrandr}/bin/xrandr --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left --noprimary
+  #   ${pkgs.xrandr}/bin/xrandr --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary
+  #
+  #   # set up my caps lock keyboard configuration # TODO: shouldn't be necessary,
+  #   # handled in hm-side minimal-desktop?
+  #   ${pkgs.kbd-capslock}/bin/kbd-capslock
+  #
+  #   # allow keyring authentication, apparently fails without this
+  #   ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
+  #
+  #   # give a decent theme in case I need to use xterm (modified variant of
+  #   # kitty's 'gruvbox material dark hard')
+  #   # I assume this is also not necessary because of console colors set in
+  #   # minimal-desktop?
+  #   ${pkgs.xrdb}/bin/xrdb -merge <<EOF
+  #     ! Black
+  #     *color0: #151414
+  #     *color8: #928374
+  #
+  #     ! Red
+  #     *color1: #ea6962
+  #     *color9: #ea6962
+  #
+  #     ! Green
+  #     *color2:  #a9b665
+  #     *color10: #a9b665
+  #
+  #     ! Yellow
+  #     *color3:  #e78a4e
+  #     *color11: #d8a657
+  #
+  #     ! Blue
+  #     *color4:  #7daea3
+  #     *color12: #7daea3
+  #
+  #     ! Magenta
+  #     *color5:  #d3869b
+  #     *color13: #d3869b
+  #
+  #     ! Cyan
+  #     *color6:  #89b482
+  #     *color14: #89b482
+  #
+  #     ! White
+  #     *color7:  #d4be98
+  #     *color15: #d4be98
+  #
+  #     *background: #1d2021
+  #     *foreground: #d4be98
+  #   EOF
+  # '';
+  #
   services.udisks2.enable = true; # necessary for udiskie to work in home-manager (usb automounting)
   # services.gvfs.enable = true;  # possibly necessary for cdroms?
   # services.devmon.enable = true;  # possibly necessary for cdroms?
