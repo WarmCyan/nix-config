@@ -119,6 +119,8 @@ in
 
   home.sessionVariables = {
     MANPAGER = "nvim +Man!";
+    TERMINAL = "kitty";
+    EDITOR = "nvim";
   };
 
   # programs.neovim = {
