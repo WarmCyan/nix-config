@@ -17,7 +17,7 @@ let
   '';
 in
 {
-  nixGL = {
+  targets.genericLinux.nixGL = {
     packages = nixgl.packages;
     defaultWrapper = "mesa";
   };
@@ -95,7 +95,7 @@ in
           "${caps}+c" = lib.mkForce "exec firefox";
 
           "${caps}+slash" = "exec ${pkgs.zeal}/bin/zeal";
-          "${win}+l" = "exec i3lock -i /home/81n/.lock-background-image.png";
+          "${win}+l" = lib.mkForce "exec i3lock -i /home/81n/.lock-background-image.png";
         };
         startup = [
           {
