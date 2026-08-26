@@ -122,6 +122,19 @@ in
     TERMINAL = "kitty";
     EDITOR = "nvim";
   };
+  programs.zsh.sessionVariables = {
+    MANPAGER = "nvim +Man!";
+    TERMINAL = "kitty";
+    EDITOR = "nvim";
+  };
+  programs.bash.sessionVariables = {
+    MANPAGER = "nvim +Man!";
+    TERMINAL = "kitty";
+    EDITOR = "nvim";
+  };
+  home.sessionPath = [
+    "$HOME/.cargo/bin"
+  ];
 
   # programs.neovim = {
   #   # package = pkgs.stable.neovim;
@@ -170,6 +183,12 @@ in
 
     #unstable.flameshot
     flameshot
+
+
+    rustc
+    cargo
+
+    pandoc
   ];
 
   qt = {
