@@ -156,6 +156,8 @@
 
     unstable.signal-desktop
     appimage-run
+
+    qgis
   ];
 
   xsession.windowManager.i3 = {
@@ -169,16 +171,16 @@
       ];
     };
     extraConfig = ''
-        workspace 1 output DP-4
-        workspace 2 output DP-1
-        workspace 3 output DP-2
+        workspace 1 output DP-2
+        workspace 2 output DP-0
+        workspace 3 output DP-5
     '';
   };
   xsession.numlock.enable = true;
   xsession.initExtra = /* bash */ ''
-    LEFT="DP-1"
-    CENTER="DP-4"
-    RIGHT="DP-2"
+    LEFT="DP-0"
+    CENTER="DP-2"
+    RIGHT="DP-5"
     HDMI="HDMI"
     
     ${pkgs.xrandr}/bin/xrandr --output $HDMI --off --noprimary
