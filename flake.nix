@@ -119,7 +119,8 @@
 
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs-old.url = "github:nixos/nixpkgs/nixos-25.11";
     
     # keeping around so if I ever need a specific nixpkgs commit, use this
     # nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
@@ -133,11 +134,13 @@
       # TODO: is there a way to see a list of changes to options in HM modules
       # that I use?
       # TODO: look into using nixvim instead of doing neovim through HM
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs"; # unsure what this actually does. (It
       # makes it so that home-manager isn't downloading it's own set of nixpkgs,
       # we're "overriding" the nixpkgs input home-manager defines by default)
     };
+
+    nixvim.url = "github:nix-community/nixvim/nixos-26.05";
 
     nixgl = {
       url = "github:nix-community/nixGL";
@@ -160,7 +163,7 @@
   };
 
   #outputs = inputs:
-  outputs = { self, nixpkgs, home-manager, nixgl, musnix, small-git-server, tt-rss-nix, ... } @ inputs:
+  outputs = { self, nixpkgs, nixvim, home-manager, nixgl, musnix, small-git-server, tt-rss-nix, ... } @ inputs:
   let
     inherit (self) outputs;
     
@@ -283,7 +286,10 @@
       # };
       amethyst = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./home ];
+        modules = [
+          ./home
+          nixvim.homeModules.nixvim
+        ];
         extraSpecialArgs = {
           inherit self inputs outputs;
           hostname = "amethyst";
@@ -296,26 +302,29 @@
         };
       };
 
-	# workbench/radio laptop
-	bench = lib.homeManagerConfiguration {
-		pkgs = pkgsFor.x86_64-linux;
-		modules = [ ./home ];
-		extraSpecialArgs = {
-		  inherit self inputs outputs;
-		  hostname = "bench";
-		  username = "dwl";
-		  configName = "bench";
-		  gitUsername = "Martindale, Nathan";
-		  gitEmail = "nathanamartindale@gmail.com";
-		  configLocation = "/home/dwl/lab/nix-config";
-		  noNixos = false;
-		};
-	};
-	
+      # workbench/radio laptop
+      bench = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "bench";
+          username = "dwl";
+          configName = "bench";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "nathanamartindale@gmail.com";
+          configLocation = "/home/dwl/lab/nix-config";
+          noNixos = false;
+        };
+      };
+
       # primary laptop
       delta = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./home ];
+        modules = [
+          ./home
+          nixvim.homeModules.nixvim
+        ];
         extraSpecialArgs = {
           inherit self inputs outputs;
           hostname = "delta";
@@ -352,7 +361,10 @@
       # work linux workstation 
       arcane = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./home ];
+        modules = [
+          ./home
+          nixvim.homeModules.nixvim
+        ];
         extraSpecialArgs = {
           inherit self inputs outputs nixgl;
           hostname = "arcane";
@@ -368,7 +380,10 @@
       # work linux laptop 
       planet = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./home ];
+        modules = [
+          ./home
+          nixvim.homeModules.nixvim
+        ];
         extraSpecialArgs = {
           inherit self inputs outputs nixgl;
           hostname = "planet";

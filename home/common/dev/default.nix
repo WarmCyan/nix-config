@@ -74,12 +74,12 @@ in
     # NOTE: commented out because it's somehow bringing in nix 2.15.3 as
     # a dependency??
     #rnix-lsp           # nix language server
-    nixfmt-rfc-style    # nix formatter
+    nixfmt              # nix formatter
     deadnix             # nix dead code locator (no idea what this is)
     statix              # nix linter
 
     pre-commit  # we want this separately so we can apply even to non-python projects
-    unstable.micromamba  # python environment management
+    old.micromamba  # python environment management
 
     # -- MY tools! --
     add-jupyter-env # run inside a conda env to add jupyter lab setup
@@ -122,55 +122,38 @@ in
    - conda-forge
   '';
 
-  programs.zsh.initExtra = /* sh */ ''
+  programs.zsh.initContent = /* sh */ ''
     # >>> mamba initialize >>>
-    export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/micromamba';
+    export MAMBA_EXE='${pkgs.old.micromamba}/bin/micromamba';
+    # export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/.mamba-wrapped';
+    # export MAMBA_EXE='${pkgs.unstable.mamba-cpp}/bin/.mamba-wrapped';
+    # export MAMBA_EXE='${pkgs.unstable.mamba-cpp}/bin/mamba';
+    # export MAMBA_EXE="''${HOME}/.nix-profile/bin/micromamba";
     export MAMBA_ROOT_PREFIX="''${HOME}/micromamba";
-    __mamba_setup="$('${pkgs.unstable.micromamba}/bin/micromamba' shell hook --shell zsh --prefix "''${HOME}/micromamba" 2> /dev/null)"
+    __mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
     if [ $? -eq 0 ]; then 
         eval "$__mamba_setup"
     else
-        if [ -f "''${HOME}/micromamba/etc/profile.d/micromamba.sh" ]; then
-            . "''${HOME}/micromamba/etc/profile.d/micromamba.sh"
-        else
-            export  PATH="''${HOME}/micromamba/bin:$PATH"
-        fi
+        alias micromamba="$MAMBA_EXE"
     fi
     unset __mamba_setup
     # <<< mamba initialize <<<
-
-    # NOTE: Needed because of the change in 1.2.0: https://github.com/mamba-org/mamba/pull/2137/files
-    # for whatever reason though __mamba_exe doesn't seem to exist? I determined
-    # that manually making a function for it that just calls $MAMBA_EXE (like
-    # what the completion used to do) seems to work fine though:
-    __mamba_exe () {
-      $MAMBA_EXE "$@"
-    }
   '';
   
   programs.bash.initExtra = /* sh */ ''
     # >>> mamba initialize >>>
-    export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/micromamba';
+    export MAMBA_EXE='${pkgs.old.micromamba}/bin/micromamba';
+    # export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/.mamba-wrapped';
+    # export MAMBA_EXE='${pkgs.unstable.mamba-cpp}/bin/.mamba-wrapped';
+    # export MAMBA_EXE="''${HOME}/.nix-profile/bin/micromamba";
     export MAMBA_ROOT_PREFIX="''${HOME}/micromamba";
-    __mamba_setup="$('${pkgs.unstable.micromamba}/bin/micromamba' shell hook --shell bash --prefix "''${HOME}/micromamba" 2> /dev/null)"
+    __mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
     if [ $? -eq 0 ]; then 
         eval "$__mamba_setup"
     else
-        if [ -f "''${HOME}/micromamba/etc/profile.d/micromamba.sh" ]; then
-            . "''${HOME}/micromamba/etc/profile.d/micromamba.sh"
-        else
-            export  PATH="''${HOME}/micromamba/bin:$PATH"
-        fi
+        alias micromamba="$MAMBA_EXE"
     fi
     unset __mamba_setup
     # <<< mamba initialize <<<
-    
-    # NOTE: Needed because of the change in 1.2.0: https://github.com/mamba-org/mamba/pull/2137/files
-    # for whatever reason though __mamba_exe doesn't seem to exist? I determined
-    # that manually making a function for it that just calls $MAMBA_EXE (like
-    # what the completion used to do) seems to work fine though:
-    __mamba_exe () {
-      $MAMBA_EXE "$@"
-    }
   '';
 }

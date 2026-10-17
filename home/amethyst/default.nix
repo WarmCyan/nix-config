@@ -24,7 +24,7 @@
 # Another good config set to pay attention to for audio stuff:
 # https://github.com/dnordstrom/dotfiles
 
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 {
   imports = [
     ../common/cli-core
@@ -39,6 +39,7 @@
     ../common/discord
 
     ../common/music
+    ../common/minimal-desktop
   ];
 
   home.packages = with pkgs; [
@@ -47,7 +48,6 @@
     pavucontrol       # detailed audio settings
     easyeffects       # live audio effects
     audacity          # basic audio editing
-    helvum            # another graphical tool for pipewire (seems worse than qpwgraph)
     mic-monitor       # custom tool to turn mic monitor on and off
     alsa-scarlett-gui # gui controls for focusrite 2i2 gen 3
 
@@ -143,6 +143,19 @@
     unrar
 
     git-bak
+
+    chromium
+    zoom-us
+
+    sshfs
+
+    unstable.pmbootstrap
+    # android-tools
+    android-tools
+
+
+    unstable.signal-desktop
+    appimage-run
   ];
 
   xsession.windowManager.i3 = {
@@ -161,9 +174,23 @@
         workspace 3 output DP-2
     '';
   };
+  xsession.numlock.enable = true;
+  xsession.initExtra = /* bash */ ''
+    LEFT="DP-1"
+    CENTER="DP-4"
+    RIGHT="DP-2"
+    HDMI="HDMI"
+    
+    ${pkgs.xrandr}/bin/xrandr --output $HDMI --off --noprimary
+    ${pkgs.xrandr}/bin/xrandr --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right --noprimary
+    ${pkgs.xrandr}/bin/xrandr --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left --noprimary
+    ${pkgs.xrandr}/bin/xrandr --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary
+  '';
 
   desktop = {
+    minimalX.enable = true;
     i3.enable = true;
+    i3.browser = "librewolf";
     polybar.enable = true;
   };
 
@@ -179,6 +206,7 @@
       package = pkgs.gnome-themes-extra;
       name = "Adwaita-dark";
     };
+    gtk4.theme = config.gtk.theme;
   };
 
   qt = {
@@ -309,7 +337,43 @@
     location = "top-left";
     yoffset = 25;
   };
-
+  #
+  # programs.firefox = {
+  #   # https://nixos.wiki/wiki/Librewolf
+  #   enable = true;
+  #   policies = {
+  #     DisableTelemetry = true;
+  #     DisableFirefoxStudies = true;
+  #     DisplayBookmarksToolbar = "never";
+  #     Preferences = {
+  #       "privacy.resistFingerprinting.letterboxing" = true;
+  #       "browser.safebrowsing.downloads.enabled" = true;
+  #       "browser.compactmode.show" = true;
+  #       "cookiebanners.service.mode" = 2;
+  #       "privacy.donottrackheader.enabled" = true;
+  #     };
+  #     ExtensionSettings = {
+  #       # go to about:support to find extension IDs
+  #       "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
+  #         install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
+  #         installation_mode = "force_installed";
+  #       };
+  #       "{d7742d87-e61d-4b78-b8a1-b469842139fa}" = {
+  #         install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-ff/latest.xpi";
+  #         installation_mode = "force_installed";
+  #       };
+  #       "search@kagi.com" = {
+  #         install_url = "https://addons.mozilla.org/firefox/downloads/latest/kagi-search-for-firefox/latest.xpi";
+  #         installation_mode = "force_installed";
+  #       };
+  #       "addon@darkreader.org" = {
+  #         install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
+  #         installation_mode = "force_installed";
+  #       };
+  #     };
+  #   };
+  # };
+  
   programs.librewolf = {
     # https://nixos.wiki/wiki/Librewolf
     enable = true;
@@ -345,40 +409,40 @@
       };
     };
   };
-
+  
   # https://github.com/nix-community/home-manager/issues/3113 (and psensor?)
   #programs.dconf.enable = true; # required for easyeffects to work?
   # https://github.com/NixOS/nixpkgs/issues/158476
 
-
-  home.file.".config/betterlockscreenrc".text = ''
-    fx_list=(blur)
-    wallpaper_cmd=""
-    blur_level=1
-
-    locktext="Hi Nathan!"
-    
-    loginbox=FFFFFF22
-    loginshadow=FFFFFF11
-    font="sans-serif"
-    ringcolor=ffffffff
-    insidecolor=00000000
-    separatorcolor=00000000
-    ringvercolor=ffffff99
-    insidevercolor=00000000
-    ringwrongcolor=ffffff99
-    insidewrongcolor=d28c3dee
-    timecolor=ffffffff
-    time_format="%H:%M"
-    greetercolor=ffffffff
-    layoutcolor=ffffffff
-    keyhlcolor=d28c3dee
-    bshlcolor=d28c3dee
-    verifcolor=ffffffff
-    wrongcolor=d28c3dee
-    modifcolor=d28c3dee
-    bgcolor=000000ff
-  '';
+  #
+  # home.file.".config/betterlockscreenrc".text = ''
+  #   fx_list=(blur)
+  #   wallpaper_cmd=""
+  #   blur_level=1
+  #
+  #   locktext="Hi Nathan!"
+  #  
+  #   loginbox=FFFFFF22
+  #   loginshadow=FFFFFF11
+  #   font="sans-serif"
+  #   ringcolor=ffffffff
+  #   insidecolor=00000000
+  #   separatorcolor=00000000
+  #   ringvercolor=ffffff99
+  #   insidevercolor=00000000
+  #   ringwrongcolor=ffffff99
+  #   insidewrongcolor=d28c3dee
+  #   timecolor=ffffffff
+  #   time_format="%H:%M"
+  #   greetercolor=ffffffff
+  #   layoutcolor=ffffffff
+  #   keyhlcolor=d28c3dee
+  #   bshlcolor=d28c3dee
+  #   verifcolor=ffffffff
+  #   wrongcolor=d28c3dee
+  #   modifcolor=d28c3dee
+  #   bgcolor=000000ff
+  # '';
   
   # programs.vscode = {
   #   enable = true;

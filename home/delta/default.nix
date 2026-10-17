@@ -13,6 +13,8 @@
     ../common/kitty
 
     ../common/music
+
+    ../common/minimal-desktop
   ];
   
   home.packages = with pkgs; [
@@ -50,6 +52,13 @@
     pluto
     pandoc
     jq
+
+    # arduino-ide
+
+    wireguard-tools
+
+    zoom-us
+    chromium
   ];
 
   xsession.windowManager.i3 = {
@@ -64,11 +73,12 @@
     };
   };
   desktop = {
+    minimalX.enable = true;
     i3 = {
       enable = true;
       colorActive = "667b59";
       colorInactive = "323433";
-      browser = "firefox";
+      browser = "librewolf";
     };
     polybar = {
       enable = true;
@@ -87,9 +97,10 @@
   gtk = {
     enable = true;
     theme = {
-      package = pkgs.gnome.gnome-themes-extra;
+      package = pkgs.gnome-themes-extra;
       name = "Adwaita-dark";
     };
+    gtk4.theme = config.gtk.theme;
   };
 
   qt = {
@@ -107,6 +118,43 @@
     location = "top-left";
     yoffset = 25;
   };
+  
+  programs.librewolf = {
+    # https://nixos.wiki/wiki/Librewolf
+    enable = true;
+    policies = {
+      DisableTelemetry = true;
+      DisableFirefoxStudies = true;
+      DisplayBookmarksToolbar = "never";
+      Preferences = {
+        "privacy.resistFingerprinting.letterboxing" = true;
+        "browser.safebrowsing.downloads.enabled" = true;
+        "browser.compactmode.show" = true;
+        "cookiebanners.service.mode" = 2;
+        "privacy.donottrackheader.enabled" = true;
+      };
+      ExtensionSettings = {
+        # go to about:support to find extension IDs
+        "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
+          installation_mode = "force_installed";
+        };
+        "{d7742d87-e61d-4b78-b8a1-b469842139fa}" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-ff/latest.xpi";
+          installation_mode = "force_installed";
+        };
+        "search@kagi.com" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/kagi-search-for-firefox/latest.xpi";
+          installation_mode = "force_installed";
+        };
+        "addon@darkreader.org" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
+          installation_mode = "force_installed";
+        };
+      };
+    };
+  };
+
 
 
   # https://github.com/nix-community/home-manager/issues/3113 (and psensor?)
@@ -115,40 +163,4 @@
 
   # NOTE: to generate the lockscreen image you need to separately run
   # betterlockscreen -u .background-image -l blur
-
-  home.file.".config/betterlockscreenrc".text = ''
-    fx_list=(blur)
-    wallpaper_cmd=""
-    blur_level=1
-
-    locktext="Hi Nathan!"
-    
-    loginbox=FFFFFF22
-    loginshadow=FFFFFF11
-    font="sans-serif"
-    ringcolor=ffffffff
-    insidecolor=00000000
-    separatorcolor=00000000
-    ringvercolor=ffffff99
-    insidevercolor=00000000
-    ringwrongcolor=ffffff99
-    insidewrongcolor=d28c3dee
-    timecolor=ffffffff
-    time_format="%H:%M"
-    greetercolor=ffffffff
-    layoutcolor=ffffffff
-    keyhlcolor=d28c3dee
-    bshlcolor=d28c3dee
-    verifcolor=ffffffff
-    wrongcolor=d28c3dee
-    modifcolor=d28c3dee
-    bgcolor=000000ff
-  '';
-  
-  programs.vscode = {
-    enable = true;
-    extensions = with pkgs.vscode-extensions; lib.mkForce [
-      vscodevim.vim
-    ];
-  };
 }

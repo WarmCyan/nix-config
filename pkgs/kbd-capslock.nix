@@ -3,7 +3,7 @@ builders.writeTemplatedShellApplication {
   name = "kbd-capslock";
   description = "This sets the caps lock key to be a hyper key instead.";
   usage = "kbd-capslock";
-  runtimeInputs = [ pkgs.xorg.xmodmap ];
+  runtimeInputs = [ pkgs.xmodmap ];
   text = /* bash */ ''
   xmodmap -e "clear lock"
   xmodmap -e "clear mod4"

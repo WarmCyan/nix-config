@@ -17,7 +17,7 @@ let
   '';
 in
 {
-  nixGL = {
+  targets.genericLinux.nixGL = {
     packages = nixgl.packages;
     defaultWrapper = "mesa";
   };
@@ -25,7 +25,7 @@ in
   imports = [
     ../common/cli-core
     ../common/dev
-    ../common/vscode
+    # ../common/vscode
     ../common/beta
     ../common/i3
     ../common/kitty
@@ -55,6 +55,7 @@ in
     mimeApps.defaultApplications = {
       "inode/directory" = [ "pcmanfm.desktop" ];
     };
+    configFile."mimeapps.list".force = true;
   };
 
   desktop.i3 = {
@@ -94,7 +95,7 @@ in
           "${caps}+c" = lib.mkForce "exec firefox";
 
           "${caps}+slash" = "exec ${pkgs.zeal}/bin/zeal";
-          "${win}+l" = "exec i3lock -i /home/81n/.lock-background-image.png";
+          "${win}+l" = lib.mkForce "exec i3lock -i /home/81n/.lock-background-image.png";
         };
         startup = [
           {
@@ -118,7 +119,22 @@ in
 
   home.sessionVariables = {
     MANPAGER = "nvim +Man!";
+    TERMINAL = "kitty";
+    EDITOR = "nvim";
   };
+  programs.zsh.sessionVariables = {
+    MANPAGER = "nvim +Man!";
+    TERMINAL = "kitty";
+    EDITOR = "nvim";
+  };
+  programs.bash.sessionVariables = {
+    MANPAGER = "nvim +Man!";
+    TERMINAL = "kitty";
+    EDITOR = "nvim";
+  };
+  home.sessionPath = [
+    "$HOME/.cargo/bin"
+  ];
 
   # programs.neovim = {
   #   # package = pkgs.stable.neovim;
@@ -154,7 +170,7 @@ in
     # (nerdfonts.override { fonts = [ "Iosevka" "Inconsolata" ]; })
     nerd-fonts.iosevka
     nerd-fonts.inconsolata
-    (config.lib.nixGL.wrap alacritty)
+    # (config.lib.nixGL.wrap alacritty)
 
 
     cg
@@ -165,7 +181,14 @@ in
     pcmanfm
     lxappearance
 
-    unstable.flameshot
+    #unstable.flameshot
+    flameshot
+
+
+    rustc
+    cargo
+
+    pandoc
   ];
 
   qt = {
@@ -209,15 +232,15 @@ in
   # };
   #
 
-  programs.vscode = {
-    enable = true;
-    extensions = with pkgs.vscode-extensions; lib.mkForce [
-      vscodevim.vim
-    ];
-  };
-
-  programs.wezterm = {
-    enable = true;
-    package = (config.lib.nixGL.wrap pkgs.wezterm);
-  };
+  # programs.vscode = {
+  #   enable = true;
+  #   extensions = with pkgs.vscode-extensions; lib.mkForce [
+  #     vscodevim.vim
+  #   ];
+  # };
+  #
+  # programs.wezterm = {
+  #   enable = true;
+  #   package = (config.lib.nixGL.wrap pkgs.wezterm);
+  # };
 }

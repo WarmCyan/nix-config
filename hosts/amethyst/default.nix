@@ -7,10 +7,38 @@
       ./hardware-configuration.nix
       ../common/fonts
       ../common/pipewire
-      ../common/sddm.nix
+     # ../common/sddm.nix
+      ../common/minimal-desktop
     ];
   
   musnix.enable = true;
+
+
+  # ==== FASTER TESTING THAN SERVER
+  # containers.cyan = {
+  #   autoStart = true;
+  #   privateUsers = "pick";
+  #   config = (import ../therock/cyan-network-config.nix);
+  #   privateNetwork = true;
+  #   hostAddress = "192.168.1.31";  # firewall machine should point to this? "external" ip?
+  #   localAddress = "192.168.1.30"; # address within the container?
+  #
+  #   # TODO: just use enableTun?
+  #   allowedDevices = [
+  #     { modifier = "rwm"; node = "/dev/net/tun"; }
+  #   ];
+  #
+  #   forwardPorts = [
+  #     { containerPort = 51830; hostPort = 51830; protocol = "udp"; }
+  #   ];
+  # };
+  # networking.nat.enable = true;
+  # networking.nat.internalInterfaces = [ "ve-cyan" ]; # I assume this should be wg1 too?
+  # networking.nat.externalInterface = "enp6s0";
+  # ==== /FASTER TESTING THAN SERVER
+
+
+  
 
   # Bootloader.
   boot.loader = {
@@ -51,8 +79,8 @@
     enable = true;
     temperature.day = 6500;
     brightness.day = "1";
-    temperature.night = 2000;
-    brightness.night = "0.4";
+    temperature.night = 4000;
+    brightness.night = "0.8";
     extraOptions = [
       "-v"
     ];
@@ -91,19 +119,24 @@
   # Set your time zone.
   time.timeZone = "America/New_York";
 
-  # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
-  services.xserver = {
+  desktop.minimalX = {
     enable = true;
-    desktopManager.session = [
-      {
-        name = "xsession";
-        start = ''
-          ${pkgs.runtimeShell} $HOME/.xsession &
-          waitPID=$!
-        '';
-      }
-    ];
+    figletNameColor = "1;34";
   };
+
+  # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
+  # services.xserver = {
+  #   enable = true;
+  #   desktopManager.session = [
+  #     {
+  #       name = "xsession";
+  #       start = ''
+  #         ${pkgs.runtimeShell} $HOME/.xsession &
+  #         waitPID=$!
+  #       '';
+  #     }
+  #   ];
+  # };
   # services.displayManager = {
   #   sddm = {
   #     enable = true;
@@ -135,77 +168,80 @@
   # https://discourse.nixos.org/t/xmodmap-keyboard-layout-customization-question/11522
   # https://discourse.nixos.org/t/opening-i3-from-home-manager-automatically/4849/13
   # enable using the caps lock key has Mod5
-  services.xserver.displayManager.sessionCommands = /* bash */''
-    # set up the monitors
-    LEFT="DP-1"
-    CENTER="DP-4"
-    RIGHT="DP-2"
-    HDMI="HDMI"
-    
-    # old 3 side by side normal orientations
-    # ${pkgs.xorg.xrandr}/bin/xrandr \
-    #   --output $LEFT --mode 1920x1080 --pos 0x10 --rotate normal \
-    #   --output $RIGHT --mode 1920x1080 --pos 4480x10 --rotate normal \
-    #   --output $CENTER --mode 2560x1440 --pos 1920x0 --rotate normal \
-    #   --output $HDMI --off
-      
-    # ${pkgs.xorg.xrandr}/bin/xrandr \
-    #   --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right \
-    #   --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left \
-    #   --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary \
-    #   --output $HDMI --off
-    
-    ${pkgs.xorg.xrandr}/bin/xrandr --output $HDMI --off --noprimary
-    ${pkgs.xorg.xrandr}/bin/xrandr --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right --noprimary
-    ${pkgs.xorg.xrandr}/bin/xrandr --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left --noprimary
-    ${pkgs.xorg.xrandr}/bin/xrandr --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary
-
-    # set up my caps lock keyboard configuration
-    ${pkgs.kbd-capslock}/bin/kbd-capslock
-
-    # allow keyring authentication, apparently fails without this
-    ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
-
-    # give a decent theme in case I need to use xterm (modified variant of
-    # kitty's 'gruvbox material dark hard')
-    ${pkgs.xorg.xrdb}/bin/xrdb -merge <<EOF
-      ! Black
-      *color0: #151414
-      *color8: #928374
-
-      ! Red
-      *color1: #ea6962
-      *color9: #ea6962
-
-      ! Green
-      *color2:  #a9b665
-      *color10: #a9b665
-
-      ! Yellow
-      *color3:  #e78a4e
-      *color11: #d8a657
-
-      ! Blue
-      *color4:  #7daea3
-      *color12: #7daea3
-
-      ! Magenta
-      *color5:  #d3869b
-      *color13: #d3869b
-
-      ! Cyan
-      *color6:  #89b482
-      *color14: #89b482
-
-      ! White
-      *color7:  #d4be98
-      *color15: #d4be98
-
-      *background: #1d2021
-      *foreground: #d4be98
-    EOF
-  '';
-
+  # services.xserver.displayManager.sessionCommands = /* bash */''
+  #   # set up the monitors
+  #   LEFT="DP-1"
+  #   CENTER="DP-4"
+  #   RIGHT="DP-2"
+  #   HDMI="HDMI"
+  #
+  #   # old 3 side by side normal orientations
+  #   # ${pkgs.xrandr}/bin/xrandr \
+  #   #   --output $LEFT --mode 1920x1080 --pos 0x10 --rotate normal \
+  #   #   --output $RIGHT --mode 1920x1080 --pos 4480x10 --rotate normal \
+  #   #   --output $CENTER --mode 2560x1440 --pos 1920x0 --rotate normal \
+  #   #   --output $HDMI --off
+  #
+  #   # ${pkgs.xrandr}/bin/xrandr \
+  #   #   --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right \
+  #   #   --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left \
+  #   #   --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary \
+  #   #   --output $HDMI --off
+  #
+  #   ${pkgs.xrandr}/bin/xrandr --output $HDMI --off --noprimary
+  #   ${pkgs.xrandr}/bin/xrandr --output $LEFT --mode 1920x1080 --pos 0x0 --rotate right --noprimary
+  #   ${pkgs.xrandr}/bin/xrandr --output $RIGHT --mode 1920x1080 --pos 3640x0 --rotate left --noprimary
+  #   ${pkgs.xrandr}/bin/xrandr --output $CENTER --mode 2560x1440 --pos 1080x334 --rotate normal --primary
+  #
+  #   # set up my caps lock keyboard configuration # TODO: shouldn't be necessary,
+  #   # handled in hm-side minimal-desktop?
+  #   ${pkgs.kbd-capslock}/bin/kbd-capslock
+  #
+  #   # allow keyring authentication, apparently fails without this
+  #   ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
+  #
+  #   # give a decent theme in case I need to use xterm (modified variant of
+  #   # kitty's 'gruvbox material dark hard')
+  #   # I assume this is also not necessary because of console colors set in
+  #   # minimal-desktop?
+  #   ${pkgs.xrdb}/bin/xrdb -merge <<EOF
+  #     ! Black
+  #     *color0: #151414
+  #     *color8: #928374
+  #
+  #     ! Red
+  #     *color1: #ea6962
+  #     *color9: #ea6962
+  #
+  #     ! Green
+  #     *color2:  #a9b665
+  #     *color10: #a9b665
+  #
+  #     ! Yellow
+  #     *color3:  #e78a4e
+  #     *color11: #d8a657
+  #
+  #     ! Blue
+  #     *color4:  #7daea3
+  #     *color12: #7daea3
+  #
+  #     ! Magenta
+  #     *color5:  #d3869b
+  #     *color13: #d3869b
+  #
+  #     ! Cyan
+  #     *color6:  #89b482
+  #     *color14: #89b482
+  #
+  #     ! White
+  #     *color7:  #d4be98
+  #     *color15: #d4be98
+  #
+  #     *background: #1d2021
+  #     *foreground: #d4be98
+  #   EOF
+  # '';
+  #
   services.udisks2.enable = true; # necessary for udiskie to work in home-manager (usb automounting)
   # services.gvfs.enable = true;  # possibly necessary for cdroms?
   # services.devmon.enable = true;  # possibly necessary for cdroms?
@@ -227,14 +263,16 @@
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "adbusers" "dialout" ];
     packages = with pkgs; [
-      # (unstable.yabridge.override { wine = unstable.wineWowPackages.yabridge; })
-      # (unstable.yabridgectl.override { wine = unstable.wineWowPackages.yabridge; })
 
-      unstable.yabridge
-      unstable.yabridgectl
-      unstable.wineWowPackages.yabridge
+      # unstable.yabridge
+      # unstable.yabridgectl
+      # unstable.wineWowPackages.yabridge
+      
+      yabridge
+      yabridgectl
+      wineWowPackages.yabridge
 
       # wineWowPackages.full
       # wineWowPackages.waylandFull
@@ -267,7 +305,7 @@
       PasswordAuthentication = true; # TODO: set this to false
       PermitRootLogin = "no";
     };
-  };
+};
 
   environment.variables = {
     #NIX_LD = builtins.readFile "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
@@ -325,7 +363,10 @@
     #   rev = "caa55a0ed9996bcd3ddec2dd48a2c7975fa49f4c";
     #   sha256 = "09qd4fhbvj3afm9bmviilc7bk9yx7ij6mnl49ps4w5jm5fgmzxlx";
     # })
+
+    unixtools.net-tools
     
+    rkflashtool
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
