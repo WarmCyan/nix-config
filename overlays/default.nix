@@ -14,6 +14,14 @@ in
       config.permittedInsecurePackages = [ "electron-25.9.0" ];
     };
   };
+  old-packages = final: _prev: {
+    old = import inputs.nixpkgs-old {
+      system = final.system;
+      config.allowUnfree = true;
+      # obsidian currently breaks without this
+      config.permittedInsecurePackages = [ "electron-25.9.0" ];
+    };
+  };
 
   # https://github.com/NixOS/nixpkgs/issues/262000
   fix-hanging-debugpy = final: prev: {

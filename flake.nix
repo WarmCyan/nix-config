@@ -120,6 +120,7 @@
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs-old.url = "github:nixos/nixpkgs/nixos-25.11";
     
     # keeping around so if I ever need a specific nixpkgs commit, use this
     # nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";

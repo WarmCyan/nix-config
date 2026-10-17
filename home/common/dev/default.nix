@@ -79,7 +79,7 @@ in
     statix              # nix linter
 
     pre-commit  # we want this separately so we can apply even to non-python projects
-    unstable.micromamba  # python environment management
+    old.micromamba  # python environment management
 
     # -- MY tools! --
     add-jupyter-env # run inside a conda env to add jupyter lab setup
@@ -124,8 +124,11 @@ in
 
   programs.zsh.initContent = /* sh */ ''
     # >>> mamba initialize >>>
-    # export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/micromamba';
-    export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/.mamba-wrapped';
+    export MAMBA_EXE='${pkgs.old.micromamba}/bin/micromamba';
+    # export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/.mamba-wrapped';
+    # export MAMBA_EXE='${pkgs.unstable.mamba-cpp}/bin/.mamba-wrapped';
+    # export MAMBA_EXE='${pkgs.unstable.mamba-cpp}/bin/mamba';
+    # export MAMBA_EXE="''${HOME}/.nix-profile/bin/micromamba";
     export MAMBA_ROOT_PREFIX="''${HOME}/micromamba";
     __mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
     if [ $? -eq 0 ]; then 
@@ -139,8 +142,10 @@ in
   
   programs.bash.initExtra = /* sh */ ''
     # >>> mamba initialize >>>
-    # export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/micromamba';
-    export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/.mamba-wrapped';
+    export MAMBA_EXE='${pkgs.old.micromamba}/bin/micromamba';
+    # export MAMBA_EXE='${pkgs.unstable.micromamba}/bin/.mamba-wrapped';
+    # export MAMBA_EXE='${pkgs.unstable.mamba-cpp}/bin/.mamba-wrapped';
+    # export MAMBA_EXE="''${HOME}/.nix-profile/bin/micromamba";
     export MAMBA_ROOT_PREFIX="''${HOME}/micromamba";
     __mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
     if [ $? -eq 0 ]; then 
