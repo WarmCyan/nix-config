@@ -28,7 +28,21 @@ in
   imports = [
     ./hardware-configuration.nix
     ../common/pipewire
+
+    # <nixpkgs/nixos/modules/services/hardware/sane_extra_backends/brscan4.nix>
+    "${inputs.nixpkgs}/nixos/modules/services/hardware/sane_extra_backends/brscan4.nix"
   ];
+
+  # https://wiki.nixos.org/wiki/Scanners
+  hardware.sane = {
+    enable = true;
+    brscan4 = {
+      enable = true;
+      # netDevices = {
+      #   model = "HL-L23800W";
+      # };
+    };
+  };
 
   boot = {
     loader.systemd-boot.enable = true;
@@ -105,7 +119,7 @@ in
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
-    extraGroups = [ "nginx" "networkmanager" "wheel" "git" ];
+    extraGroups = [ "nginx" "networkmanager" "wheel" "git" "scanner" "lp" ];
     packages = with pkgs; [
       firefox
       kdePackages.kate
