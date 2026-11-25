@@ -681,8 +681,8 @@ in
       ];
 
     extraPackages = with pkgs; [
-      nodePackages.bash-language-server
-      nodePackages.vim-language-server
+      bash-language-server
+      vim-language-server
       # nodePackages.vls
 
       # -- Python language server stuff --

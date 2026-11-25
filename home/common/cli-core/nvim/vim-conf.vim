@@ -290,5 +290,3 @@ autocmd BufRead,BufNewFile * highlight URL ctermfg=magenta cterm=underline guifg
 " stop bold facing comments 
 autocmd BufRead,BufNewFile * highlight Comment cterm=None gui=None
 
-
-

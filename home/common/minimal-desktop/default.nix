@@ -10,18 +10,18 @@ in
   };
 
   config = mkIf cfg.enable {
-    programs.bash.profileExtra = ''
+    programs.bash.profileExtra = /* bash */ ''
       if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ] && [[ "$(tty)" == *"/dev/tty"* ]]; then
         exec startx
       fi
     '';
-    programs.zsh.profileExtra = ''
+    programs.zsh.profileExtra = /* bash */ ''
       if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ] && [[ "$(tty)" == *"/dev/tty"* ]]; then
         exec startx
       fi
     '';
     
-    home.file.".xinitrc".text = ''
+    home.file.".xinitrc".text = /* bash */ ''
       if test -z "$DBUS_SESSION_BUS_ADDRESS"; then
         eval $(dbus-launch --exit-with-session --sh-syntax)
       fi

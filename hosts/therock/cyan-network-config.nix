@@ -59,7 +59,7 @@ in
       smtpd_sasl_auth_enable = "yes";
       smtpd_recipient_restrictions = "permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination";
 
-      resolve_numeric_domain = "yes"; # allow ip addresses
+      # resolve_numeric_domain = "yes"; # allow ip addresses
     };
 
     # hostname = "ip-192.168.200.1";
@@ -155,11 +155,11 @@ in
         # generatePrivateKeyFile = true;
         peers = [
           {
-            allowedIPs = [ "192.168.200.4/32" "192.168.130.3/32" ];
+            allowedIPs = [ "192.168.130.3/32" ];
             publicKey = "6jHY+DAfq2xpKbsW4+H8FOX3z+MB9rZLvhiL24oJzgQ=";
           }
           {
-            allowedIPs = [ "192.168.200.5/32" "192.168.130.8/32" ];
+            allowedIPs = [ "192.168.130.8/32" ];
             publicKey = "Hwi4/lYNRUYbicDmbYXQZJ6md8YzGhedK7XkbxQwOQg=";
           }
           {

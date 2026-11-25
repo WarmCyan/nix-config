@@ -17,7 +17,7 @@ let
   '';
 in
 {
-  nixGL = {
+  targets.genericLinux.nixGL = {
     packages = nixgl.packages;
     defaultWrapper = "mesa";
   };
@@ -95,7 +95,7 @@ in
           "${caps}+c" = lib.mkForce "exec firefox";
 
           "${caps}+slash" = "exec ${pkgs.zeal}/bin/zeal";
-          "${win}+l" = "exec i3lock -i /home/81n/.lock-background-image.png";
+          "${win}+l" = lib.mkForce "exec i3lock -i /home/81n/.lock-background-image.png";
         };
         startup = [
           {
@@ -119,7 +119,22 @@ in
 
   home.sessionVariables = {
     MANPAGER = "nvim +Man!";
+    TERMINAL = "kitty";
+    EDITOR = "nvim";
   };
+  programs.zsh.sessionVariables = {
+    MANPAGER = "nvim +Man!";
+    TERMINAL = "kitty";
+    EDITOR = "nvim";
+  };
+  programs.bash.sessionVariables = {
+    MANPAGER = "nvim +Man!";
+    TERMINAL = "kitty";
+    EDITOR = "nvim";
+  };
+  home.sessionPath = [
+    "$HOME/.cargo/bin"
+  ];
 
   # programs.neovim = {
   #   # package = pkgs.stable.neovim;
@@ -168,6 +183,15 @@ in
 
     #unstable.flameshot
     flameshot
+
+
+    rustc
+    cargo
+
+    pandoc
+
+
+    uv
   ];
 
   qt = {

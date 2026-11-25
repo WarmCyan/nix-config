@@ -120,6 +120,7 @@
   inputs = {
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs-old.url = "github:nixos/nixpkgs/nixos-25.11";
     
     # keeping around so if I ever need a specific nixpkgs commit, use this
     # nixpkgs-pinned.url = "github:nixos/nixpkgs?rev=988cc958c57ce4350ec248d2d53087777f9e1949";
@@ -285,7 +286,10 @@
       # };
       amethyst = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
-        modules = [ ./home ];
+        modules = [
+          ./home
+          nixvim.homeModules.nixvim
+        ];
         extraSpecialArgs = {
           inherit self inputs outputs;
           hostname = "amethyst";
@@ -298,22 +302,22 @@
         };
       };
 
-	# workbench/radio laptop
-	bench = lib.homeManagerConfiguration {
-		pkgs = pkgsFor.x86_64-linux;
-		modules = [ ./home ];
-		extraSpecialArgs = {
-		  inherit self inputs outputs;
-		  hostname = "bench";
-		  username = "dwl";
-		  configName = "bench";
-		  gitUsername = "Martindale, Nathan";
-		  gitEmail = "nathanamartindale@gmail.com";
-		  configLocation = "/home/dwl/lab/nix-config";
-		  noNixos = false;
-		};
-	};
-	
+      # workbench/radio laptop
+      bench = lib.homeManagerConfiguration {
+        pkgs = pkgsFor.x86_64-linux;
+        modules = [ ./home ];
+        extraSpecialArgs = {
+          inherit self inputs outputs;
+          hostname = "bench";
+          username = "dwl";
+          configName = "bench";
+          gitUsername = "Martindale, Nathan";
+          gitEmail = "nathanamartindale@gmail.com";
+          configLocation = "/home/dwl/lab/nix-config";
+          noNixos = false;
+        };
+      };
+
       # primary laptop
       delta = lib.homeManagerConfiguration {
         pkgs = pkgsFor.x86_64-linux;
