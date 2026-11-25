@@ -9,7 +9,7 @@ let
   portImmich        = 2283;
   portGrafana       = 3000;
   portKiwix         = 4080;
-  portEtherCalc     = 5032;
+  # portEtherCalc     = 5032;
   portCGit          = 5080;
   portWebDavNathan  = 7121;
   portWebDavMum     = 7122;
@@ -28,7 +28,21 @@ in
   imports = [
     ./hardware-configuration.nix
     ../common/pipewire
+
+    # <nixpkgs/nixos/modules/services/hardware/sane_extra_backends/brscan4.nix>
+    "${inputs.nixpkgs}/nixos/modules/services/hardware/sane_extra_backends/brscan4.nix"
   ];
+
+  # https://wiki.nixos.org/wiki/Scanners
+  hardware.sane = {
+    enable = true;
+    brscan4 = {
+      enable = true;
+      # netDevices = {
+      #   model = "HL-L23800W";
+      # };
+    };
+  };
 
   boot = {
     loader.systemd-boot.enable = true;
@@ -39,13 +53,13 @@ in
     enableContainers = true; # necessary for containers to work obv
   };
 
-  containers.cyan = {
-    autoStart = true;
-    config = (import ./cyan-network-config.nix);
-    privateNetwork = true;
-    hostAddress = "192.168.1.31";  # firewall machine should point to this? "external" ip?
-    localAddress = "192.168.1.30"; # address within the container?
-  };
+  # containers.cyan = {
+  #   autoStart = true;
+  #   config = (import ./cyan-network-config.nix);
+  #   privateNetwork = true;
+  #   hostAddress = "192.168.1.31";  # firewall machine should point to this? "external" ip?
+  #   localAddress = "192.168.1.30"; # address within the container?
+  # };
   networking.nat.enable = true;
   networking.nat.internalInterfaces = [ "ve-cyan" ];
   networking.nat.externalInterface = "eth0";
@@ -63,6 +77,15 @@ in
     browsing = true;
     defaultShared = true;
     openFirewall = true;
+  };
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+    publish = {
+      enable = true;
+      userServices = true;
+    };
   };
 
   # networking
@@ -84,7 +107,7 @@ in
         portGrafana
         portImmich
         portKiwix
-        portEtherCalc
+        # portEtherCalc
         portCGit
         portWebDavNathan
         portWebDavMum
@@ -117,7 +140,7 @@ in
   users.users.dwl = {
     isNormalUser = true;
     description = "Nathan";
-    extraGroups = [ "nginx" "networkmanager" "wheel" "git" ];
+    extraGroups = [ "nginx" "networkmanager" "wheel" "git" "scanner" "lp" ];
     packages = with pkgs; [
       firefox
       kdePackages.kate
@@ -262,10 +285,10 @@ in
     mediaLocation = "/depository/immich";
   };
 
-  services.ethercalc = {
-    enable = true;
-    port = portEtherCalc;
-  };
+  # services.ethercalc = {
+  #   enable = true;
+  #   port = portEtherCalc;
+  # };
 
   # services.cryptpad = {
   #   enable = true;
@@ -303,6 +326,7 @@ in
         domain = "192.168.1.3";
         root_url = "http://192.168.1.3:${toString portGrafana}/";
       };
+      security.secret_key = "SW2YcwTIb9zpd00hoPsMm";
     };
   };
   # make grafana available to phone through wg as well
@@ -415,7 +439,6 @@ in
         <p><a href="http://192.168.130.2:${toString portImmich}">Immich (${toString portImmich})</a> - photo gallery</p>
         <p><a href="http://192.168.130.2:${toString portGrafana}">Grafana (${toString portGrafana})</a> - network/system monitoring</p>
         <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - local wikipedia/zim wikis</p>
-        <p><a href="http://192.168.130.2:${toString portEtherCalc}">EtherCalc (${toString portEtherCalc})</a> - collaborative spreadsheets</p>
         <p><a href="http://192.168.130.2:${toString portCGit}">CGit (${toString portCGit})</a> - local git repo browser</p>
         <p><a href="http://192.168.130.2:${toString portWebDavNathan}">Nathan's files (${toString portWebDavNathan})</a> - rclone webdav storage folder</p>
         <p><a href="http://192.168.130.2:${toString portWebDavSis}">Jackie's files (${toString portWebDavSis})</a> - rclone webdav storage folder</p>
