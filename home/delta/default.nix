@@ -59,6 +59,8 @@
 
     zoom-us
     chromium
+
+    signal-desktop
   ];
 
   xsession.windowManager.i3 = {
