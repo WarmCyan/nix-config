@@ -189,6 +189,9 @@ in
     cargo
 
     pandoc
+
+
+    uv
   ];
 
   qt = {
