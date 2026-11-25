@@ -40,6 +40,8 @@
 
     ../common/music
     ../common/minimal-desktop
+
+    ../common/web/librewolf.nix
   ];
 
   home.packages = with pkgs; [
@@ -156,6 +158,8 @@
 
     unstable.signal-desktop
     appimage-run
+
+    qgis
   ];
 
   xsession.windowManager.i3 = {
@@ -169,16 +173,16 @@
       ];
     };
     extraConfig = ''
-        workspace 1 output DP-4
-        workspace 2 output DP-1
-        workspace 3 output DP-2
+        workspace 1 output DP-2
+        workspace 2 output DP-0
+        workspace 3 output DP-5
     '';
   };
   xsession.numlock.enable = true;
   xsession.initExtra = /* bash */ ''
-    LEFT="DP-1"
-    CENTER="DP-4"
-    RIGHT="DP-2"
+    LEFT="DP-0"
+    CENTER="DP-2"
+    RIGHT="DP-5"
     HDMI="HDMI"
     
     ${pkgs.xrandr}/bin/xrandr --output $HDMI --off --noprimary
@@ -336,78 +340,6 @@
     theme = "gruvbox-dark-hard";
     location = "top-left";
     yoffset = 25;
-  };
-  #
-  # programs.firefox = {
-  #   # https://nixos.wiki/wiki/Librewolf
-  #   enable = true;
-  #   policies = {
-  #     DisableTelemetry = true;
-  #     DisableFirefoxStudies = true;
-  #     DisplayBookmarksToolbar = "never";
-  #     Preferences = {
-  #       "privacy.resistFingerprinting.letterboxing" = true;
-  #       "browser.safebrowsing.downloads.enabled" = true;
-  #       "browser.compactmode.show" = true;
-  #       "cookiebanners.service.mode" = 2;
-  #       "privacy.donottrackheader.enabled" = true;
-  #     };
-  #     ExtensionSettings = {
-  #       # go to about:support to find extension IDs
-  #       "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
-  #         install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
-  #         installation_mode = "force_installed";
-  #       };
-  #       "{d7742d87-e61d-4b78-b8a1-b469842139fa}" = {
-  #         install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-ff/latest.xpi";
-  #         installation_mode = "force_installed";
-  #       };
-  #       "search@kagi.com" = {
-  #         install_url = "https://addons.mozilla.org/firefox/downloads/latest/kagi-search-for-firefox/latest.xpi";
-  #         installation_mode = "force_installed";
-  #       };
-  #       "addon@darkreader.org" = {
-  #         install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
-  #         installation_mode = "force_installed";
-  #       };
-  #     };
-  #   };
-  # };
-  
-  programs.librewolf = {
-    # https://nixos.wiki/wiki/Librewolf
-    enable = true;
-    policies = {
-      DisableTelemetry = true;
-      DisableFirefoxStudies = true;
-      DisplayBookmarksToolbar = "never";
-      Preferences = {
-        "privacy.resistFingerprinting.letterboxing" = true;
-        "browser.safebrowsing.downloads.enabled" = true;
-        "browser.compactmode.show" = true;
-        "cookiebanners.service.mode" = 2;
-        "privacy.donottrackheader.enabled" = true;
-      };
-      ExtensionSettings = {
-        # go to about:support to find extension IDs
-        "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
-          installation_mode = "force_installed";
-        };
-        "{d7742d87-e61d-4b78-b8a1-b469842139fa}" = {
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-ff/latest.xpi";
-          installation_mode = "force_installed";
-        };
-        "search@kagi.com" = {
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/kagi-search-for-firefox/latest.xpi";
-          installation_mode = "force_installed";
-        };
-        "addon@darkreader.org" = {
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
-          installation_mode = "force_installed";
-        };
-      };
-    };
   };
   
   # https://github.com/nix-community/home-manager/issues/3113 (and psensor?)
