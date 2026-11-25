@@ -69,6 +69,11 @@
     };
   };
 
+  services.upower = {
+    enable = true;
+    criticalPowerAction = "PowerOff";
+  };
+
   # Configure keymap in X11
   services.xserver = {
     xkb = {
