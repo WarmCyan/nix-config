@@ -9,6 +9,7 @@ let
   portImmich        = 2283;
   portGrafana       = 3000;
   portKiwix         = 4080;
+  portHedgedoc      = 4090;
   # portEtherCalc     = 5032;
   portCGit          = 5080;
   portWebDavNathan  = 7121;
@@ -107,6 +108,7 @@ in
         portGrafana
         portImmich
         portKiwix
+        portHedgedoc
         # portEtherCalc
         portCGit
         portWebDavNathan
@@ -273,6 +275,33 @@ in
     };
   };
 
+  services.hedgedoc = {
+    enable = true;
+    configureNginx = false;
+    settings = {
+      domain = "192.168.130.2";
+      # domain = "localhost";
+      port = portHedgedoc;
+      host = "192.168.1.3";
+      urlAddPort = true;
+      allowOrigin = [ 
+        "localhost"
+        "192.168.1.3"
+        "192.168.130.2"
+        "192.168.130.6"
+      ];
+      db = {
+        dialect = "sqlite";
+        # storage = "/depository/hedgedoc/db.sqlite";
+      };
+      useSSL = false;
+      protocolUseSSL = false;
+      # uploadsPath = "/depository/hedgedoc/uploads";
+      hsts = false;
+      csp.enable = false;
+    };
+  };
+
   services.immich = {
     package = pkgs.unstable.immich;
     enable = true;
@@ -332,6 +361,9 @@ in
   # make grafana available to phone through wg as well
   services.nginx = {
     enable = true;
+    # appendHttpConfig = ''
+    #   add_header 'Access-Control-Allow-Origin' *;
+    # '';
     virtualHosts = {
       "local-git" = {
         listen = [{ port = portCGit; addr = "192.168.130.2"; }];
@@ -369,6 +401,27 @@ in
             proxy_send_timeout   600s;
             send_timeout         600s;
           '';
+        };
+      };
+      "hedgedoc" = {
+        listen = [{ port = portHedgedoc; addr = "192.168.130.2"; }];
+
+        # root = "/var/www/hedgedoc";
+        locations."/" = {
+          proxyPass = "http://192.168.1.3:${toString portHedgedoc}";
+          recommendedProxySettings = true;
+          # extraConfig = ''
+          #   add_header 'Access-Control-Allow-Origin' '*';
+          #   add_header 'Access-Control-Allow-Methods' '*';
+          # '';
+        };
+        locations."/socket.io/" = {
+          proxyPass = "http://192.168.1.3:${toString portHedgedoc}";
+          proxyWebsockets = true;
+          recommendedProxySettings = true;
+          # extraConfig = ''
+          #   add_header 'Access-Control-Allow-Origin' '*';
+          # '';
         };
       };
       # this is necessary because tt-rss won't download from non-80 ports. So,
@@ -439,6 +492,7 @@ in
         <p><a href="http://192.168.130.2:${toString portImmich}">Immich (${toString portImmich})</a> - photo gallery</p>
         <p><a href="http://192.168.130.2:${toString portGrafana}">Grafana (${toString portGrafana})</a> - network/system monitoring</p>
         <p><a href="http://192.168.130.2:${toString portKiwix}">Kiwix (${toString portKiwix})</a> - local wikipedia/zim wikis</p>
+        <p><a href="http://192.168.130.2:${toString portHedgedoc}">Hedgedoc (${toString portHedgedoc})</a> - Collaborative text editing</p>
         <p><a href="http://192.168.130.2:${toString portCGit}">CGit (${toString portCGit})</a> - local git repo browser</p>
         <p><a href="http://192.168.130.2:${toString portWebDavNathan}">Nathan's files (${toString portWebDavNathan})</a> - rclone webdav storage folder</p>
         <p><a href="http://192.168.130.2:${toString portWebDavSis}">Jackie's files (${toString portWebDavSis})</a> - rclone webdav storage folder</p>
