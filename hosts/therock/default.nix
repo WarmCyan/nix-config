@@ -119,6 +119,7 @@ in
         # portFreshRSS
         portTTRSS
         portRSSBridge
+        8123  # home-assistant container
         # portMiniflux
         # 4080 # kiwix
         # 7121 # webdav: me
@@ -193,6 +194,28 @@ in
   services.displayManager = {
     sddm.enable = true;
   };
+
+
+  # ==== HA ====
+  virtualisation.oci-containers = {
+    backend = "podman";
+    containers.homeassistant = {
+      volumes = [ "home-assistant:/config" ];
+      environment.TZ = "America/New_York";
+      # Note: The image will not be updated on rebuilds, unless the version label changes
+      image = "ghcr.io/home-assistant/home-assistant:stable";
+      extraOptions = [ 
+        # Use the host network namespace for all sockets
+        "--network=host"
+        # Pass devices into the container, so Home Assistant can discover and make use of them
+        "--device=/dev/ttyACM0:/dev/ttyACM0"
+        # "--device=/dev/serial/by-id/usb-ITEAD_SONOFF_Zigbee_3.0_USB_Dongle_Plus_V2_20231215195145-uif
+      ];
+    };
+  };
+  # ============
+
+  
   
   services.openssh = {
     enable = true;
@@ -352,6 +375,7 @@ in
         http_port = portGrafana;
         # domain = "therock.cyan.arpa";
         # root_url = "http://therock.cyan.arpa:3000/";
+    
         domain = "192.168.1.3";
         root_url = "http://192.168.1.3:${toString portGrafana}/";
       };
